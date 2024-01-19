@@ -15,13 +15,15 @@ import org.springframework.core.env.Environment;
  * &emsp; will provide all mysql config for the application
  */
 
-@Configuration
-@Profile("!test")
-public class DatasourceConfig {
-    @Autowired private Environment e;
+@Configuration //Indicates to the scanner that this class describes the application config
+@Profile("!test") //Indicates to the scanner that this class should be ignored during unit testing
+public class DatasourceConfig //will provide all mysql config for the application
+{ 
+    @Autowired private Environment e; //Finds Enviroment and injects as dependency into class
 
-    @Bean
-    public HikariDataSource provideHikariDataSource() {
+    @Bean //Indicates to the scanner that anytime we need a HikariDataSource, use this method to generate it
+    public HikariDataSource provideHikariDataSource() 
+    {
         return DataSourceBuilder.create().type(HikariDataSource.class)
             .username(e.getRequiredProperty("mysql.database.username"))
             .password(e.getRequiredProperty("mysql.database.password"))

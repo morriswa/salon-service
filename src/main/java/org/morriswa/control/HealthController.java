@@ -14,13 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
  * &emsp; provides RESTful endpoints to ensure application is running
  */
 
-@RestController
-public class HealthController {
+@RestController //Indicates that the class is code for a REST controller
+public class HealthController  //Provides endpoints to user 
+{ 
+    @Autowired //Automatically injects dependencies into the HealthController class as attrs
+    private HttpResponseFactory response; //Generates HTTP Responses with all requested info and default fields for API
+    
 
-    @Autowired private HttpResponseFactory response;
-
-    @GetMapping("health")
+    @GetMapping("health") //Maps and endpoint to a method, GET method in postman 
     public ResponseEntity<?> getServiceHealth() {
-        return response.build(HttpStatus.OK, "All is good on our end!");
+        var str = "Kevin Rivers";
+        //Returns formmated JSON response
+        return response.build(HttpStatus.OK, "All is good on our end!", str);
     }
 }
