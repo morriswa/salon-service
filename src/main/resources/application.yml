@@ -1,0 +1,5 @@
+# file to store ALL application configuration properties
+
+server:
+  # service will be available on this port
+  port: 8080
