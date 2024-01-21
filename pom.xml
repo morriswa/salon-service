@@ -51,12 +51,21 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Database Migration Library -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-mysql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+        <!-- Database Migration Libraries -->
+            <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>10.6.0</version>
+                <scope>runtime</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-mysql</artifactId>
+                <version>10.6.0</version>
+                <scope>runtime</scope>
+            </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core
             need security classes
