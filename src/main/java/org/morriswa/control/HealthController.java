@@ -17,7 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthController {
 
-    @Autowired private HttpResponseFactory response;
+    private final HttpResponseFactory response;
+
+    @Autowired public HealthController(HttpResponseFactory response) {
+        this.response = response;
+    }
 
     @GetMapping("health")
     public ResponseEntity<?> getServiceHealth() {

@@ -21,13 +21,20 @@ import org.springframework.web.context.request.WebRequest;
  */
 @ControllerAdvice
 public class WebErrorHandler {
-    @Autowired private Environment env;
-    @Autowired private HttpResponseFactory responseFactory;
-    private final Logger log = LoggerFactory.getLogger(WebErrorHandler.class);
+    private final Environment env;
+    private final HttpResponseFactory responseFactory;
+    private final Logger log;
 
-    @ExceptionHandler({Exception.class}) // Catch any and all exceptions thrown in any controller
+    @Autowired public WebErrorHandler(Environment env, HttpResponseFactory responseFactory) {
+        this.env = env;
+        this.responseFactory = responseFactory;
+        this.log = LoggerFactory.getLogger(WebErrorHandler.class);
+    }
+
+
+    @ExceptionHandler({Exception.class}) // Catch any and all unexpected exceptions thrown in any controller
     public ResponseEntity<?> internalServerError(Exception e, WebRequest r) {
-        log.error("Encountered 500 error: ", e);
+        log.error("Encountered unexpected (500) error: ", e);
 
         // and return a 500 with as much relevant information as they deserve
         return responseFactory.error(
@@ -36,8 +43,8 @@ public class WebErrorHandler {
             e.getMessage());
     }
 
-    @ExceptionHandler({ // catch...
-        BadRequestException.class, // Bad Requests,
+    @ExceptionHandler({ // catches expected exceptions including...
+        BadRequestException.class, // Bad Requests...
     })
     public ResponseEntity<?> badRequest(Exception e, WebRequest r) {
         // and assume user fault [400]
