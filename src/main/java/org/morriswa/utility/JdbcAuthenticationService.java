@@ -7,6 +7,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+
+/**
+ * AUTHOR: William A. Morris <br>
+ * CREATION_DATE: 2024-01-22 <br>
+ * PURPOSE: <br>
+ * &emsp; responsible for authenticating all web requests and locating appropriate user
+ */
+
 @Component
 public class JdbcAuthenticationService implements UserDetailsService {
 
