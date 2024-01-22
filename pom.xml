@@ -11,7 +11,7 @@
     <groupId>org.morriswa</groupId>
     <artifactId>eecs447-project-service</artifactId>
     <version>0.0.0-SNAPSHOT</version>
-    <name>EECS 447 Project Service</name>
+    <name>EECS447-Project-Service</name>
     <description>Starter for EECS 447 Project Microservice</description>
     <packaging>jar</packaging>
     <properties>
@@ -37,12 +37,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-            <!-- Required to unittest the application-->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <scope>test</scope>
-            </dependency>
+        <!-- Required to unittest the application-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Required for JDBC with MySql -->
         <dependency>
@@ -51,7 +51,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Database Migration Libraries -->
+        <!-- Required Database Migration Libraries -->
             <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
             <dependency>
                 <groupId>org.flywaydb</groupId>
@@ -66,45 +66,6 @@
                 <version>10.6.0</version>
                 <scope>runtime</scope>
             </dependency>
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.security/spring-security-core-->
-<!--            need security classes-->
-<!--            &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security</groupId>-->
-<!--            <artifactId>spring-security-core</artifactId>-->
-<!--            <version>6.1.5</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework.vault/spring-vault-core-->
-<!--            need org.springframework.vault.support.JsonMapFlattener;-->
-<!--           &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.vault</groupId>-->
-<!--            <artifactId>spring-vault-core</artifactId>-->
-<!--            <version>3.0.3</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash;-->
-<!--            need to manually load YAML config props-->
-<!--            &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.fasterxml.jackson.dataformat</groupId>-->
-<!--            <artifactId>jackson-dataformat-yaml</artifactId>-->
-<!--            <version>2.14.2</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.amazonaws</groupId>-->
-<!--            <artifactId>aws-java-sdk</artifactId>-->
-<!--            <version>1.12.579</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.amazonaws</groupId>-->
-<!--            <artifactId>aws-java-sdk-appconfigdata</artifactId>-->
-<!--            <version>1.12.469</version>-->
-<!--        </dependency>-->
 
     </dependencies>
 
