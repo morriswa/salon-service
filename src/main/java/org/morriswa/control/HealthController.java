@@ -23,7 +23,7 @@ public class HealthController {
         this.response = response;
     }
 
-    @GetMapping("health")
+    @GetMapping("/health")
     public ResponseEntity<?> getServiceHealth() {
         return response.build(HttpStatus.OK, "All is good on our end!");
     }
