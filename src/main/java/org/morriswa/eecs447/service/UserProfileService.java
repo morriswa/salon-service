@@ -1,11 +1,12 @@
 package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.model.RegistrationRequest;
+import org.morriswa.eecs447.model.UserProfileResponse;
 
 import java.security.Principal;
 
 public interface UserProfileService {
-    void registerUser(RegistrationRequest request) throws Exception;
+    String registerUser(RegistrationRequest request) throws Exception;
 
-    Long getUserId(Principal principal);
+    UserProfileResponse getUserProfile(Principal principal);
 }

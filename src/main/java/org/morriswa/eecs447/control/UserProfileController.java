@@ -30,13 +30,14 @@ public class UserProfileController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) throws Exception {
-        userService.registerUser(request);
-        return response.build(HttpStatus.OK, "Got registered");
+        var registeredUsername = userService.registerUser(request);
+        return response.build(HttpStatus.OK,
+                String.format("Successfully registered user with username: %s", registeredUsername));
     }
 
     @GetMapping("/user")
-    public ResponseEntity<?> getUserId(Principal principal) {
-        var id = userService.getUserId(principal);
-        return response.build(HttpStatus.OK, "Successfully retrieved user id", id);
+    public ResponseEntity<?> getUserProfile(Principal principal) {
+        var id = userService.getUserProfile(principal);
+        return response.build(HttpStatus.OK, "Successfully retrieved user profile!", id);
     }
 }

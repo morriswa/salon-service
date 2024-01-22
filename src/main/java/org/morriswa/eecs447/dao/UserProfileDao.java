@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.dao;
 
+import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.security.core.userdetails.User;
 
 public interface UserProfileDao {
@@ -8,5 +9,5 @@ public interface UserProfileDao {
 
     void register(String username, String password) throws Exception;
 
-    Long getUserId(String username);
+    UserProfileResponse getUserProfile(String username);
 }

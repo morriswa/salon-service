@@ -2,6 +2,7 @@ package org.morriswa.eecs447;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -16,19 +17,20 @@ public class UserProfileTest extends ServiceTest {
     private String testingToken;
 
     @Test
-    void testGetUserIdEndpoint() throws Exception {
+    void testGetUserProfile() throws Exception {
 
         final long userId = 1L;
 
         final String username = "test";
 
-        when(userProfileDao.getUserId(username))
-                .thenReturn(userId);
+        when(userProfileDao.getUserProfile(username))
+                .thenReturn(new UserProfileResponse(userId, username));
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user")
                         .header("Authorization", testingToken))
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.payload", Matchers.is(Math.toIntExact(userId))))
+                .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(userId))))
+                .andExpect(jsonPath("$.payload.username", Matchers.is(username)))
         ;
     }
 }
