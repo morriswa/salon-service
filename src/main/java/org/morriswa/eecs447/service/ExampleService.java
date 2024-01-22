@@ -1,4 +1,4 @@
-package org.morriswa.service;
+package org.morriswa.eecs447.service;
 
 public interface ExampleService {
     String helloWorld ();

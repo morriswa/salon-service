@@ -1,7 +1,7 @@
-package org.morriswa.service;
+package org.morriswa.eecs447.service;
 
-import org.morriswa.dao.ExampleDao;
-import org.morriswa.exception.BadRequestException;
+import org.morriswa.eecs447.dao.ExampleDao;
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

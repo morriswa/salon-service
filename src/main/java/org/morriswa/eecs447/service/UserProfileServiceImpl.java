@@ -1,7 +1,7 @@
-package org.morriswa.service;
+package org.morriswa.eecs447.service;
 
-import org.morriswa.dao.UserProfileDao;
-import org.morriswa.model.RegistrationRequest;
+import org.morriswa.eecs447.dao.UserProfileDao;
+import org.morriswa.eecs447.model.RegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

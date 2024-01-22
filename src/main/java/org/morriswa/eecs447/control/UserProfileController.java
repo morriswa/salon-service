@@ -1,12 +1,11 @@
-package org.morriswa.control;
+package org.morriswa.eecs447.control;
 
-import org.morriswa.model.RegistrationRequest;
-import org.morriswa.service.UserProfileService;
-import org.morriswa.utility.HttpResponseFactory;
+import org.morriswa.eecs447.model.RegistrationRequest;
+import org.morriswa.eecs447.service.UserProfileService;
+import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

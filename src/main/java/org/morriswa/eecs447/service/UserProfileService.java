@@ -1,7 +1,6 @@
-package org.morriswa.service;
+package org.morriswa.eecs447.service;
 
-import org.morriswa.model.RegistrationRequest;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.morriswa.eecs447.model.RegistrationRequest;
 
 import java.security.Principal;
 

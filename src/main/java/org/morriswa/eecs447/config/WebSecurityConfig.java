@@ -1,8 +1,9 @@
-package org.morriswa.config;
+package org.morriswa.eecs447.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -33,7 +34,7 @@ public class WebSecurityConfig {
      *
      * @return the password encoder implementation
      */
-    @Bean public PasswordEncoder passwordEncoder() {
+    @Bean @Profile("!test") public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 

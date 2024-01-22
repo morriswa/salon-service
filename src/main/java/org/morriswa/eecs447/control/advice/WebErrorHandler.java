@@ -1,7 +1,7 @@
-package org.morriswa.control.advice;
+package org.morriswa.eecs447.control.advice;
 
-import org.morriswa.exception.BadRequestException;
-import org.morriswa.utility.HttpResponseFactory;
+import org.morriswa.eecs447.exception.BadRequestException;
+import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

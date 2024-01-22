@@ -1,4 +1,4 @@
-package org.morriswa.utility;
+package org.morriswa.eecs447.utility;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

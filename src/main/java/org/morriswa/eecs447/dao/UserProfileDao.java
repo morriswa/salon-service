@@ -1,4 +1,4 @@
-package org.morriswa.dao;
+package org.morriswa.eecs447.dao;
 
 import org.springframework.security.core.userdetails.User;
 
