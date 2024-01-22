@@ -1,9 +1,7 @@
 package org.morriswa.config;
 
-import org.morriswa.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -29,20 +28,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity // Enables Spring Security for this application
 public class WebSecurityConfig {
+    private final Logger log = LoggerFactory.getLogger(WebSecurityConfig.class);
 
-    private final UserDetailsService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final Logger log;
-
-    @Autowired
-    public WebSecurityConfig(UserDetailsService service, PasswordEncoder passwordEncoder) {
-        this.userService = service;
-        this.passwordEncoder = passwordEncoder;
-        this.log = LoggerFactory.getLogger(WebSecurityConfig.class);
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() {
+    public AuthenticationManager authenticationManager(UserDetailsService userService,
+                                                       PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         authenticationProvider.setUserDetailsService(userService);
         authenticationProvider.setPasswordEncoder(passwordEncoder);
@@ -59,7 +54,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/register").permitAll()
                         .anyRequest().authenticated()
                 )
-                .authenticationManager(authenticationManager())
                 .httpBasic(Customizer.withDefaults())
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable);
