@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.GregorianCalendar;
+import java.time.ZonedDateTime;
 
 @Component
 public class HttpResponseFactoryImpl implements HttpResponseFactory {
@@ -16,7 +16,7 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
      */
     private record DefaultResponse<T> (
         String message,
-        GregorianCalendar timestamp,
+        String timestamp,
         String applicationName,
         String version,
         T payload
@@ -28,7 +28,7 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
     private record DefaultErrorResponse (
         String error,
         String description,
-        GregorianCalendar timestamp,
+        String timestamp,
         String applicationName,
         String version,
         Object stack
@@ -47,7 +47,7 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
         return ResponseEntity
                 .status(status)
                 .body(new DefaultResponse<>(
-                    message, new GregorianCalendar(), this.APPLICATION_NAME, this.APPLICATION_VERSION, null)
+                    message, ZonedDateTime.now().toString(), this.APPLICATION_NAME, this.APPLICATION_VERSION, null)
                 );
     }
 
@@ -55,21 +55,21 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
         return ResponseEntity
                 .status(status)
                 .body(new DefaultResponse<>(
-                        message, new GregorianCalendar(), this.APPLICATION_NAME, this.APPLICATION_VERSION, payload
+                        message, ZonedDateTime.now().toString(), this.APPLICATION_NAME, this.APPLICATION_VERSION, payload
                 ));
     }
 
     public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(exceptionName, description, new GregorianCalendar(),
+                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now().toString(),
                         APPLICATION_NAME, APPLICATION_VERSION, null));
     }
 
     public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object stack) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(exceptionName, description, new GregorianCalendar(),
+                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now().toString(),
                         APPLICATION_NAME, APPLICATION_VERSION, stack));
     }
 }
