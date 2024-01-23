@@ -1,9 +1,9 @@
 package org.morriswa.eecs447.dao;
 
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.UserProfileResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,61 +15,67 @@ import java.util.Map;
 
 @Component
 public class UserProfileDaoImpl implements UserProfileDao {
-    private final Logger log;
     private final NamedParameterJdbcTemplate database;
     private final PasswordEncoder encoder;
 
     @Autowired
     public UserProfileDaoImpl(NamedParameterJdbcTemplate database, PasswordEncoder encoder) {
-        this.log = LoggerFactory.getLogger(UserProfileDaoImpl.class);
         this.database = database;
         this.encoder = encoder;
     }
 
     @Override
     public User findUser(String username) {
-
+        // defn query, inject params, query database and return the result
         final var query = "select * from user_profile where username=:username";
-
         final var params = Map.of("username",username);
-
         return database.query(query, params, rs->{
-
+            // check that a database record exists
             if (rs.next())
+                // and return the requested user, formatted for compatibility with Spring Security Filter
                 return new User(
                     rs.getString("username"),
                     rs.getString("password"),
                     Collections.emptyList());
-
+            // if a record is not found, throw an exception. This will trigger a 401 Http Response.
             throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
         });
     }
 
     @Override
-    public void register(String username, String password) {
-
-        final var query = "insert into user_profile (username, password) values (:username, :password)";
-
+    public void register(String username, String password) throws BadRequestException {
+        // database should always store an encrypted password
         final String encPassword = encoder.encode(password);
-
+        // defn query, inject params
+        final var query = "insert into user_profile (username, password) values (:username, :password)";
         final var params = Map.of("username", username, "password", encPassword);
-
-        database.update(query, params);
+        try { // attempt to update the database
+            database.update(query, params);
+        } catch (DuplicateKeyException dpke) { // if a duplicate key exception is thrown...
+            // extract database error message
+            final var error = dpke.getMostSpecificCause().getMessage();
+            // if error was caused by duplicate username on user_profile table...
+            if (error.endsWith("for key 'user_profile.username'"))
+                // throw a user-friendly error
+                throw new BadRequestException("There is already a user registered with that username! Try again :)");
+            // if error was not expected, throw as is
+            throw dpke;
+        }
     }
 
     @Override
     public UserProfileResponse getUserProfile(String username) {
-        final var query = """
-            select user_id, username from user_profile where username=:username
-        """;
-
+        // defn query, inject params, query database and return the result
+        final var query = "select user_id, username from user_profile where username=:username";
         final var params = Map.of("username", username);
-
         return database.query(query, params, rs -> {
+            // check that a database record exists
             if (rs.next())
-               return new UserProfileResponse(rs.getLong("user_id"), rs.getString("username"));
-
-            throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
+                // and return the requested profile
+                return new UserProfileResponse(rs.getLong("user_id"), rs.getString("username"));
+            // any authenticated user should have a user profile record
+            // missing records should not happen
+            throw new IllegalStateException(String.format("Could not locate user profile for user %s, but was able to successfully authenticate the user", username));
         });
     }
 }
