@@ -8,7 +8,7 @@
             "type": "java",
             "name": "ServiceRunner",
             "request": "launch",
-            "mainClass": "org.morriswa.ServiceRunner",
+            "mainClass": "org.morriswa.eecs447.ServiceRunner",
             "projectName": "eecs447-project-service"
         }
     ]
