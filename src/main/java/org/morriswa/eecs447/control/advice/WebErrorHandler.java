@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.control.advice;
 
+import jakarta.servlet.ServletException;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -32,6 +34,7 @@ public class WebErrorHandler {
     }
 
 
+    // Generic Internal Server Error handler
     @ExceptionHandler({Exception.class}) // Catch any and all unexpected exceptions thrown in any controller
     public ResponseEntity<?> internalServerError(Exception e, WebRequest r) {
         log.error("Encountered unexpected (500) error: ", e);
@@ -52,6 +55,17 @@ public class WebErrorHandler {
             HttpStatus.BAD_REQUEST,
             e.getClass().getSimpleName(),
             e.getMessage());
+    }
+
+    // catches servlet exceptions
+    @ExceptionHandler(ServletException.class) // usually this means the user is doing something
+    // forbidden by the application
+    public ResponseEntity<?> forbiddenRequests(Exception e, WebRequest r) {
+        // and return forbidden response 403
+        return responseFactory.error(
+                HttpStatus.FORBIDDEN,
+                e.getClass().getSimpleName(),
+                e.getMessage());
     }
 
 }

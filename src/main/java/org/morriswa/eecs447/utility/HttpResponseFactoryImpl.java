@@ -10,8 +10,6 @@ import java.util.GregorianCalendar;
 
 @Component
 public class HttpResponseFactoryImpl implements HttpResponseFactory {
-    private final String APPLICATION_NAME;
-    private final String APPLICATION_VERSION;
 
     /**
      * Default Service Response
@@ -36,6 +34,8 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
         Object stack
     ) { }
 
+    private final String APPLICATION_NAME;
+    private final String APPLICATION_VERSION;
 
     @Autowired
     public HttpResponseFactoryImpl(BuildProperties build) {
@@ -59,17 +59,17 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
                 ));
     }
 
-    public ResponseEntity<?> error(HttpStatus status, String message, String description) {
+    public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(message, description, new GregorianCalendar(),
+                .body(new DefaultErrorResponse(exceptionName, description, new GregorianCalendar(),
                         APPLICATION_NAME, APPLICATION_VERSION, null));
     }
 
-    public ResponseEntity<?> error(HttpStatus status, String message, String description, Object stack) {
+    public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object stack) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(message, description, new GregorianCalendar(),
+                .body(new DefaultErrorResponse(exceptionName, description, new GregorianCalendar(),
                         APPLICATION_NAME, APPLICATION_VERSION, stack));
     }
 }

@@ -1,21 +1,28 @@
 package org.morriswa.eecs447.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 
 /**
@@ -30,11 +37,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     /**
-     * Register a Password Encoder bean to be used throughout the application
+     * Register a Password Encoder bean to be injected
+     * as a dependency throughout the application
      *
      * @return the password encoder implementation
      */
-    @Bean @Profile("!test") public PasswordEncoder passwordEncoder() {
+    @Bean @Profile("!test")
+    public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -42,12 +51,12 @@ public class WebSecurityConfig {
      * Register an Authentication Manager bean to be used by Spring Security filter
      * to authenticate users' basic auth token
      * <p>
-     * DEPENDENCIES:
+     * REQUIRED AUTOWIRED DEPENDENCIES:
      * @param userService an implementation of spring's User Detail Service
      * @param passwordEncoder an implementation of Password Encoder
      * @return the final configured application Authentication Manager
      */
-    @Autowired @Bean
+    @Bean @Autowired
     public AuthenticationManager authenticationManager(UserDetailsService userService,
                                                        PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
@@ -57,14 +66,58 @@ public class WebSecurityConfig {
     }
 
     /**
+     * Register a Cors Configuration Bean.
+     * Contains all Cors (Cross Origin Resource Sharing) Configuration for the application
+     *
+     * @return fully configured Cors Object, ready to be injected into Security Filter
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        // configuration for Secured Routes
+        final CorsConfiguration secureRoutesCors = new CorsConfiguration(){{
+            // allow requests coming from any origin
+            setAllowedOrigins(List.of("*"));
+            // allow only GET and POST HTTP methods
+            setAllowedMethods(List.of("GET", "POST"));
+            // allow request to have any headers
+            setAllowedHeaders(List.of("*"));
+        }};
+
+        // configuration for User Registration Route
+        final CorsConfiguration registrationEndpointCors = new CorsConfiguration(){{
+            // allow requests coming from any origin
+            setAllowedOrigins(List.of("*"));
+            // only allow POST method, as that is the method of the registration endpoint
+            setAllowedMethods(List.of("POST"));
+            // allow request to have any headers
+            setAllowedHeaders(List.of("*"));
+        }};
+
+        // cors configuration will vary based on url
+        UrlBasedCorsConfigurationSource sources = new UrlBasedCorsConfigurationSource();
+
+        // register all routes with secured cors config
+        sources.registerCorsConfiguration("/**", secureRoutesCors);
+
+        // register user registration route with appropriate config
+        sources.registerCorsConfiguration("/register", registrationEndpointCors);
+
+        // return fully configured cors soruce
+        return sources;
+    }
+
+    /**
      * Register a Security Filter Chain bean to secure all web requests
      *
      * @param http Spring's Http Security object, used for security configuration
      * @return the final configured application Security Filter
      * @throws Exception if the Security Filter cannot be configured for any reason
      */
-    @Bean
-    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+    @Bean @Autowired
+    public SecurityFilterChain configure(HttpSecurity http, HttpResponseFactory responseFactory) throws Exception {
+
+        ObjectMapper objectMapper = new ObjectMapper();
 
         http    // All http requests will...
                 // Be stateless
@@ -78,10 +131,38 @@ public class WebSecurityConfig {
                 )
                 // use default http basic authorization token, provided in http headers
                 .httpBasic(Customizer.withDefaults())
-                // not conform to cors or crsf security standards
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable);
+                // not use csrf
+                .csrf(csrfConfiguration -> csrfConfiguration.disable())
+                // have custom error messages
+                .exceptionHandling(exceptions->
+                    exceptions
+                    // register exception handler for Unauthorized Requests (401)
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        // create a formatted Http Response
+                        var customErrorResponse =
+                            responseFactory.error(
+                                // status should be 401
+                                HttpStatus.UNAUTHORIZED,
+                                // error should be the exception encountered in the filter chain
+                                authException.getClass().getSimpleName(),
+                                // error description to include in response
+                                """
+                                    You are not authorized to use this endpoint! \
+                                    If you believe this is a mistake, check your authentication settings.\
+                                    """);
 
+                        // write the body of the generated Http Response to actual Response
+                        response.getOutputStream().println(
+                                objectMapper.writeValueAsString(customErrorResponse.getBody()));
+                        // content type of response will be json
+                        response.setContentType("application/json");
+                        // status of response should be 401
+                        response.setStatus(customErrorResponse.getStatusCode().value());
+                        // continue response chain
+                    })
+                );
+
+        // build http security object, and return if no errors are encountered
         return http.build();
     }
 }

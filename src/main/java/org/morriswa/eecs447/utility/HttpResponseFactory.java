@@ -15,7 +15,7 @@ public interface HttpResponseFactory {
 
     ResponseEntity<?> build(HttpStatus status, String message, Object payload);
 
-    ResponseEntity<?> error(HttpStatus status, String message, String description);
+    ResponseEntity<?> error(HttpStatus status, String exceptionName, String description);
 
-    ResponseEntity<?> error(HttpStatus status, String message, String description, Object stack);
+    ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object stack);
 }

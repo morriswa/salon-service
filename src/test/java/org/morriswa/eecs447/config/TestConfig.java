@@ -28,8 +28,6 @@ public class TestConfig {
 
     @Bean @Profile("test")
     public BuildProperties getTestBuildProps() {
-        // This anonymous class needs for the possibility of using SpyBean in test methods
-        // Lambda cannot be a spy with spring @SpyBean annotation
         return new BuildProperties(new Properties(){{
             put("name", "eecs447-project-test");
             put("version", "testing-testing-123");
