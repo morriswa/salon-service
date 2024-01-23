@@ -28,9 +28,12 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
     @Override
     public User findUser(String username) {
+
+        final var query = "select * from user_profile where username=:username";
+
         final var params = Map.of("username",username);
 
-        return database.query("select * from user_profile where username=:username", params, rs->{
+        return database.query(query, params, rs->{
 
             if (rs.next())
                 return new User(
@@ -44,11 +47,13 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
     public void register(String username, String password) {
 
-        String encPassword = encoder.encode(password);
+        final var query = "insert into user_profile (username, password) values (:username, :password)";
+
+        final String encPassword = encoder.encode(password);
 
         final var params = Map.of("username", username, "password", encPassword);
 
-        database.update("insert into user_profile (username, password) values (:username, :password)", params);
+        database.update(query, params);
     }
 
     @Override

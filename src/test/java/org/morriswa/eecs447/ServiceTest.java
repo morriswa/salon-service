@@ -5,6 +5,7 @@ import org.morriswa.eecs447.dao.ExampleDao;
 import org.morriswa.eecs447.dao.UserProfileDao;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,4 +32,6 @@ public class ServiceTest {
     @MockBean protected ExampleDao exampleDao;
 
     @MockBean protected UserProfileDao userProfileDao;
+
+    @Value("${testing.token}") protected String testingToken;
 }

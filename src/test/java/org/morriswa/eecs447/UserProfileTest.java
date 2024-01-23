@@ -3,7 +3,6 @@ package org.morriswa.eecs447;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.eecs447.model.UserProfileResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -12,9 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserProfileTest extends ServiceTest {
-
-    @Value("${testing.token}")
-    private String testingToken;
 
     @Test
     void testGetUserProfile() throws Exception {
