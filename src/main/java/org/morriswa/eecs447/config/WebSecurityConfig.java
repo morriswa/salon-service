@@ -53,6 +53,7 @@ public class WebSecurityConfig {
      * <p>
      * REQUIRED AUTOWIRED DEPENDENCIES:
      * @param userService an implementation of spring's User Detail Service
+     *                    for this application org.morriswa.eecs447.utility.JdbcAuthenticationService
      * @param passwordEncoder an implementation of Password Encoder
      * @return the final configured application Authentication Manager
      */
@@ -103,14 +104,16 @@ public class WebSecurityConfig {
         // register user registration route with appropriate config
         sources.registerCorsConfiguration("/register", registrationEndpointCors);
 
-        // return fully configured cors soruce
+        // return fully configured cors source
         return sources;
     }
 
     /**
      * Register a Security Filter Chain bean to secure all web requests
-     *
+     * <p>
+     * REQUIRED AUTOWIRED DEPENDENCIES:
      * @param http Spring's Http Security object, used for security configuration
+     * @param responseFactory Used to generate formatted error responses for HTTP consumption
      * @return the final configured application Security Filter
      * @throws Exception if the Security Filter cannot be configured for any reason
      */
