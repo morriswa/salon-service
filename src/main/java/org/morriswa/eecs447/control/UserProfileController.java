@@ -16,8 +16,6 @@ import java.security.Principal;
 @RestController
 public class UserProfileController {
 
-    // Web logic goes in Control layer
-
     private final HttpResponseFactory response;
     private final UserProfileService userService;
 
