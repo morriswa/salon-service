@@ -11,8 +11,8 @@
     <groupId>org.morriswa</groupId>
     <artifactId>eecs447-project-service</artifactId>
     <version>0.0.0-SNAPSHOT</version>
-    <name>EECS447-Project-Service</name>
-    <description>Starter for EECS 447 Project Microservice</description>
+    <name>EECS 447 Project Service</name>
+    <description>Starter for EECS 447 Group Term Project Microservice</description>
     <packaging>jar</packaging>
     <properties>
         <java.version>17</java.version>
@@ -83,7 +83,7 @@
                 </executions>
             </plugin>
         </plugins>
-        <finalName>${project.name}</finalName>
+        <finalName>${project.artifactId}</finalName>
     </build>
 
 </project>
