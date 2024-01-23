@@ -45,6 +45,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
         });
     }
 
+    @Override
     public void register(String username, String password) {
 
         final var query = "insert into user_profile (username, password) values (:username, :password)";
@@ -65,10 +66,10 @@ public class UserProfileDaoImpl implements UserProfileDao {
         final var params = Map.of("username", username);
 
         return database.query(query, params, rs -> {
-           if (rs.next())
+            if (rs.next())
                return new UserProfileResponse(rs.getLong("user_id"), rs.getString("username"));
 
-           throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
+            throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
         });
     }
 }
