@@ -1,4 +1,4 @@
-package org.morriswa;
+package org.morriswa.eecs447;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -12,7 +12,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  */
 
 // Do NOT use Spring Data Source Configuration,
-// Data Source will be manually configured in org.morriswa.config.DatasourceConfig
+// Data Source will be manually configured in org.morriswa.eecs447.config.DatasourceConfig
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class ServiceRunner {
     public static void main(String[] args) {

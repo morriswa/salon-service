@@ -1,6 +1,6 @@
-package org.morriswa.dao;
+package org.morriswa.eecs447.dao;
 
-import org.morriswa.model.UserProfileResponse;
+import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.security.core.userdetails.User;
 
 public interface UserProfileDao {

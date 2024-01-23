@@ -1,4 +1,4 @@
-package org.morriswa.utility;
+package org.morriswa.eecs447.utility;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;

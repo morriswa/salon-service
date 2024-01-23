@@ -1,9 +1,8 @@
-package org.morriswa.control;
+package org.morriswa.eecs447.control;
 
-import org.apache.catalina.connector.Response;
-import org.morriswa.dao.UserProfileDao;
-import org.morriswa.model.RegisterUser;
-import org.morriswa.utility.HttpResponseFactory;
+import org.morriswa.eecs447.dao.UserProfileDao;
+import org.morriswa.eecs447.model.RegisterUser;
+import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

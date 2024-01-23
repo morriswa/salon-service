@@ -1,4 +1,4 @@
-package org.morriswa.config;
+package org.morriswa.eecs447.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;

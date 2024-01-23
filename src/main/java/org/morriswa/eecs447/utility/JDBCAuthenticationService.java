@@ -1,6 +1,6 @@
-package org.morriswa.utility;
+package org.morriswa.eecs447.utility;
 
-import org.morriswa.dao.UserProfileDao;
+import org.morriswa.eecs447.dao.UserProfileDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
