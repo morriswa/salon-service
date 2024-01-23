@@ -6,6 +6,9 @@ import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,7 +23,7 @@ public class UserProfileTest extends ServiceTest {
         final String username = "test";
 
         when(userProfileDao.getUserProfile(username))
-                .thenReturn(new UserProfileResponse(userId, username));
+                .thenReturn(new UserProfileResponse(userId, username, ZonedDateTime.now().minusDays(3)));
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user")
                         .header("Authorization", testingToken))
