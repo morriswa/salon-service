@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,8 +35,11 @@ public class UserProfileDaoImpl implements UserProfileDao {
             if (rs.next())
                 // and return the requested user, formatted for compatibility with Spring Security Filter
                 return new User(
+                    // retrieve column "username" from result set as String
                     rs.getString("username"),
+                    // retrieve column "password" from result set as String
                     rs.getString("password"),
+                    // not using Spring to manage authorities, no Granted Authorities
                     Collections.emptyList());
             // if a record is not found, throw an exception. This will trigger a 401 Http Response.
             throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
@@ -66,13 +70,24 @@ public class UserProfileDaoImpl implements UserProfileDao {
     @Override
     public UserProfileResponse getUserProfile(String username) {
         // defn query, inject params, query database and return the result
-        final var query = "select user_id, username from user_profile where username=:username";
+        final var query = "select user_id, username, date_created from user_profile where username=:username";
         final var params = Map.of("username", username);
         return database.query(query, params, rs -> {
             // check that a database record exists
             if (rs.next())
                 // and return the requested profile
-                return new UserProfileResponse(rs.getLong("user_id"), rs.getString("username"));
+                return new UserProfileResponse(
+                    // retrieve column "user_id" from result set as Long
+                    rs.getLong("user_id"),
+                    // retrieve column "username" from result set as String
+                    rs.getString("username"),
+                    // retrieve column "date_created" from result set as Timestamp
+                    rs.getTimestamp("date_created")
+                        // cast to Java object
+                        .toLocalDateTime()
+                        // and append time zone info
+                        .atZone(ZoneId.systemDefault())
+                );
             // any authenticated user should have a user profile record
             // missing records should not happen
             throw new IllegalStateException(String.format("Could not locate user profile for user %s, but was able to successfully authenticate the user", username));
