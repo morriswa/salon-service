@@ -11,6 +11,7 @@
 FROM --platform=x86-64 amazoncorretto:17-alpine-jdk
 
 # ENV SYS_VAR toExposeToContainer
+ENV RUNTIME_ENV=LOCAL_DOCKER
 
 # create and move to directory /app to store artifacts
 WORKDIR /app

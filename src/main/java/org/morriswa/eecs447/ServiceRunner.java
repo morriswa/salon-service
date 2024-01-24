@@ -1,8 +1,11 @@
 package org.morriswa.eecs447;
 
+import java.util.Properties;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.core.env.PropertiesPropertySource;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -23,6 +26,30 @@ public class ServiceRunner {
         // add required application initializers (control things like environment)
         application.addInitializers(applicationContext -> {
             // add application initialization tasks here...
+
+            // if the user has specified a runtime environment...
+            if (System.getenv("RUNTIME_ENV")!=null) {
+                
+                // retrieve env code
+                final String runtimeEnvironment = System.getenv("RUNTIME_ENV");
+            
+                // and run appropriate application context configuration 
+                switch (runtimeEnvironment) {
+                    case "LOCAL_DOCKER":
+                        // if running the application locally as a docker container...
+                        applicationContext.getEnvironment().getPropertySources()
+                            // add property source to environment that will override default settings
+                            .addFirst(new PropertiesPropertySource("LOCAL_DOCKER_OVERRIDES", new Properties(){{
+                                // local docker containers use a different path to connect to the database
+                                // override path config
+                                put("mysql.path", "host.docker.internal");
+                            }}));
+                        break;
+                    default:
+                        break;
+                }
+            }
+                
         });
 
         // run the application with provided CLI args
