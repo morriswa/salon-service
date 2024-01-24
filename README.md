@@ -2,7 +2,7 @@
 ## Authors:
 - William A. Morris (morriswa) [morris.william@ku.edu]
 - Makenna B. Loewenherz []
-- Kevin Rivers []
+- Kevin Rivers (Kabuto1357) [kevin.rivers14832@ku.edu]
 
 ## Why Microservice?
 The purpose of this application is to provide a RESTful Web Service
