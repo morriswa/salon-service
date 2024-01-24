@@ -118,9 +118,9 @@ public class WebSecurityConfig {
      * @throws Exception if the Security Filter cannot be configured for any reason
      */
     @Bean @Autowired
-    public SecurityFilterChain configure(HttpSecurity http, HttpResponseFactory responseFactory) throws Exception {
-
-        ObjectMapper objectMapper = new ObjectMapper();
+    public SecurityFilterChain configure(HttpSecurity http,
+                                         HttpResponseFactory responseFactory,
+                                         ObjectMapper objectMapper) throws Exception {
 
         http    // All http requests will...
                 // Be stateless
@@ -137,8 +137,7 @@ public class WebSecurityConfig {
                 // not use csrf
                 .csrf(csrfConfiguration -> csrfConfiguration.disable())
                 // have custom error messages
-                .exceptionHandling(exceptions->
-                    exceptions
+                .exceptionHandling(exceptions-> exceptions
                     // register exception handler for Unauthorized Requests (401)
                     .authenticationEntryPoint((request, response, authException) -> {
                         // create a formatted Http Response

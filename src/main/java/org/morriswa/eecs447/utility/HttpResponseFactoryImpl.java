@@ -16,7 +16,7 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
      */
     private record DefaultResponse<T> (
         String message,
-        String timestamp,
+        ZonedDateTime timestamp,
         String applicationName,
         String version,
         T payload
@@ -28,7 +28,7 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
     private record DefaultErrorResponse (
         String error,
         String description,
-        String timestamp,
+        ZonedDateTime timestamp,
         String applicationName,
         String version,
         Object stack
@@ -47,7 +47,7 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
         return ResponseEntity
                 .status(status)
                 .body(new DefaultResponse<>(
-                    message, ZonedDateTime.now().toString(), this.APPLICATION_NAME, this.APPLICATION_VERSION, null)
+                    message, ZonedDateTime.now(), this.APPLICATION_NAME, this.APPLICATION_VERSION, null)
                 );
     }
 
@@ -55,21 +55,21 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
         return ResponseEntity
                 .status(status)
                 .body(new DefaultResponse<>(
-                        message, ZonedDateTime.now().toString(), this.APPLICATION_NAME, this.APPLICATION_VERSION, payload
+                        message, ZonedDateTime.now(), this.APPLICATION_NAME, this.APPLICATION_VERSION, payload
                 ));
     }
 
     public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now().toString(),
+                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now(),
                         APPLICATION_NAME, APPLICATION_VERSION, null));
     }
 
     public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object stack) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now().toString(),
+                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now(),
                         APPLICATION_NAME, APPLICATION_VERSION, stack));
     }
 }
