@@ -57,7 +57,7 @@ public class DatasourceConfig {  //will provide all mysql config for the applica
         try {
             return new HikariDataSource(databaseConfig);
         } catch (Exception e) {
-            log.error("Could not configure database! Encountered the following errors, shutting down",e);
+            log.error("Could not configure database, encountered errors, shutting down :( ");
             throw new RuntimeException(e);
         }
     }

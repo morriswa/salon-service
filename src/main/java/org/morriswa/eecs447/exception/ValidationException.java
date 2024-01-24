@@ -4,15 +4,18 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Validation Exception to throw when the server cannot complete a request due to user input error
+ * AUTHOR: William A. Morris <br>
+ * CREATION_DATE: 2024-01-23 <br>
+ * PURPOSE: <br>
+ * &emsp; Exception to throw when the server cannot complete a request due to user input error
  */
 public class ValidationException extends Exception {
-
 
     /**
      * Creates an individual Validation Error to be thrown as part of Validation Exception
      *
      * @param field name of the request field that failed validation
+     * @param required whether the field being validated is required or optional
      * @param rejectedValue value passed in request
      * @param message error message to be provided
      */
@@ -29,6 +32,7 @@ public class ValidationException extends Exception {
      * Creates a Validation Exception when only one error needs to be returned
      *
      * @param problemField name of the request field that failed validation
+     * @param required whether the field being validated is required or optional
      * @param problemValue value passed in request
      * @param errorMessage error message to be provided
      */

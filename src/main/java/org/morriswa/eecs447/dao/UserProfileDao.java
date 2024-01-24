@@ -3,6 +3,13 @@ package org.morriswa.eecs447.dao;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.security.core.userdetails.User;
 
+/**
+ * AUTHOR: William A. Morris, Kevin Rivers <br>
+ * CREATION_DATE: 2024-01-21 <br>
+ * PURPOSE: <br>
+ * &emsp; provides an interface for interacting with the database to perform essential User actions
+ */
+
 public interface UserProfileDao {
 
     /**
