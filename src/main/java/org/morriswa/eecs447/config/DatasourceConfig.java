@@ -41,13 +41,13 @@ public class DatasourceConfig {  //will provide all mysql config for the applica
     @Bean
     public HikariDataSource provideHikariDataSource() {
 
-        final var dbUsername = e.getRequiredProperty("mysql.database.username");
-        final var dbPassword = e.getRequiredProperty("mysql.database.password");
+        final var dbUsername = e.getRequiredProperty("mysql.username");
+        final var dbPassword = e.getRequiredProperty("mysql.password");
         final var jdbcUrl = String.format("%s://%s:%s/%s",
-                e.getRequiredProperty("mysql.scheme"),
-                e.getRequiredProperty("mysql.path"),
+                e.getRequiredProperty("mysql.protocol"),
+                e.getRequiredProperty("mysql.hostname"),
                 e.getRequiredProperty("mysql.port"),
-                e.getRequiredProperty("mysql.database.name"));
+                e.getRequiredProperty("mysql.database"));
 
         var databaseConfig = new HikariConfig();
         databaseConfig.setUsername(dbUsername);

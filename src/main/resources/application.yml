@@ -8,10 +8,9 @@ server:
   port: 8080
 
 mysql:
-  scheme: jdbc:mysql
-  path: localhost
+  protocol: jdbc:mysql
+  hostname: localhost
   port: 3306
-  database:
-    name: project
-    username: eecs447
-    password: password
+  database: project
+  username: eecs447
+  password: password

@@ -12,7 +12,7 @@
 FROM --platform=x86-64 amazoncorretto:17-alpine-jdk
 
 # ENV SYS_VAR=default_value
-ENV MYSQL_PATH=host.docker.internal
+ENV MYSQL_HOSTNAME=host.docker.internal
 
 # create and move to directory /app to store artifacts
 WORKDIR /app
