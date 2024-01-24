@@ -15,13 +15,13 @@ maximizes compatibility with front-end frameworks (Including Vanilla JS).
 Application stability and security can be enhanced by providing a 
 layer between the UI and DB that abstracts away business logic 
 and all sensitive configuration information.
-Additionally, thanks to the rich Java community, this Microsevice
+Additionally, thanks to the rich Java community, this Microservice
 can take advantage of useful libraries to perform important operations
 more easily.<br>
 These libraries include:
 - Java Database Connectivity Library (JDBC)
   - provides several classes to easily connect to, query, and update
-    an SQL databse.
+    an SQL database.
 - Spring Framework
   - provides classes to create RESTful Web Services
   - provides a Security Filter that can be extensively configured
