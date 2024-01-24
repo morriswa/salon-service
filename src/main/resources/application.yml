@@ -1,4 +1,7 @@
 # file to store ALL application configuration properties
+# all props can be overridden by injecting Java Environment Variables
+#   capitalize config property and replace periods and hyphens with underscores
+#   ex. server.port (spring environment) can be overridden by setting SERVER_PORT
 
 server:
   # service will be available on this port
