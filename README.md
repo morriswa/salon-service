@@ -1,7 +1,7 @@
 # EECS 447 Term Project
 ## Authors:
 - William A. Morris (morriswa) [morris.william@ku.edu]
-- Makenna B. Loewenherz []
+- Makenna B. Loewenherz (makennabrynn) [makennaloewenherz@ku.edu]
 - Kevin Rivers (Kabuto1357) [kevin.rivers14832@ku.edu]
 
 ## Why Microservice?
