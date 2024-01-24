@@ -11,7 +11,9 @@
 FROM --platform=x86-64 amazoncorretto:17-alpine-jdk
 
 # ENV SYS_VAR toExposeToContainer
-ENV RUNTIME_ENV=LOCAL_DOCKER
+ENV MYSQL_PATH=host.docker.internal
+ENV MYSQL_DATABASE_USERNAME=eecs447
+ENV MYSQL_DATABASE_PASSWORD=password
 
 # create and move to directory /app to store artifacts
 WORKDIR /app
