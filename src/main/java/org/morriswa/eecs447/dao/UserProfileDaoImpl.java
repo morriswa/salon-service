@@ -30,7 +30,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     @Override
     public User findUser(String username) {
         // defn query, inject params, query database and return the result
-        final var query = "select * from user_profile where username=:username";
+        final var query = "select * from user_account where username=:username";
         final var params = Map.of("username",username);
         return database.query(query, params, rs->{
             // check that a database record exists
@@ -53,7 +53,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
         // database should always store an encrypted password
         final String encPassword = encoder.encode(password);
         // defn query, inject params
-        final var query = "insert into user_profile (username, password) values (:username, :password)";
+        final var query = "insert into user_account (username, password) values (:username, :password)";
         final var params = Map.of("username", username, "password", encPassword);
         try { // attempt to update the database
             database.update(query, params);
@@ -72,7 +72,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     @Override
     public UserProfileResponse getUserProfile(String username) {
         // defn query, inject params, query database and return the result
-        final var query = "select user_id, username, date_created from user_profile where username=:username";
+        final var query = "select user_id, username, date_created from user_account where username=:username";
         final var params = Map.of("username", username);
         return database.query(query, params, rs -> {
             // check that a database record exists
