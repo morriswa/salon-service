@@ -1,5 +1,7 @@
 package org.morriswa.eecs447.dao;
 
+import org.morriswa.eecs447.enumurated.UserContactPreferences;
+import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.security.core.userdetails.User;
 
@@ -33,4 +35,12 @@ public interface UserProfileDao {
      * @return
      */
     UserProfileResponse getUserProfile(String username);
+
+    void updateUserPassword(String username, String currentPassword, String newPassword);
+
+    void changeUsername(String currentUsername, String newUsername);
+
+    void updateUserContactInfo(String username, ContactInfoRequest request);
+
+    void updateUserContactPreference(String username, UserContactPreferences preference);
 }

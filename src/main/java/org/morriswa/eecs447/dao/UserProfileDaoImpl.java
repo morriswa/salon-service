@@ -1,6 +1,8 @@
 package org.morriswa.eecs447.dao;
 
+import org.morriswa.eecs447.enumurated.UserContactPreferences;
 import org.morriswa.eecs447.exception.BadRequestException;
+import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -92,5 +94,25 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // missing records should not happen
             throw new IllegalStateException(String.format("Could not locate user profile for user %s, but was able to successfully authenticate the user", username));
         });
+    }
+
+    @Override
+    public void updateUserPassword(String username, String currentPassword, String newPassword) {
+
+    }
+
+    @Override
+    public void changeUsername(String currentUsername, String newUsername) {
+
+    }
+
+    @Override
+    public void updateUserContactInfo(String username, ContactInfoRequest request) {
+
+    }
+
+    @Override
+    public void updateUserContactPreference(String username, UserContactPreferences preference) {
+
     }
 }
