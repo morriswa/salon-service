@@ -1,5 +1,6 @@
 package org.morriswa.eecs447;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.morriswa.eecs447.config.TestConfig;
 import org.morriswa.eecs447.dao.ExampleDao;
 import org.morriswa.eecs447.dao.UserProfileDao;
@@ -25,6 +26,8 @@ public class ServiceTest {
 
     @Autowired protected MockMvc mockMvc;
 
+    @Autowired protected ObjectMapper mapper;
+
     @Autowired protected HttpResponseFactory responseFactory;
 
     @Autowired protected Environment e;
@@ -34,4 +37,7 @@ public class ServiceTest {
     @MockBean protected UserProfileDao userProfileDao;
 
     @Value("${testing.token}") protected String testingToken;
+
+    @Value("${testing.password}") protected String testingPassword;
+
 }

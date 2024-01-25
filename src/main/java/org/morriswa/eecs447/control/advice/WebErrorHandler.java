@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -48,6 +49,7 @@ public class WebErrorHandler {
 
     @ExceptionHandler({ // catches expected exceptions including...
         BadRequestException.class, // Bad Requests...
+        HttpMessageNotReadableException.class
     })
     public ResponseEntity<?> badRequest(Exception e, WebRequest r) {
         // and assume user fault [400]

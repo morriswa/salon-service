@@ -43,7 +43,7 @@ public class UserProfileController {
         // use the user profile service to register a new user, and retrieve the username they were registered with
         var registeredUsername = userService.registerUser(request);
         // return confirmation in JSON format
-        return response.build(HttpStatus.OK,
+        return response.build(HttpStatus.CREATED,
                 String.format("Successfully registered user with username: %s", registeredUsername));
     }
 
