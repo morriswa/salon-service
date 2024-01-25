@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.control;
 
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.RegistrationRequest;
 import org.morriswa.eecs447.service.UserProfileService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
@@ -61,5 +62,25 @@ public class UserProfileController {
         var profile = userService.getUserProfile(principal);
         // and return it to them in JSON format
         return response.build(HttpStatus.OK, "Successfully retrieved user profile!", profile);
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<?> createUserProfile(Principal principal) {
+        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+    }
+
+    @PatchMapping("/user")
+    public ResponseEntity<?> updateUserProfile(Principal principal) {
+        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+    }
+
+    @PatchMapping("/user/name")
+    public ResponseEntity<?> updateUsername(Principal principal) {
+        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+    }
+
+    @PatchMapping("/user/password")
+    public ResponseEntity<?> updatePassword(Principal principal) {
+        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 }
