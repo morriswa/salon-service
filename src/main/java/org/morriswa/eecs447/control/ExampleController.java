@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController //Indicates that the class is code for a REST controller ( Provides endpoints to user )
 public class ExampleController {
@@ -36,4 +37,15 @@ public class ExampleController {
         return response.build(HttpStatus.OK, "Successfully hit Hello World endpoint!");
     }
 
+    @PostMapping("test-image-upload")
+    public ResponseEntity<?> testImageUpload(@RequestPart MultipartFile file, @RequestParam String path) throws Exception {
+        exampleService.testImageUpload(file, path);
+        return response.build(HttpStatus.CREATED, "Successfully uploaded requested file!");
+    }
+
+    @GetMapping("test-image-upload")
+    public ResponseEntity<?> testImageDownload(@RequestParam String path) throws Exception {
+        var url = exampleService.testImageDownload(path);
+        return response.build(HttpStatus.OK, "Successfully retrieved requested file!", url);
+    }
 }

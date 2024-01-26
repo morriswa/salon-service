@@ -6,6 +6,13 @@
 server:
   # service will be available on this port
   port: 8080
+  cache: ./localfilecache/
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 30MB
 
 mysql:
   protocol: jdbc:mysql
@@ -14,3 +21,8 @@ mysql:
   database: project
   username: eecs447
   password: password
+
+aws:
+  s3:
+    bucket: circlesdevocean
+    apppath: eecs447/local/
