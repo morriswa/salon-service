@@ -1,5 +1,5 @@
 
--- Creating a new table named user_profile
+-- Creating a new table named user_account
 CREATE TABLE user_account(
     -- The name, datatype, and rules for each column in table
     user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
