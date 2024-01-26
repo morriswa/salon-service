@@ -68,11 +68,11 @@
             </dependency>
 
         <!-- Required for Amazon S3 Object Store -->
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk -->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
-            <version>1.12.644</version>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.12.645</version>
         </dependency>
     </dependencies>
 

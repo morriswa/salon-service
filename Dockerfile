@@ -13,12 +13,16 @@ FROM --platform=x86-64 amazoncorretto:17-alpine-jdk
 
 # ENV SYS_VAR=default_value
 ENV MYSQL_HOSTNAME=host.docker.internal
+ENV SERVER_CACHE='/cache'
 
 # create and move to directory /app to store artifacts
 WORKDIR /app
 
 # copy Java ARchieve (Jar) into /app folder
 COPY target/eecs447-project-service.jar eecs447-project-service.jar
+
+# create file cache
+RUN mkdir /cache
 
 # set entrypoint (command which will run when container is started)
 ENTRYPOINT ["java","-jar","/app/eecs447-project-service.jar"]

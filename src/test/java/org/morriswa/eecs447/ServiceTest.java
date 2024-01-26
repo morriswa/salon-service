@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.morriswa.eecs447.config.TestConfig;
 import org.morriswa.eecs447.dao.ExampleDao;
 import org.morriswa.eecs447.dao.UserProfileDao;
-import org.morriswa.eecs447.utility.HttpResponseFactory;
+import org.morriswa.eecs447.utility.AmazonS3Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,13 +28,13 @@ public class ServiceTest {
 
     @Autowired protected ObjectMapper mapper;
 
-    @Autowired protected HttpResponseFactory responseFactory;
-
     @Autowired protected Environment e;
 
     @MockBean protected ExampleDao exampleDao;
 
     @MockBean protected UserProfileDao userProfileDao;
+
+    @MockBean protected AmazonS3Client amazonS3Client;
 
     @Value("${testing.token}") protected String testingToken;
 

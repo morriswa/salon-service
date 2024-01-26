@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import java.util.UUID;
 
 @Component
 public class AmazonS3ClientImpl implements AmazonS3Client {
+    private final Logger log;
     private final String FILE_DEST_PREFIX;
     private final String INTERNAL_FILE_CACHE_PATH;
     private final Environment e;
@@ -28,11 +31,21 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
 
     @Autowired
     AmazonS3ClientImpl(Environment e) {
+        this.log = LoggerFactory.getLogger(AmazonS3ClientImpl.class);
         this.e = e;
         this.s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
         this.ACTIVE_BUCKET = e.getRequiredProperty("aws.s3.bucket");
         this.FILE_DEST_PREFIX = e.getRequiredProperty("aws.s3.apppath");
         this.INTERNAL_FILE_CACHE_PATH = e.getRequiredProperty("server.cache");
+        try { // attempt to access test file within S3 bucket
+            s3.doesObjectExist(this.ACTIVE_BUCKET, "eecs447/hello-world.txt");
+            log.info("Successfully started Amazon S3 Client!");
+        } catch (Exception ex) { // if file is inaccessible, S3 client has not been properly configured
+            // report error
+            log.error("Could not create Amazon S3 Client, shutting down. Please double check your AWS config.");
+            // and shutdown application
+            System.exit(1);
+        }
     }
 
     @Override
