@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -44,7 +45,11 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
             // report error
             log.error("Could not create Amazon S3 Client, shutting down. Please double check your AWS config.");
             // and shutdown application
-            System.exit(1);
+            throw new UnsatisfiedDependencyException(
+                    this.getClass().getCanonicalName(),
+                    "amazonS3ClientImpl",
+                    this.s3.getClass().getCanonicalName(),
+                    ex.getMessage());
         }
     }
 

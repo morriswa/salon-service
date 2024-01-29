@@ -26,3 +26,14 @@ aws:
   s3:
     bucket: circlesdevocean
     apppath: eecs447/local/
+
+#logging:
+#  level:
+#    root: ERROR
+#    org.morriswa.eecs447: INFO
+##    org.springframework.data.repository: OFF
+##    org.springframework.beans.factory: OFF
+##    org.springframework.boot.SpringApplication: OFF
+##    org.springframework.boot.web.servlet.context: OFF
+##    org.apache.catalina.core: OFF
+##    com.zaxxer.hikari: OFF
