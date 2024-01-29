@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.morriswa</groupId>
     <artifactId>eecs447-project-service</artifactId>
-    <version>0.0.0-SNAPSHOT</version>
+    <version>0.0.0</version>
     <name>EECS 447 Project Service</name>
     <description>Starter for EECS 447 Group Term Project Microservice</description>
     <packaging>jar</packaging>
