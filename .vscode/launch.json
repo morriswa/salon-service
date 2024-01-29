@@ -9,7 +9,8 @@
             "name": "ServiceRunner",
             "request": "launch",
             "mainClass": "org.morriswa.eecs447.ServiceRunner",
-            "projectName": "eecs447-project-service"
+            "projectName": "eecs447-project-service",
+            "envFile": "${workspaceFolder}/environment.local"
         }
     ]
 }
