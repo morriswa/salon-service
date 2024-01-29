@@ -1,7 +1,7 @@
 package org.morriswa.eecs447.control;
 
-import org.morriswa.eecs447.exception.BadRequestException;
-import org.morriswa.eecs447.model.RegistrationRequest;
+import org.morriswa.eecs447.model.ContactInfoRequest;
+import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.service.UserProfileService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class UserProfileController {
      * @throws Exception if the user could not be registered
      */
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegistrationRequest request) throws Exception {
+    public ResponseEntity<?> registerUser(@RequestBody AccountRequest request) throws Exception {
         // use the user profile service to register a new user, and retrieve the username they were registered with
         var registeredUsername = userService.registerUser(request);
         // return confirmation in JSON format
@@ -65,22 +65,26 @@ public class UserProfileController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUserProfile(Principal principal) {
+    public ResponseEntity<?> createUserProfile(Principal principal, ContactInfoRequest createProfileRequest) {
+        userService.createUserProfile(principal, createProfileRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUserProfile(Principal principal) {
+    public ResponseEntity<?> updateUserProfile(Principal principal, ContactInfoRequest updateProfileRequest) {
+        userService.updateUserProfile(principal, updateProfileRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PatchMapping("/user/name")
-    public ResponseEntity<?> updateUsername(Principal principal) {
+    public ResponseEntity<?> updateUsername(Principal principal, AccountRequest updateUsernameRequest) throws Exception {
+        userService.updateUsername(principal, updateUsernameRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PatchMapping("/user/password")
-    public ResponseEntity<?> updatePassword(Principal principal) {
+    public ResponseEntity<?> updatePassword(Principal principal, AccountRequest updatePasswordRequest) throws Exception {
+        userService.updatePassword(principal, updatePasswordRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 }

@@ -107,12 +107,12 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void updateUserContactInfo(String username, ContactInfoRequest request) {
+    public void createUserContactInfo(String username, ContactInfoRequest request) {
 
     }
 
     @Override
-    public void updateUserContactPreference(String username, UserContactPreferences preference) {
+    public void updateUserContactInfo(String username, ContactInfoRequest request) {
 
     }
 }

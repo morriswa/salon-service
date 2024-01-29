@@ -1,6 +1,7 @@
 package org.morriswa.eecs447.service;
 
-import org.morriswa.eecs447.model.RegistrationRequest;
+import org.morriswa.eecs447.model.ContactInfoRequest;
+import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 
 import java.security.Principal;
@@ -12,7 +13,16 @@ import java.security.Principal;
  * &emsp; provides an interface for performing essential User actions
  */
 public interface UserProfileService {
-    String registerUser(RegistrationRequest request) throws Exception;
+
+    String registerUser(AccountRequest request) throws Exception;
 
     UserProfileResponse getUserProfile(Principal principal);
+
+    void createUserProfile(Principal principal, ContactInfoRequest createProfileRequest);
+
+    void updateUserProfile(Principal principal, ContactInfoRequest updateProfileRequest);
+
+    void updateUsername(Principal principal, AccountRequest updateUsernameRequest) throws Exception;
+
+    void updatePassword(Principal principal, AccountRequest updatePasswordRequest) throws Exception;
 }

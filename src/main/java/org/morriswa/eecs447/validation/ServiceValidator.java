@@ -39,15 +39,30 @@ public class ServiceValidator {
             throw new ValidationException(errors);
     }
 
-    public static void validatePasswordOrThrow(String requestedPassword) throws Exception {
+    public static void validatePasswordOrThrow(String password) throws Exception {
+        validatePasswordOrThrow(password, "password");
+    }
+
+    private static void validatePasswordOrThrow(String password, String field) throws Exception {
         // add password validation guards here
 
-        if (requestedPassword==null||requestedPassword.isBlank()||requestedPassword.isEmpty())
-            throw new ValidationException("password", true, "********",
-                    "Password field must not be blank!");
+        if (password==null||password.isBlank()||password.isEmpty())
+            throw new ValidationException(field, true, "********",
+                    "Field must not be blank!");
 
-        if (requestedPassword.length() < 8)
-            throw new ValidationException("password", true, "********",
-                    "Password must be longer than 8 characters!");
+        if (password.length() < 8)
+            throw new ValidationException(field, true, "********",
+                    "Field must be longer than 8 characters!");
+    }
+
+    public static void validatePasswordChangeOrThrow(String password, String confirmPassword) throws Exception {
+        // add password validation guards here
+
+        validatePasswordOrThrow(password, "password");
+        validatePasswordOrThrow(confirmPassword, "confirmPassword");
+
+        if (!password.equals(confirmPassword))
+            throw new ValidationException("confirmPassword", true, "********",
+                    "Fields password and confirmPassword must be matching!");
     }
 }

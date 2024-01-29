@@ -40,7 +40,7 @@ public interface UserProfileDao {
 
     void changeUsername(String currentUsername, String newUsername);
 
-    void updateUserContactInfo(String username, ContactInfoRequest request);
+    void createUserContactInfo(String username, ContactInfoRequest request);
 
-    void updateUserContactPreference(String username, UserContactPreferences preference);
+    void updateUserContactInfo(String username, ContactInfoRequest request);
 }

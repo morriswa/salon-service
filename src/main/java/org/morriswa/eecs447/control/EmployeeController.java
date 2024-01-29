@@ -1,8 +1,6 @@
 package org.morriswa.eecs447.control;
 
-import org.morriswa.eecs447.model.RegistrationRequest;
 import org.morriswa.eecs447.service.ExampleService;
-import org.morriswa.eecs447.service.UserProfileService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

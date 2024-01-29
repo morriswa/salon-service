@@ -3,7 +3,7 @@ package org.morriswa.eecs447;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.eecs447.exception.BadRequestException;
-import org.morriswa.eecs447.model.RegistrationRequest;
+import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,7 +23,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         final String username = "test";
 
-        final var request = new RegistrationRequest(username, testingPassword);
+        final var request = new AccountRequest(username, testingPassword, null, null);
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
                         .contentType("application/json")
@@ -39,7 +39,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         final String username = "test";
 
-        final var request = new RegistrationRequest(username, testingPassword);
+        final var request = new AccountRequest(username, testingPassword, null, null);
 
         doThrow(BadRequestException.class).when(userProfileDao)
                 .register(request.username(),request.password());
@@ -58,7 +58,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         final String username = "123";
 
-        final var request = new RegistrationRequest(username, testingPassword);
+        final var request = new AccountRequest(username, testingPassword, null, null);
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
                         .contentType("application/json")
@@ -76,7 +76,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         assertEquals("Username is 65 characters long", username.length(), 65);
 
-        final var request = new RegistrationRequest(username, testingPassword);
+        final var request = new AccountRequest(username, testingPassword, null, null);
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
                         .contentType("application/json")
@@ -92,7 +92,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         final String username = "will$";
 
-        final var request = new RegistrationRequest(username, testingPassword);
+        final var request = new AccountRequest(username, testingPassword, null, null );
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
                         .contentType("application/json")
