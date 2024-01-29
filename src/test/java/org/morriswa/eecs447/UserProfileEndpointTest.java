@@ -6,6 +6,7 @@ import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.ZonedDateTime;
@@ -19,11 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserProfileEndpointTest extends ServiceTest {
 
     @Test
-    void testRegisterUserEndpoint() throws Exception {
+    void registerUserEndpoint() throws Exception {
 
-        final String username = "test";
-
-        final var request = new AccountRequest(username, testingPassword, null, null);
+        final var request = new AccountRequest(testingUsername, testingPassword, null, null);
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
                         .contentType("application/json")
@@ -35,11 +34,9 @@ public class UserProfileEndpointTest extends ServiceTest {
     }
 
     @Test
-    void testRegisterUserEndpointDaoFails() throws Exception {
+    void registerUserEndpointDaoFails() throws Exception {
 
-        final String username = "test";
-
-        final var request = new AccountRequest(username, testingPassword, null, null);
+        final var request = new AccountRequest(testingUsername, testingPassword, null, null);
 
         doThrow(BadRequestException.class).when(userProfileDao)
                 .register(request.username(),request.password());
@@ -54,7 +51,7 @@ public class UserProfileEndpointTest extends ServiceTest {
     }
 
     @Test
-    void testRegisterUserEndpointShortUsername() throws Exception {
+    void registerUserEndpointShortUsername() throws Exception {
 
         final String username = "123";
 
@@ -70,7 +67,7 @@ public class UserProfileEndpointTest extends ServiceTest {
     }
 
     @Test
-    void testRegisterUserEndpointLongUsername() throws Exception {
+    void registerUserEndpointLongUsername() throws Exception {
 
         final String username = "01234567012345670123456701234567012345670123456701234567012345678";
 
@@ -88,7 +85,7 @@ public class UserProfileEndpointTest extends ServiceTest {
     }
 
     @Test
-    void testRegisterUserEndpointIllegalCharacterUsername() throws Exception {
+    void registerUserEndpointIllegalCharacterUsername() throws Exception {
 
         final String username = "will$";
 
@@ -104,20 +101,69 @@ public class UserProfileEndpointTest extends ServiceTest {
     }
 
     @Test
-    void testGetUserProfileEndpoint() throws Exception {
+    void getUserProfileEndpoint() throws Exception {
 
         final long userId = 1L;
 
-        final String username = "test";
-
-        when(userProfileDao.getUserProfile(username))
-                .thenReturn(new UserProfileResponse(userId, username, ZonedDateTime.now().minusDays(3)));
+        when(userProfileDao.getUserProfile(testingUsername))
+                .thenReturn(new UserProfileResponse(userId, testingUsername, ZonedDateTime.now().minusDays(3)));
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user")
                         .header("Authorization", testingToken))
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(userId))))
-                .andExpect(jsonPath("$.payload.username", Matchers.is(username)))
+                .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
         ;
+    }
+
+    @Test
+    void updateUserPassword() throws Exception {
+
+        final String newPassword = "password2";
+
+        var request = new AccountRequest(null, newPassword, testingPassword, newPassword);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
+                        .header("Authorization", testingToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(501))
+        ;
+
+        verify(userProfileDao).updateUserPassword(testingUsername, testingPassword, newPassword);
+    }
+
+    @Test
+    void updateUserPasswordNotMatching() throws Exception {
+
+        final String newPassword = "password2";
+
+        var request = new AccountRequest(null, newPassword, testingPassword, "Password2");
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
+                        .header("Authorization", testingToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao, never()).updateUserPassword(testingUsername, testingPassword, newPassword);
+    }
+
+    @Test
+    void updateUserPasswordShort() throws Exception {
+
+        final String newPassword = "pass";
+
+        var request = new AccountRequest(null, newPassword, testingPassword, newPassword);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
+                        .header("Authorization", testingToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao, never()).updateUserPassword(testingUsername, testingPassword, newPassword);
     }
 }

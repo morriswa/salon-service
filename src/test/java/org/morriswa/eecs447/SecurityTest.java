@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SecurityTest extends ServiceTest {
 
     @Test
-    void testUnauthorized() throws Exception {
+    void unauthorizedResponse() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/health"))
                 .andExpect(status().is(401))
                 .andExpect(jsonPath("$.error",
@@ -21,7 +21,7 @@ public class SecurityTest extends ServiceTest {
     }
 
     @Test
-    void testAuthorized() throws Exception {
+    void authorizedResponse() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/health")
                 .header("Authorization", testingToken))
                 .andExpect(status().is(200))
@@ -29,7 +29,7 @@ public class SecurityTest extends ServiceTest {
     }
 
     @Test
-    void testForbidden() throws Exception {
+    void forbiddenResponse() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/fake-not-real")
                         .header("Authorization", testingToken))
                 .andExpect(status().is(403))
