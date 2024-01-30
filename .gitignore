@@ -16,5 +16,6 @@ target/
 ### Mac OS ###
 **/.DS_Store
 
-### Other Environments ###
+### Environment Files ###
 environment**
+.env**
