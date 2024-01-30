@@ -15,7 +15,7 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Map;
 
-@Component
+@Component @SuppressWarnings("null")
 public class UserProfileDaoImpl implements UserProfileDao {
     private final NamedParameterJdbcTemplate database;
     private final PasswordEncoder encoder;
