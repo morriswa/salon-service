@@ -3,7 +3,7 @@ package org.morriswa.eecs447.service;
 import org.morriswa.eecs447.dao.UserProfileDao;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.AccountRequest;
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.morriswa.eecs447.validation.ServiceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,26 +35,34 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserProfileResponse getUserProfile(ApplicationUser principal) {
-        return userProfileDao.getUserProfile(principal.getUserId());
+    public UserProfileResponse getUserProfile(UserAccount principal) {
+
+        // get user contact info
+
+        // attach info from authentication principal
+        var userProfile = new UserProfileResponse(
+            principal.getUserId(), principal.getUsername(), principal.getDateCreated());
+        
+        // return complete profile
+        return userProfile;
     }
 
     @Override
-    public void createUserProfile(ApplicationUser principal, ContactInfoRequest createProfileRequest) {
+    public void createUserProfile(UserAccount principal, ContactInfoRequest createProfileRequest) {
         // add Contact Info validation rules here
 
         userProfileDao.createUserContactInfo(principal.getUserId(), createProfileRequest);
     }
 
     @Override
-    public void updateUserProfile(ApplicationUser principal, ContactInfoRequest updateProfileRequest) {
+    public void updateUserProfile(UserAccount principal, ContactInfoRequest updateProfileRequest) {
         // add Contact Info validation rules here
 
         userProfileDao.updateUserContactInfo(principal.getUserId(), updateProfileRequest);
     }
 
     @Override
-    public void updateUsername(ApplicationUser principal, AccountRequest updateUsernameRequest) throws Exception {
+    public void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception {
         // validate requested username
         ServiceValidator.validateUsernameOrThrow(updateUsernameRequest.username());
 
@@ -63,7 +71,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void updatePassword(ApplicationUser principal, AccountRequest updatePasswordRequest) throws Exception {
+    public void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception {
         // validate requested password
         ServiceValidator.validatePasswordChangeOrThrow(
                 updatePasswordRequest.password(),

@@ -1,6 +1,6 @@
 package org.morriswa.eecs447.control;
 
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.service.ExampleService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,22 +32,22 @@ public class ClientController {
     }
 
     @PostMapping("/client/register")
-    public ResponseEntity<?> registerUserAsClient(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> registerUserAsClient(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PostMapping("/client/booking")
-    public ResponseEntity<?> bookAppointment(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> bookAppointment(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @DeleteMapping("/client/booking")
-    public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @GetMapping("/client/booking")
-    public ResponseEntity<?> retrieveAppointments(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> retrieveAppointments(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 }

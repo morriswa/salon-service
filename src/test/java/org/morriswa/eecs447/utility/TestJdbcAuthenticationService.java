@@ -1,6 +1,8 @@
 package org.morriswa.eecs447.utility;
 
-import org.morriswa.eecs447.model.ApplicationUser;
+import java.time.ZonedDateTime;
+
+import org.morriswa.eecs447.model.UserAccount;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -28,7 +30,7 @@ public class TestJdbcAuthenticationService implements UserDetailsService {
     private String testingPassword;
 
     @Override
-    public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new ApplicationUser(testingUserId, testingUsername, testingPassword);
+    public UserAccount loadUserByUsername(String username) throws UsernameNotFoundException {
+        return new UserAccount(testingUserId, testingUsername, testingPassword, ZonedDateTime.now().minusDays(3));
     }
 }

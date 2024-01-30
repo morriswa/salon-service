@@ -1,7 +1,7 @@
 package org.morriswa.eecs447.control;
 
 import org.morriswa.eecs447.model.AccountRequest;
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.service.UserProfileService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
@@ -57,7 +57,7 @@ public class UserProfileController {
      * @return a nicely formatted Http Response
      */
     @GetMapping("/user")
-    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserAccount principal) {
         // using the user profile service, retrieve the current users profile
         var profile = userService.getUserProfile(principal);
         // and return it to them in JSON format
@@ -66,7 +66,7 @@ public class UserProfileController {
 
     @PostMapping("/user")
     public ResponseEntity<?> createUserProfile(
-        @AuthenticationPrincipal ApplicationUser principal,
+        @AuthenticationPrincipal UserAccount principal,
         @RequestBody ContactInfoRequest createProfileRequest) 
     {
         userService.createUserProfile(principal, createProfileRequest);
@@ -75,7 +75,7 @@ public class UserProfileController {
 
     @PatchMapping("/user")
     public ResponseEntity<?> updateUserProfile(
-        @AuthenticationPrincipal ApplicationUser principal, 
+        @AuthenticationPrincipal UserAccount principal, 
         @RequestBody ContactInfoRequest updateProfileRequest) 
     {
         userService.updateUserProfile(principal, updateProfileRequest);
@@ -84,7 +84,7 @@ public class UserProfileController {
 
     @PatchMapping("/user/name")
     public ResponseEntity<?> updateUsername(
-        @AuthenticationPrincipal ApplicationUser principal, 
+        @AuthenticationPrincipal UserAccount principal, 
         @RequestBody AccountRequest updateUsernameRequest) throws Exception 
     {
         userService.updateUsername(principal, updateUsernameRequest);
@@ -93,7 +93,7 @@ public class UserProfileController {
 
     @PatchMapping("/user/password")
     public ResponseEntity<?> updatePassword(
-        @AuthenticationPrincipal ApplicationUser principal, 
+        @AuthenticationPrincipal UserAccount principal, 
         @RequestBody AccountRequest updatePasswordRequest) throws Exception 
     {
         userService.updatePassword(principal, updatePasswordRequest);

@@ -1,6 +1,6 @@
 package org.morriswa.eecs447.dao;
 
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 
@@ -20,7 +20,7 @@ public interface UserProfileDao {
      * @param username of the user who is authenticating
      * @return the requested user, formatted for compatibility with Spring Security Filter
      */
-    ApplicationUser findUser(String username);
+    UserAccount findUser(String username);
 
     /**
      * registerUser takes a username and password string, puts them in the database

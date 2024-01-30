@@ -1,7 +1,7 @@
 package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.exception.BadRequestException;
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public ApplicationUser findUser(String username) {
+    public UserAccount findUser(String username) {
         // defn query, inject params, query database and return the result
         final var query = "select * from user_account where username=:username";
         final var params = Map.of("username",username);
@@ -35,13 +35,17 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // check that a database record exists
             if (rs.next())
                 // and return the requested user, formatted for compatibility with Spring Security Filter
-                return new ApplicationUser(
+                return new UserAccount(
                     // retrieve column "user_id" from result set as Long
                     rs.getLong("user_id"),
                     // retrieve column "username" from result set as String
                     rs.getString("username"),
                     // retrieve column "password" from result set as String
-                    rs.getString("password"));
+                    rs.getString("password"),
+                    // retrieve column "date_created" from result set as Timestamp
+                    rs.getTimestamp("date_created")
+                        // and cast to Zoned Date Time at System Date.
+                        .toLocalDateTime().atZone(ZoneId.systemDefault()));
             // if a record is not found, throw an exception. This will trigger a 401 Http Response.
             throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
         });

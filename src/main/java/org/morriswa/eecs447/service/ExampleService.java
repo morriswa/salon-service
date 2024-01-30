@@ -1,12 +1,12 @@
 package org.morriswa.eecs447.service;
 
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
 
 public interface ExampleService {
-    String helloWorld (ApplicationUser principal);
+    String helloWorld (UserAccount principal);
 
     void throwAnError() throws Exception;
 

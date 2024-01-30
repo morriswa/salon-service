@@ -1,6 +1,6 @@
 package org.morriswa.eecs447.control;
 
-import org.morriswa.eecs447.model.ApplicationUser;
+import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.service.ExampleService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,27 +29,27 @@ public class EmployeeController {
     }
 
     @PostMapping("/employee/register")
-    public ResponseEntity<?> registerUserAsEmployee(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> registerUserAsEmployee(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PostMapping("/employee/services")
-    public ResponseEntity<?> addProvidedService(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> addProvidedService(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @DeleteMapping("/employee/services")
-    public ResponseEntity<?> deleteService(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> deleteService(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @GetMapping("/employee/schedule")
-    public ResponseEntity<?> retrieveEmployeeSchedule(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> retrieveEmployeeSchedule(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @DeleteMapping("/employee/schedule")
-    public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal ApplicationUser principal) {
+    public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal UserAccount principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 }

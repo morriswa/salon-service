@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.model;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -14,20 +15,26 @@ import org.springframework.security.core.userdetails.UserDetails;
  * PURPOSE: <br>
  * &emsp; provides an interface for interacting with the database to perform essential User actions
  */
-public class ApplicationUser implements UserDetails {
+public class UserAccount implements UserDetails {
 
     private final Long userId;
     private final String username;
     private final String encodedPassword;
+    private final ZonedDateTime dateCreated;
     
-    public ApplicationUser(Long userId, String username, String encodedPassword) {
+    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated) {
         this.userId = userId;
         this.username = username;
         this.encodedPassword = encodedPassword;
+        this.dateCreated = dateCreated;
     }
 
     public Long getUserId() {
         return userId;
+    }
+
+    public ZonedDateTime getDateCreated() {
+        return dateCreated;
     }
 
     @Override
