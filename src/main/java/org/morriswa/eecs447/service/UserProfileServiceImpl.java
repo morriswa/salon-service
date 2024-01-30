@@ -1,7 +1,7 @@
 package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.dao.UserProfileDao;
-import org.morriswa.eecs447.model.ContactInfoRequest;
+import org.morriswa.eecs447.model.ContactInfo;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.UserProfileResponse;
@@ -48,14 +48,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void createUserProfile(UserAccount principal, ContactInfoRequest createProfileRequest) {
+    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) {
         // add Contact Info validation rules here
 
         userProfileDao.createUserContactInfo(principal.getUserId(), createProfileRequest);
     }
 
     @Override
-    public void updateUserProfile(UserAccount principal, ContactInfoRequest updateProfileRequest) {
+    public void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest) {
         // add Contact Info validation rules here
 
         userProfileDao.updateUserContactInfo(principal.getUserId(), updateProfileRequest);

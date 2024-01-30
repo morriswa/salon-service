@@ -4,12 +4,9 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.AccountRequest;
-import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.time.ZonedDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -102,10 +99,23 @@ public class UserProfileEndpointTest extends ServiceTest {
     }
 
     @Test
-    void getUserProfileEndpoint() throws Exception {
+    void registerUserEndpointShortPassword() throws Exception {
 
-        when(userProfileDao.getUserProfile(testingUserId))
-                .thenReturn(new UserProfileResponse(testingUserId, testingUsername, ZonedDateTime.now().minusDays(3)));
+        final String shortPassword = "1234567";
+
+        final var request = new AccountRequest(testingUsername, shortPassword, null, null);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao, never()).register(any(), any());
+    }
+
+    @Test
+    void getUserProfile() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user")
                         .header("Authorization", testingToken))
@@ -127,6 +137,26 @@ public class UserProfileEndpointTest extends ServiceTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(status().is(501))
+        ;
+
+        verify(userProfileDao).updateUserPassword(testingUserId, testingPassword, newPassword);
+    }
+
+    @Test
+    void updateUserPasswordDaoFails() throws Exception {
+
+        final String newPassword = "password2";
+
+        var request = new AccountRequest(null, newPassword, testingPassword, newPassword);
+
+        doThrow(BadRequestException.class).when(userProfileDao)
+               .updateUserPassword(testingUserId, testingPassword, newPassword);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
+                        .header("Authorization", testingToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
         ;
 
         verify(userProfileDao).updateUserPassword(testingUserId, testingPassword, newPassword);
@@ -164,5 +194,95 @@ public class UserProfileEndpointTest extends ServiceTest {
         ;
 
         verify(userProfileDao, never()).updateUserPassword(testingUserId, testingPassword, newPassword);
+    }
+
+    @Test
+    void updateUsername() throws Exception {
+
+        final var newUsername = "new_username";
+
+        final var request = new AccountRequest(newUsername, null, null, null);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
+                        .header("Authorization", testingToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(501))
+        ;
+
+        verify(userProfileDao).changeUsername(testingUserId, newUsername);
+    }
+
+    @Test
+    void updateUsernameDaoFails() throws Exception {
+
+        final var duplicateUsername = "duplicate";
+
+        final var request = new AccountRequest(duplicateUsername, null, null, null);
+
+        doThrow(BadRequestException.class).when(userProfileDao)
+               .changeUsername(testingUserId, duplicateUsername);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
+                        .header("Authorization", testingToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao).changeUsername(testingUserId, duplicateUsername);
+    }
+
+    @Test
+    void updateUsernameShortUsername() throws Exception {
+
+        final String username = "123";
+
+        final var request = new AccountRequest(username, null, null, null);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
+                        .header("Authorization", testingToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao, never()).register(any(), any());
+    }
+
+    @Test
+    void updateUsernameLongUsername() throws Exception {
+
+        final String username = "01234567012345670123456701234567012345670123456701234567012345678";
+
+        assertEquals("Username is 65 characters long", username.length(), 65);
+
+        final var request = new AccountRequest(username, testingPassword, null, null);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
+                        .header("Authorization", testingToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao, never()).register(any(), any());
+    }
+
+    @Test
+    void updateUsernameIllegalCharacters() throws Exception {
+
+        final String username = "will$";
+
+        final var request = new AccountRequest(username, testingPassword, null, null );
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
+                        .header("Authorization", testingToken)
+                        .contentType("application/json")
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().is(400))
+        ;
+
+        verify(userProfileDao, never()).register(any(), any());
     }
 }

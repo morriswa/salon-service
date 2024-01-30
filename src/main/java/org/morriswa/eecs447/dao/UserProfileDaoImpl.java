@@ -2,8 +2,7 @@ package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.UserAccount;
-import org.morriswa.eecs447.model.ContactInfoRequest;
-import org.morriswa.eecs447.model.UserProfileResponse;
+import org.morriswa.eecs447.model.ContactInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -72,50 +71,29 @@ public class UserProfileDaoImpl implements UserProfileDao {
         }
     }
 
+
     @Override
-    public UserProfileResponse getUserProfile(Long userId) {
-        // defn query, inject params, query database and return the result
-        final var query = "select user_id, username, date_created from user_account where user_id=:userId";
-        final var params = Map.of("userId", userId);
-        return database.query(query, params, rs -> {
-            // check that a database record exists
-            if (rs.next())
-                // and return the requested profile
-                return new UserProfileResponse(
-                    // retrieve column "user_id" from result set as Long
-                    rs.getLong("user_id"),
-                    // retrieve column "username" from result set as String
-                    rs.getString("username"),
-                    // retrieve column "date_created" from result set as Timestamp
-                    rs.getTimestamp("date_created")
-                        // cast to Java object
-                        .toLocalDateTime()
-                        // and append time zone info
-                        .atZone(ZoneId.systemDefault())
-                );
-            // any authenticated user should have a user profile record
-            // missing records should not happen
-            throw new IllegalStateException(String.format("Could not locate user profile for user #%s, but was able to successfully authenticate the user", userId));
-        });
+    public ContactInfo getContactInfo(Long userId) {
+        return null;
     }
 
     @Override
-    public void updateUserPassword(Long userId, String currentPassword, String newPassword) {
+    public void updateUserPassword(Long userId, String currentPassword, String newPassword) throws Exception {
 
     }
 
     @Override
-    public void changeUsername(Long userId, String newUsername) {
+    public void changeUsername(Long userId, String newUsername) throws Exception {
 
     }
 
     @Override
-    public void createUserContactInfo(Long userId, ContactInfoRequest request) {
+    public void createUserContactInfo(Long userId, ContactInfo request) {
 
     }
 
     @Override
-    public void updateUserContactInfo(Long userId, ContactInfoRequest request) {
+    public void updateUserContactInfo(Long userId, ContactInfo request) {
 
     }
 }

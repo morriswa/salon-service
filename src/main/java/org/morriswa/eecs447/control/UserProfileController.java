@@ -2,7 +2,7 @@ package org.morriswa.eecs447.control;
 
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
-import org.morriswa.eecs447.model.ContactInfoRequest;
+import org.morriswa.eecs447.model.ContactInfo;
 import org.morriswa.eecs447.service.UserProfileService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class UserProfileController {
     @PostMapping("/user")
     public ResponseEntity<?> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
-        @RequestBody ContactInfoRequest createProfileRequest) 
+        @RequestBody ContactInfo createProfileRequest) 
     {
         userService.createUserProfile(principal, createProfileRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
@@ -76,7 +76,7 @@ public class UserProfileController {
     @PatchMapping("/user")
     public ResponseEntity<?> updateUserProfile(
         @AuthenticationPrincipal UserAccount principal, 
-        @RequestBody ContactInfoRequest updateProfileRequest) 
+        @RequestBody ContactInfo updateProfileRequest) 
     {
         userService.updateUserProfile(principal, updateProfileRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");

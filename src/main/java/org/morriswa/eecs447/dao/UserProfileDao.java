@@ -1,8 +1,7 @@
 package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.model.UserAccount;
-import org.morriswa.eecs447.model.ContactInfoRequest;
-import org.morriswa.eecs447.model.UserProfileResponse;
+import org.morriswa.eecs447.model.ContactInfo;
 
 
 /**
@@ -29,18 +28,13 @@ public interface UserProfileDao {
      */
     void register(String username, String password) throws Exception;
 
-    /**
-     * Retrieves the full user profile from the database by username
-     * @param username
-     * @return
-     */
-    UserProfileResponse getUserProfile(Long userId);
+    ContactInfo getContactInfo(Long userId);
 
-    void updateUserPassword(Long userId, String currentPassword, String newPassword);
+    void updateUserPassword(Long userId, String currentPassword, String newPassword) throws Exception;
 
-    void changeUsername(Long userId, String newUsername);
+    void changeUsername(Long userId, String newUsername) throws Exception;
 
-    void createUserContactInfo(Long userId, ContactInfoRequest request);
+    void createUserContactInfo(Long userId, ContactInfo request);
 
-    void updateUserContactInfo(Long userId, ContactInfoRequest request);
+    void updateUserContactInfo(Long userId, ContactInfo request);
 }
