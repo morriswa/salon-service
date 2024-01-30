@@ -1,6 +1,5 @@
 package org.morriswa.eecs447.dao;
 
-import org.morriswa.eecs447.enumurated.UserContactPreferences;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.security.core.userdetails.User;
