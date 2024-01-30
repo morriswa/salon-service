@@ -31,6 +31,7 @@ public class TestJdbcAuthenticationService implements UserDetailsService {
 
     @Override
     public UserAccount loadUserByUsername(String username) throws UsernameNotFoundException {
+        if (!username.equals(testingUsername)) throw new UsernameNotFoundException("Not a valid test user");
         return new UserAccount(testingUserId, testingUsername, testingPassword, ZonedDateTime.now().minusDays(3));
     }
 }

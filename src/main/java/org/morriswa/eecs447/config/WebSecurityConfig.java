@@ -132,37 +132,57 @@ public class WebSecurityConfig {
                         // all other requests must be authenticated
                         .anyRequest().authenticated()
                 )
-                // use default http basic authorization token, provided in http headers
-                .httpBasic(Customizer.withDefaults())
                 // not use csrf
                 .csrf(csrfConfiguration -> csrfConfiguration.disable())
-                // have custom error messages
-                .exceptionHandling(exceptions-> exceptions
-                    // register exception handler for Unauthorized Requests (401)
-                    .authenticationEntryPoint((request, response, authException) -> {
-                        // create a formatted Http Response
-                        var customErrorResponse =
-                            responseFactory.error(
-                                // status should be 401
-                                HttpStatus.UNAUTHORIZED,
-                                // error should be the exception encountered in the filter chain
-                                authException.getClass().getSimpleName(),
-                                // error description to include in response
-                                """
-                                    You are not authorized to use this endpoint! \
-                                    If you believe this is a mistake, check your authentication settings.\
-                                    """);
+                // use default http basic authorization token, provided in http headers
+                // and register exception handler for requests with bad credentials (401)
+                .httpBasic(basic->basic.authenticationEntryPoint((request, response, authException) -> {
+                    // create a formatted Http Response
+                    var customErrorResponse =
+                        responseFactory.error(
+                            // status should be 401
+                            HttpStatus.UNAUTHORIZED,
+                            // error should be the exception encountered in the filter chain
+                            authException.getClass().getSimpleName(),
+                            // error description to include in response
+                            """
+                            Could not authenticate with provided credentials. \
+                            If you believe this is a mistake, check your login information."""
+                        );
 
-                        // write the body of the generated Http Response to actual Response
-                        response.getOutputStream().println(
-                                objectMapper.writeValueAsString(customErrorResponse.getBody()));
-                        // content type of response will be json
-                        response.setContentType("application/json");
-                        // status of response should be 401
-                        response.setStatus(customErrorResponse.getStatusCode().value());
-                        // continue response chain
-                    })
-                );
+                    // write the body of the generated Http Response to actual Response
+                    response.getOutputStream().println(
+                            objectMapper.writeValueAsString(customErrorResponse.getBody()));
+                    // content type of response will be json
+                    response.setContentType("application/json");
+                    // status of response should be 401
+                    response.setStatus(customErrorResponse.getStatusCode().value());
+                    // continue response chain
+                }))
+                // register exception handler for requests without authentication (401)
+                .exceptionHandling(exceptions->exceptions.authenticationEntryPoint((request, response, authException) -> {
+                    // create a formatted Http Response
+                    var customErrorResponse =
+                        responseFactory.error(
+                            // status should be 401
+                            HttpStatus.UNAUTHORIZED,
+                            // error should be the exception encountered in the filter chain
+                            authException.getClass().getSimpleName(),
+                            // error description to include in response
+                            """ 
+                            YOU SHALL NOT PASS! \
+                            This endpoint requires authentication, which you did not bother to provide..."""
+                        );
+
+                    // write the body of the generated Http Response to actual Response
+                    response.getOutputStream().println(
+                            objectMapper.writeValueAsString(customErrorResponse.getBody()));
+                    // content type of response will be json
+                    response.setContentType("application/json");
+                    // status of response should be 401
+                    response.setStatus(customErrorResponse.getStatusCode().value());
+                    // continue response chain
+                }));
 
         // build http security object, and return if no errors are encountered
         return http.build();
