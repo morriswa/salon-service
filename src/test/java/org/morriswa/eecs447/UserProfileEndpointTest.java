@@ -17,6 +17,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SuppressWarnings("null")
 public class UserProfileEndpointTest extends ServiceTest {
 
     @Test
@@ -103,15 +104,13 @@ public class UserProfileEndpointTest extends ServiceTest {
     @Test
     void getUserProfileEndpoint() throws Exception {
 
-        final long userId = 1L;
-
-        when(userProfileDao.getUserProfile(testingUsername))
-                .thenReturn(new UserProfileResponse(userId, testingUsername, ZonedDateTime.now().minusDays(3)));
+        when(userProfileDao.getUserProfile(testingUserId))
+                .thenReturn(new UserProfileResponse(testingUserId, testingUsername, ZonedDateTime.now().minusDays(3)));
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user")
                         .header("Authorization", testingToken))
                 .andExpect(status().is(200))
-                .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(userId))))
+                .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
                 .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
         ;
     }
@@ -130,7 +129,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(501))
         ;
 
-        verify(userProfileDao).updateUserPassword(testingUsername, testingPassword, newPassword);
+        verify(userProfileDao).updateUserPassword(testingUserId, testingPassword, newPassword);
     }
 
     @Test
@@ -147,7 +146,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).updateUserPassword(testingUsername, testingPassword, newPassword);
+        verify(userProfileDao, never()).updateUserPassword(testingUserId, testingPassword, newPassword);
     }
 
     @Test
@@ -164,6 +163,6 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).updateUserPassword(testingUsername, testingPassword, newPassword);
+        verify(userProfileDao, never()).updateUserPassword(testingUserId, testingPassword, newPassword);
     }
 }

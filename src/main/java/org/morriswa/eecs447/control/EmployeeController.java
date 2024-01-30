@@ -1,13 +1,13 @@
 package org.morriswa.eecs447.control;
 
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.morriswa.eecs447.service.ExampleService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -29,27 +29,27 @@ public class EmployeeController {
     }
 
     @PostMapping("/employee/register")
-    public ResponseEntity<?> registerUserAsEmployee(Principal principal) {
+    public ResponseEntity<?> registerUserAsEmployee(@AuthenticationPrincipal ApplicationUser principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PostMapping("/employee/services")
-    public ResponseEntity<?> addProvidedService(Principal principal) {
+    public ResponseEntity<?> addProvidedService(@AuthenticationPrincipal ApplicationUser principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @DeleteMapping("/employee/services")
-    public ResponseEntity<?> deleteService(Principal principal) {
+    public ResponseEntity<?> deleteService(@AuthenticationPrincipal ApplicationUser principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @GetMapping("/employee/schedule")
-    public ResponseEntity<?> retrieveEmployeeSchedule(Principal principal) {
+    public ResponseEntity<?> retrieveEmployeeSchedule(@AuthenticationPrincipal ApplicationUser principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @DeleteMapping("/employee/schedule")
-    public ResponseEntity<?> deleteAppointment(Principal principal) {
+    public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal ApplicationUser principal) {
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 }

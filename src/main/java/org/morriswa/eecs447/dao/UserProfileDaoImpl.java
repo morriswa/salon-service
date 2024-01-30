@@ -1,18 +1,18 @@
 package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.exception.BadRequestException;
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Map;
 
 @Component @SuppressWarnings("null")
@@ -27,7 +27,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public User findUser(String username) {
+    public ApplicationUser findUser(String username) {
         // defn query, inject params, query database and return the result
         final var query = "select * from user_account where username=:username";
         final var params = Map.of("username",username);
@@ -35,13 +35,13 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // check that a database record exists
             if (rs.next())
                 // and return the requested user, formatted for compatibility with Spring Security Filter
-                return new User(
+                return new ApplicationUser(
+                    // retrieve column "user_id" from result set as Long
+                    rs.getLong("user_id"),
                     // retrieve column "username" from result set as String
                     rs.getString("username"),
                     // retrieve column "password" from result set as String
-                    rs.getString("password"),
-                    // not using Spring to manage authorities, no Granted Authorities
-                    Collections.emptyList());
+                    rs.getString("password"));
             // if a record is not found, throw an exception. This will trigger a 401 Http Response.
             throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
         });
@@ -69,10 +69,10 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public UserProfileResponse getUserProfile(String username) {
+    public UserProfileResponse getUserProfile(Long userId) {
         // defn query, inject params, query database and return the result
-        final var query = "select user_id, username, date_created from user_account where username=:username";
-        final var params = Map.of("username", username);
+        final var query = "select user_id, username, date_created from user_account where user_id=:userId";
+        final var params = Map.of("userId", userId);
         return database.query(query, params, rs -> {
             // check that a database record exists
             if (rs.next())
@@ -91,27 +91,27 @@ public class UserProfileDaoImpl implements UserProfileDao {
                 );
             // any authenticated user should have a user profile record
             // missing records should not happen
-            throw new IllegalStateException(String.format("Could not locate user profile for user %s, but was able to successfully authenticate the user", username));
+            throw new IllegalStateException(String.format("Could not locate user profile for user #%s, but was able to successfully authenticate the user", userId));
         });
     }
 
     @Override
-    public void updateUserPassword(String username, String currentPassword, String newPassword) {
+    public void updateUserPassword(Long userId, String currentPassword, String newPassword) {
 
     }
 
     @Override
-    public void changeUsername(String currentUsername, String newUsername) {
+    public void changeUsername(Long userId, String newUsername) {
 
     }
 
     @Override
-    public void createUserContactInfo(String username, ContactInfoRequest request) {
+    public void createUserContactInfo(Long userId, ContactInfoRequest request) {
 
     }
 
     @Override
-    public void updateUserContactInfo(String username, ContactInfoRequest request) {
+    public void updateUserContactInfo(Long userId, ContactInfoRequest request) {
 
     }
 }

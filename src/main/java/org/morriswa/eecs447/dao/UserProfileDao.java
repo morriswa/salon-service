@@ -1,8 +1,9 @@
 package org.morriswa.eecs447.dao;
 
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.model.UserProfileResponse;
-import org.springframework.security.core.userdetails.User;
+
 
 /**
  * AUTHOR: William A. Morris, Kevin Rivers <br>
@@ -19,7 +20,7 @@ public interface UserProfileDao {
      * @param username of the user who is authenticating
      * @return the requested user, formatted for compatibility with Spring Security Filter
      */
-    User findUser(String username);
+    ApplicationUser findUser(String username);
 
     /**
      * registerUser takes a username and password string, puts them in the database
@@ -33,13 +34,13 @@ public interface UserProfileDao {
      * @param username
      * @return
      */
-    UserProfileResponse getUserProfile(String username);
+    UserProfileResponse getUserProfile(Long userId);
 
-    void updateUserPassword(String username, String currentPassword, String newPassword);
+    void updateUserPassword(Long userId, String currentPassword, String newPassword);
 
-    void changeUsername(String currentUsername, String newUsername);
+    void changeUsername(Long userId, String newUsername);
 
-    void createUserContactInfo(String username, ContactInfoRequest request);
+    void createUserContactInfo(Long userId, ContactInfoRequest request);
 
-    void updateUserContactInfo(String username, ContactInfoRequest request);
+    void updateUserContactInfo(Long userId, ContactInfoRequest request);
 }

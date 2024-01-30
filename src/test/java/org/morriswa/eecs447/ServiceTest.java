@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
+        "testing.userId=1",
         "testing.username=test",
         "testing.password=test_password",
         "testing.token=Basic dGVzdDp0ZXN0X3Bhc3N3b3Jk"
@@ -38,6 +39,8 @@ public class ServiceTest {
     @MockBean protected AmazonS3Client amazonS3Client;
 
     @Value("${testing.token}") protected String testingToken;
+
+    @Value("${testing.userId}") protected Long testingUserId;
 
     @Value("${testing.username}") protected String testingUsername;
 

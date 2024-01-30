@@ -1,15 +1,15 @@
 package org.morriswa.eecs447.control;
 
 import org.morriswa.eecs447.model.AccountRequest;
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.morriswa.eecs447.model.ContactInfoRequest;
 import org.morriswa.eecs447.service.UserProfileService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 /**
  * AUTHOR: William A. Morris, Kevin Rivers <br>
@@ -57,7 +57,7 @@ public class UserProfileController {
      * @return a nicely formatted Http Response
      */
     @GetMapping("/user")
-    public ResponseEntity<?> getUserProfile(Principal principal) {
+    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal ApplicationUser principal) {
         // using the user profile service, retrieve the current users profile
         var profile = userService.getUserProfile(principal);
         // and return it to them in JSON format
@@ -65,25 +65,37 @@ public class UserProfileController {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> createUserProfile(Principal principal, @RequestBody ContactInfoRequest createProfileRequest) {
+    public ResponseEntity<?> createUserProfile(
+        @AuthenticationPrincipal ApplicationUser principal,
+        @RequestBody ContactInfoRequest createProfileRequest) 
+    {
         userService.createUserProfile(principal, createProfileRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PatchMapping("/user")
-    public ResponseEntity<?> updateUserProfile(Principal principal, @RequestBody ContactInfoRequest updateProfileRequest) {
+    public ResponseEntity<?> updateUserProfile(
+        @AuthenticationPrincipal ApplicationUser principal, 
+        @RequestBody ContactInfoRequest updateProfileRequest) 
+    {
         userService.updateUserProfile(principal, updateProfileRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PatchMapping("/user/name")
-    public ResponseEntity<?> updateUsername(Principal principal, @RequestBody AccountRequest updateUsernameRequest) throws Exception {
+    public ResponseEntity<?> updateUsername(
+        @AuthenticationPrincipal ApplicationUser principal, 
+        @RequestBody AccountRequest updateUsernameRequest) throws Exception 
+    {
         userService.updateUsername(principal, updateUsernameRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
 
     @PatchMapping("/user/password")
-    public ResponseEntity<?> updatePassword(Principal principal, @RequestBody AccountRequest updatePasswordRequest) throws Exception {
+    public ResponseEntity<?> updatePassword(
+        @AuthenticationPrincipal ApplicationUser principal, 
+        @RequestBody AccountRequest updatePasswordRequest) throws Exception 
+    {
         userService.updatePassword(principal, updatePasswordRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }

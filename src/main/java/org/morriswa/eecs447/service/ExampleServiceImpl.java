@@ -2,6 +2,7 @@ package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.dao.ExampleDao;
 import org.morriswa.eecs447.exception.BadRequestException;
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.morriswa.eecs447.utility.AmazonS3Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class ExampleServiceImpl implements ExampleService {
     }
 
     @Override
-    public String helloWorld() {
-        return "Hello World!";
+    public String helloWorld(ApplicationUser principal) {
+        return String.format("Hello %s! Your user id is %d", principal.getUsername(), principal.getUserId());
     }
 
     @Override

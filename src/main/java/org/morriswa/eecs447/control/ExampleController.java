@@ -1,10 +1,12 @@
 package org.morriswa.eecs447.control;
 
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.morriswa.eecs447.service.ExampleService;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,8 +27,8 @@ public class ExampleController {
     }
 
     @GetMapping("hello-world") //Maps and endpoint to a method, GET method in postman
-    public ResponseEntity<?> helloWorldEndpoint() {
-        var payload = exampleService.helloWorld();
+    public ResponseEntity<?> helloWorldEndpoint(@AuthenticationPrincipal ApplicationUser principal) {
+        var payload = exampleService.helloWorld(principal);
         //Returns formatted JSON response
         return response.build(HttpStatus.OK, "Successfully hit Hello World endpoint!", payload);
     }

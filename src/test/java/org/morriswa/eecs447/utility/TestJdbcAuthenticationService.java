@@ -1,14 +1,11 @@
 package org.morriswa.eecs447.utility;
 
+import org.morriswa.eecs447.model.ApplicationUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 
 /**
@@ -21,11 +18,17 @@ import java.util.Collections;
 @Service @Profile("test")
 public class TestJdbcAuthenticationService implements UserDetailsService {
 
+    @Value("${testing.userId}") 
+    private Long testingUserId;
+
+    @Value("${testing.username}") 
+    private String testingUsername;
+
     @Value("${testing.password}")
     private String testingPassword;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return new User(username, testingPassword, Collections.emptyList());
+    public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
+        return new ApplicationUser(testingUserId, testingUsername, testingPassword);
     }
 }
