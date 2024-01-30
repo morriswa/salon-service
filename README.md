@@ -31,6 +31,9 @@ These libraries include:
   - automatically manages database migrations
   - maintains information about the database's history
   - ensures connected database is running up-to-date schema
+- AWS SDK
+  - provides an easy interface for interacting with AWS services
+  - used in this application to store/retrieve/update data from S3 (Simple Storage Service)
   
 ## Purpose
 ### Business Owners
