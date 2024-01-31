@@ -24,4 +24,6 @@ public interface UserProfileService {
     void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception;
 
     void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception;
+
+    void promoteUser(UserAccount principal, AccountRequest request) throws Exception;
 }

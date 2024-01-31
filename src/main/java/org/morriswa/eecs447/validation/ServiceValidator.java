@@ -1,6 +1,9 @@
 package org.morriswa.eecs447.validation;
 
+import org.morriswa.eecs447.enumerated.AccountType;
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.exception.ValidationException;
+import org.morriswa.eecs447.model.AccountRequest;
 
 import java.util.ArrayList;
 
@@ -64,5 +67,21 @@ public class ServiceValidator {
         if (!password.equals(confirmPassword))
             throw new ValidationException("confirmPassword", true, "********",
                     "Fields password and confirmPassword must be matching!");
+    }
+
+    public static void validatePromoteRequestOrThrow(AccountRequest request) throws ValidationException, BadRequestException {
+        
+        if (request.role()==null||request.role().isBlank()||request.role().isEmpty())
+            throw new ValidationException("role", true, request.role(), "Field must not be blank!");
+
+        if (AccountType.getEnum(request.role())==null) throw new BadRequestException("Invalid account type code! Must be 'USR', 'CLT', 'EMP', 'ADM'...");
+
+        boolean usernameIsMissing = false;
+        if (request.username()==null||request.username().isBlank()||request.username().isEmpty()) usernameIsMissing = true;
+
+        boolean userIdIsMissing = request.userId()==null;
+
+        if (userIdIsMissing && usernameIsMissing)
+            throw new BadRequestException("Must include a userId or username in request!");
     }
 }

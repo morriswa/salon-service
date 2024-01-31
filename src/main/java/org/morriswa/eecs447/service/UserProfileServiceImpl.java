@@ -1,6 +1,7 @@
 package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.dao.UserProfileDao;
+import org.morriswa.eecs447.enumerated.AccountType;
 import org.morriswa.eecs447.model.ContactInfo;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
@@ -81,5 +82,15 @@ public class UserProfileServiceImpl implements UserProfileService {
                 principal.getUserId(),
                 updatePasswordRequest.currentPassword(),
                 updatePasswordRequest.password());
+    }
+
+    @Override
+    public void promoteUser(UserAccount principal, AccountRequest request) throws Exception {
+
+        ServiceValidator.validatePromoteRequestOrThrow(request);
+
+        if (request.userId()!=null)
+            userProfileDao.promoteUser(principal.getUserId(), request.userId(), AccountType.getEnum(request.role()));
+        else userProfileDao.promoteUser(principal.getUserId(), request.username(), AccountType.getEnum(request.role()));
     }
 }

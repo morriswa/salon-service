@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.dao;
 
+import org.morriswa.eecs447.enumerated.AccountType;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.ContactInfo;
@@ -96,5 +97,19 @@ public class UserProfileDaoImpl implements UserProfileDao {
     @Override
     public void updateUserContactInfo(Long userId, ContactInfo request) {
 
+    }
+
+    @Override
+    public void promoteUser(Long promoterId, Long userId, AccountType role) {
+        final var query = "update user_account set account_type = :accountCode, promoter = :promoterId where user_id = :userId";
+        final var params = Map.of("accountCode", role.code, "promoterId", promoterId, "userId", userId);
+        database.update(query, params);
+    }
+
+    @Override
+    public void promoteUser(Long promoterId, String username, AccountType role) {
+        final var query = "update user_account set account_type = :accountCode, promoter = :promoterId where username = :username";
+        final var params = Map.of("accountCode", role.code, "promoterId", promoterId, "username", username);
+        database.update(query, params);
     }
 }

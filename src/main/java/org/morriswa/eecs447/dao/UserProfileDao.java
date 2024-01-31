@@ -1,6 +1,7 @@
 package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.model.UserAccount;
+import org.morriswa.eecs447.enumerated.AccountType;
 import org.morriswa.eecs447.model.ContactInfo;
 
 
@@ -37,4 +38,8 @@ public interface UserProfileDao {
     void createUserContactInfo(Long userId, ContactInfo request);
 
     void updateUserContactInfo(Long userId, ContactInfo request);
+
+    void promoteUser(Long promoterId, Long userId, AccountType role);
+
+    void promoteUser(Long promoterId, String username, AccountType role);
 }

@@ -99,4 +99,13 @@ public class UserProfileController {
         userService.updatePassword(principal, updatePasswordRequest);
         return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
     }
+
+    @PatchMapping("/admin/promote")
+    public ResponseEntity<?> promoteUser(
+        @AuthenticationPrincipal UserAccount principal,
+        @RequestBody AccountRequest request
+    ) throws Exception {
+        userService.promoteUser(principal, request);
+        return response.build(HttpStatus.OK, "Successfully promoted user");
+    }
 }

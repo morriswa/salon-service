@@ -25,8 +25,9 @@ public enum AccountType {
             case "ADM":
                 return AccountType.Admin;
             case "CLT":
-            default:
                 return AccountType.Client;
+            default:
+                return null;
         }
     }
 
