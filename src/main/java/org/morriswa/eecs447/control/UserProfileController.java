@@ -70,7 +70,7 @@ public class UserProfileController {
         @RequestBody ContactInfo createProfileRequest) 
     {
         userService.createUserProfile(principal, createProfileRequest);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return response.build(HttpStatus.NO_CONTENT,"You have successfully created a profile!");
     }
 
     @PatchMapping("/user")
@@ -88,7 +88,7 @@ public class UserProfileController {
         @RequestBody AccountRequest updateUsernameRequest) throws Exception 
     {
         userService.updateUsername(principal, updateUsernameRequest);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return response.build(HttpStatus.NO_CONTENT,"You have successfully updated your username!");
     }
 
     @PatchMapping("/user/password")

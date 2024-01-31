@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component @SuppressWarnings("null")
@@ -65,7 +66,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // extract database error message
             final var error = dpke.getMostSpecificCause().getMessage();
             // if error was caused by duplicate username on user_profile table...
-            if (error.endsWith("for key 'user_profile.username'"))
+            if (error.endsWith("for key 'user_account.username'"))
                 // throw a user-friendly error
                 throw new BadRequestException("There is already a user registered with that username! Try again :)");
             // if error was not expected, throw as is
@@ -86,12 +87,48 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
     @Override
     public void changeUsername(Long userId, String newUsername) throws Exception {
-
+        final var query = "UPDATE user_account SET username = :newUsername WHERE user_id = :userId";
+        final var params = Map.of("newUsername", newUsername, "userId", userId);
+        try {
+            database.update(query, params);
+        }
+        catch (DuplicateKeyException exception) {
+            // extract database error message
+            final var error = exception.getMostSpecificCause().getMessage();
+            // if error was caused by duplicate username on user_profile table...
+            if (error.endsWith("for key 'user_account.username'"))
+                // throw a user-friendly error
+                throw new BadRequestException("There is already a user registered with that username! Try again :)");
+            // if error was not expected, throw as is
+            throw exception;
+        }
     }
 
     @Override
     public void createUserContactInfo(Long userId, ContactInfo request) {
 
+        final var query = String.format("""
+            INSERT INTO contact_info 
+            (user_id, first_name, last_name, phone_num, email, addr_one, addr_two, city, state_code, zip_code, contact_pref) 
+            VALUES 
+            (:UserId, :FirstName, :LastName, :PhoneNum, :Email, :AddrOne, :AddrTwo, :City, :StateCode, :ZipCode, :ContactPref) 
+            """);
+
+        final var params = new HashMap<String,Object>(){{
+            put("UserId", userId);
+            put("FirstName", request.firstName());
+            put("LastName", request.lastName());
+            put("PhoneNum", request.phoneNum());
+            put("Email", request.email());
+            put("AddrOne", request.addressLineOne());
+            put("AddrTwo", request.addressLineTwo());
+            put("City", request.city());
+            put("StateCode", request.stateCode());
+            put("ZipCode", request.zipCode());
+            put("ContactPref", request.contactPreferences().code);
+        }};
+
+        database.update(query, params);
     }
 
     @Override
