@@ -1,0 +1,6 @@
+
+testing:
+  userId: 1
+  username: test
+  password: test_password
+  bad-token: Basic YmFkOnRva2Vu

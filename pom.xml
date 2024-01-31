@@ -44,6 +44,14 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <scope>test</scope>
             </dependency>
+            <!-- Required to unittest application security config -->
+            <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-test</artifactId>
+                <scope>test</scope>
+            </dependency>
+
 
         <!-- Required for JDBC with MySql -->
         <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->

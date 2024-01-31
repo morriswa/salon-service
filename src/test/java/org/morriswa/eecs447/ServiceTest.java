@@ -1,7 +1,10 @@
 package org.morriswa.eecs447;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.morriswa.eecs447.config.TestConfig;
+import org.morriswa.eecs447.config.TestJdbcAuthenticationConfig;
 import org.morriswa.eecs447.dao.ExampleDao;
 import org.morriswa.eecs447.dao.UserProfileDao;
 import org.morriswa.eecs447.utility.AmazonS3Client;
@@ -12,18 +15,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(classes = {TestConfig.class})
+@SpringBootTest(classes = {TestConfig.class, TestJdbcAuthenticationConfig.class})
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestPropertySource(properties = {
-        "testing.userId=1",
-        "testing.username=test",
-        "testing.password=test_password",
-        "testing.token=Basic dGVzdDp0ZXN0X3Bhc3N3b3Jk"
-})
+@TestPropertySource("classpath:application-test.yml")
+@ExtendWith(SpringExtension.class) 
+@ContextConfiguration
 public class ServiceTest {
 
     @Autowired protected MockMvc mockMvc;
@@ -38,12 +40,11 @@ public class ServiceTest {
 
     @MockBean protected AmazonS3Client amazonS3Client;
 
-    @Value("${testing.token}") protected String testingToken;
+    @Value("${testing.bad-token}") protected String badToken;
 
     @Value("${testing.userId}") protected Long testingUserId;
 
     @Value("${testing.username}") protected String testingUsername;
 
     @Value("${testing.password}") protected String testingPassword;
-
 }

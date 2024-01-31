@@ -2,8 +2,7 @@ package org.morriswa.eecs447.model;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
-
+import org.morriswa.eecs447.enumerated.AccountType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,12 +20,14 @@ public class UserAccount implements UserDetails {
     private final String username;
     private final String encodedPassword;
     private final ZonedDateTime dateCreated;
-    
-    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated) {
+    private final AccountType role;
+
+    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated, String role) {
         this.userId = userId;
         this.username = username;
         this.encodedPassword = encodedPassword;
         this.dateCreated = dateCreated;
+        this.role = AccountType.getEnum(role);
     }
 
     public Long getUserId() {
@@ -39,7 +40,7 @@ public class UserAccount implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return role.getAssociatedAuthorities();
     }
 
     @Override

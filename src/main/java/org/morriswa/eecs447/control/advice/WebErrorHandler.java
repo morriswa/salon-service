@@ -49,7 +49,8 @@ public class WebErrorHandler {
 
     @ExceptionHandler({ // catches expected exceptions including...
         BadRequestException.class, // Bad Requests...
-        HttpMessageNotReadableException.class
+        HttpMessageNotReadableException.class,
+        ServletException.class
     })
     public ResponseEntity<?> badRequest(Exception e, WebRequest r) {
         // and assume user fault [400]
@@ -69,17 +70,6 @@ public class WebErrorHandler {
                 e.getClass().getSimpleName(),
                 "A validation error has occurred!!!",
                 ve.getValidationErrors());
-    }
-
-    // catches servlet exceptions
-    @ExceptionHandler(ServletException.class) // usually this means the user is doing something
-    // forbidden by the application
-    public ResponseEntity<?> forbiddenRequests(Exception e, WebRequest r) {
-        // so return forbidden response 403
-        return responseFactory.error(
-                HttpStatus.FORBIDDEN,
-                e.getClass().getSimpleName(),
-                e.getMessage());
     }
 
 }

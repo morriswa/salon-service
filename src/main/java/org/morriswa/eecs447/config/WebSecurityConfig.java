@@ -130,7 +130,10 @@ public class WebSecurityConfig {
                         // requests to user registration endpoint shall be allowed
                         .requestMatchers("/register").permitAll()
                         // all other requests must be authenticated
-                        .anyRequest().authenticated()
+                        .requestMatchers("/user", "/user/**", "/health").hasAuthority("USER")
+                        .requestMatchers("/client/**").hasAuthority("CLIENT")
+                        .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
+                        .anyRequest().hasAuthority("ADMIN")
                 )
                 // not use csrf
                 .csrf(csrfConfiguration -> csrfConfiguration.disable())
@@ -160,7 +163,8 @@ public class WebSecurityConfig {
                     // continue response chain
                 }))
                 // register exception handler for requests without authentication (401)
-                .exceptionHandling(exceptions->exceptions.authenticationEntryPoint((request, response, authException) -> {
+                .exceptionHandling(exceptions->exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
                     // create a formatted Http Response
                     var customErrorResponse =
                         responseFactory.error(
@@ -172,6 +176,31 @@ public class WebSecurityConfig {
                             """ 
                             YOU SHALL NOT PASS! \
                             This endpoint requires authentication, which you did not bother to provide..."""
+                        );
+
+                    // write the body of the generated Http Response to actual Response
+                    response.getOutputStream().println(
+                            objectMapper.writeValueAsString(customErrorResponse.getBody()));
+                    // content type of response will be json
+                    response.setContentType("application/json");
+                    // status of response should be 401
+                    response.setStatus(customErrorResponse.getStatusCode().value());
+                    // continue response chain
+                })
+                // register exception handler for requests without proper scope (403)
+                .accessDeniedHandler((request, response, authException) -> {
+                    // create a formatted Http Response
+                    var customErrorResponse =
+                        responseFactory.error(
+                            // status should be 401
+                            HttpStatus.FORBIDDEN,
+                            // error should be the exception encountered in the filter chain
+                            authException.getClass().getSimpleName(),
+                            // error description to include in response
+                            """ 
+                            YOU SHALL NOT PASS! \
+                            You do not have permission to access this endpoint. \
+                            If you believe this is a mistake, please contact your system administrator."""
                         );
 
                     // write the body of the generated Http Response to actual Response

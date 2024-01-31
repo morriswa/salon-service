@@ -44,7 +44,8 @@ public class UserProfileDaoImpl implements UserProfileDao {
                     // retrieve column "date_created" from result set as Timestamp
                     rs.getTimestamp("date_created")
                         // and cast to Zoned Date Time at System Date.
-                        .toLocalDateTime().atZone(ZoneId.systemDefault()));
+                        .toLocalDateTime().atZone(ZoneId.systemDefault()),
+                    rs.getString("account_type"));
             // if a record is not found, throw an exception. This will trigger a 401 Http Response.
             throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
         });
