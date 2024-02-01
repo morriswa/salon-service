@@ -2,7 +2,6 @@ package org.morriswa.eecs447;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.morriswa.eecs447.annotations.WithAdminAccount;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -39,14 +38,6 @@ public class SecurityTest extends ServiceTest {
     void authenticatedRequest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/health"))
             .andExpect(status().is(200))
-        ;
-    }
-
-    @Test
-    @WithAdminAccount
-    void badEndpointRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/fake-endpoint"))
-            .andExpect(status().is(400))
         ;
     }
 

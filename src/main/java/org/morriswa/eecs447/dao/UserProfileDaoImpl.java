@@ -3,6 +3,8 @@ package org.morriswa.eecs447.dao;
 import org.morriswa.eecs447.enumerated.AccountType;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.UserAccount;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.morriswa.eecs447.model.ContactInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -11,18 +13,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component @SuppressWarnings("null")
 public class UserProfileDaoImpl implements UserProfileDao {
+
+    private final Logger log;
     private final NamedParameterJdbcTemplate database;
     private final PasswordEncoder encoder;
 
     @Autowired
     public UserProfileDaoImpl(NamedParameterJdbcTemplate database, PasswordEncoder encoder) {
+        this.log = LoggerFactory.getLogger(getClass());
         this.database = database;
         this.encoder = encoder;
     }
@@ -54,7 +58,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void register(String username, String password) throws BadRequestException {
+    public void register(String username, String password) throws Exception {
         // database should always store an encrypted password
         final String encPassword = encoder.encode(password);
         // defn query, inject params
@@ -105,27 +109,27 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void createUserContactInfo(Long userId, ContactInfo request) throws BadRequestException {
+    public void createUserContactInfo(Long userId, ContactInfo request) throws Exception {
 
-        final var query = String.format("""
+        final var query = """
             INSERT INTO contact_info 
             (user_id, first_name, last_name, phone_num, email, addr_one, addr_two, city, state_code, zip_code, contact_pref) 
             VALUES 
             (:UserId, :FirstName, :LastName, :PhoneNum, :Email, :AddrOne, :AddrTwo, :City, :StateCode, :ZipCode, :ContactPref) 
-            """);
+            """;
 
         final var params = new HashMap<String,Object>(){{
             put("UserId", userId);
             put("FirstName", request.firstName());
             put("LastName", request.lastName());
-            put("PhoneNum", request.phoneNum());
+            put("PhoneNum", request.phoneNumber());
             put("Email", request.email());
             put("AddrOne", request.addressLineOne());
             put("AddrTwo", request.addressLineTwo());
             put("City", request.city());
             put("StateCode", request.stateCode());
             put("ZipCode", request.zipCode());
-            put("ContactPref", request.contactPreferences().code);
+            put("ContactPref", request.contactPreference().code);
         }};
         
         try {
@@ -143,8 +147,38 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void updateUserContactInfo(Long userId, ContactInfo request) {
+    public void updateUserContactInfo(Long userId, ContactInfo request) throws Exception {
 
+        final var query = """
+            UPDATE contact_info SET
+                first_name = IFNULL(:firstName, first_name),
+                last_name = IFNULL(:lastName, last_name),
+                phone_num = IFNULL(:phoneNumber, phone_num),
+                email = IFNULL(:email, email),
+                addr_one = IFNULL(:addressLnOne, addr_one),
+                addr_two = IFNULL(:addressLnTwo, addr_two),
+                city = IFNULL(:city, city),
+                state_code = IFNULL(:stateCode, state_code),
+                zip_code = IFNULL(:zipCode, zip_code),
+                contact_pref = IFNULL(:contactPreference, contact_pref)
+            WHERE user_id = :userId
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("userId", userId);
+            put("firstName", request.firstName());
+            put("lastName", request.lastName());
+            put("phoneNumber", request.phoneNumber());
+            put("email", request.email());
+            put("addressLnOne", request.addressLineOne());
+            put("addressLnTwo", request.addressLineTwo());
+            put("city", request.city());
+            put("stateCode", request.stateCode());
+            put("zipCode", request.zipCode());
+            put("contactPreference", request.contactPreference().code);
+        }};
+
+        database.update(query, params);
     }
 
     @Override

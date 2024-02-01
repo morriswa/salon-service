@@ -50,14 +50,14 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws BadRequestException {
+    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception {
         // add Contact Info validation rules here
 
         userProfileDao.createUserContactInfo(principal.getUserId(), createProfileRequest);
     }
 
     @Override
-    public void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest) {
+    public void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception {
         // add Contact Info validation rules here
 
         userProfileDao.updateUserContactInfo(principal.getUserId(), updateProfileRequest);

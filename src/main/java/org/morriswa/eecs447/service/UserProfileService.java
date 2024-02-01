@@ -1,7 +1,6 @@
 package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.model.ContactInfo;
-import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.UserProfileResponse;
@@ -18,9 +17,9 @@ public interface UserProfileService {
 
     UserProfileResponse getUserProfile(UserAccount principal);
 
-    void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws BadRequestException;
+    void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception;
 
-    void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest);
+    void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception;
 
     void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception;
 

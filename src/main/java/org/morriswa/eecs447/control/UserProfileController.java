@@ -1,6 +1,5 @@
 package org.morriswa.eecs447.control;
 
-import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.ContactInfo;
@@ -68,8 +67,8 @@ public class UserProfileController {
     @PostMapping("/user")
     public ResponseEntity<?> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
-        @RequestBody ContactInfo createProfileRequest) throws BadRequestException 
-    {
+        @RequestBody ContactInfo createProfileRequest
+    ) throws Exception {
         userService.createUserProfile(principal, createProfileRequest);
         return response.build(HttpStatus.NO_CONTENT,"You have successfully created a profile!");
     }
@@ -77,10 +76,10 @@ public class UserProfileController {
     @PatchMapping("/user")
     public ResponseEntity<?> updateUserProfile(
         @AuthenticationPrincipal UserAccount principal, 
-        @RequestBody ContactInfo updateProfileRequest) 
-    {
+        @RequestBody ContactInfo updateProfileRequest
+    ) throws Exception {
         userService.updateUserProfile(principal, updateProfileRequest);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return response.build(HttpStatus.NO_CONTENT,"Successfully updated your contact information!");
     }
 
     @PatchMapping("/user/name")

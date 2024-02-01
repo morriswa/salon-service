@@ -1,6 +1,5 @@
 package org.morriswa.eecs447.control.advice;
 
-import jakarta.servlet.ServletException;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.exception.ValidationException;
 import org.morriswa.eecs447.utility.HttpResponseFactory;
@@ -8,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -47,10 +47,24 @@ public class WebErrorHandler {
             e.getMessage());
     }
 
+    // Generic Data Access Exception handler
+    @ExceptionHandler({
+        DataAccessException.class
+    }) // Catch any and all unexpected exceptions thrown in any controller
+    public ResponseEntity<?> dataAccessExceptionHandler(Exception dae, WebRequest r) {
+
+        log.error("Encountered unexpected data access exception {}: ", dae.getMessage(), dae);
+
+        // and return a 500 with as much relevant information as they deserve
+        return responseFactory.error(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "DataAccessException",
+            "Encountered error in database layer, please contact your system administrator");
+    }
+
     @ExceptionHandler({ // catches expected exceptions including...
         BadRequestException.class, // Bad Requests...
-        HttpMessageNotReadableException.class,
-        ServletException.class
+        HttpMessageNotReadableException.class
     })
     public ResponseEntity<?> badRequest(Exception e, WebRequest r) {
         // and assume user fault [400]
