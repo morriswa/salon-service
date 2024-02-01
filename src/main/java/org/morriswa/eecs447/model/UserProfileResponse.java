@@ -2,6 +2,8 @@ package org.morriswa.eecs447.model;
 
 import java.time.ZonedDateTime;
 
+import org.morriswa.eecs447.enumerated.ContactPreference;
+
 public record UserProfileResponse(
     Long userId, String username, ZonedDateTime accountCreationDate,
     String firstName, String lastName, String address, 
@@ -17,7 +19,7 @@ public record UserProfileResponse(
                     info.phoneNumber().substring(0, 3),
                     info.phoneNumber().substring(3,6),
                     info.phoneNumber().substring(6)), 
-                info.email(), info.contactPreference().description
+                info.email(), ContactPreference.valueOf(info.contactPreference()).description
             );
     };
 }

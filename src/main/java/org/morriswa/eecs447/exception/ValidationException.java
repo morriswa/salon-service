@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.exception;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,8 +57,33 @@ public class ValidationException extends Exception {
         this.validationErrors = validationErrors;
     }
 
+    /**
+     * Creates a blank Validation Exception that users can build upon
+     *
+     * @param validationErrors to be included in response
+     */
+    public ValidationException() {
+        super();
+        this.validationErrors = new ArrayList<ValidationError>();
+    }
+
     public List<ValidationError> getValidationErrors() {
         return this.validationErrors;
     }
 
+     /**
+     * Adds an error to an existing validation exception
+     *
+     * @param problemField name of the request field that failed validation
+     * @param required whether the field being validated is required or optional
+     * @param problemValue value passed in request
+     * @param errorMessage error message to be provided
+     */
+    public void addValidationError(String problemField, boolean required, String problemValue, String errorMessage) {
+        this.validationErrors.add(new ValidationError(problemField, required, problemValue, errorMessage));
+    }
+
+    public boolean containsErrors() {
+        return !this.validationErrors.isEmpty();
+    }
 }

@@ -1,6 +1,7 @@
 package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.enumerated.AccountType;
+import org.morriswa.eecs447.enumerated.ContactPreference;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.UserAccount;
 import org.slf4j.Logger;
@@ -129,7 +130,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
             put("City", request.city());
             put("StateCode", request.stateCode());
             put("ZipCode", request.zipCode());
-            put("ContactPref", request.contactPreference().code);
+            put("ContactPref", ContactPreference.valueOf(request.contactPreference()).code);
         }};
         
         try {
@@ -141,6 +142,17 @@ public class UserProfileDaoImpl implements UserProfileDao {
             if (error.endsWith("for key 'contact_info.PRIMARY'"))
                 // throw a user-friendly error
                 throw new BadRequestException("You have already entered your contact info! Please use update endpoint if you are attempting to update your profile.");
+            
+            // if error was caused by duplicate phone number on contact_info table...
+            if (error.endsWith("for key 'contact_info.phone_num'"))
+            // throw a user-friendly error
+                throw new BadRequestException("There is already a user registered with requested phone number!");
+
+            // if error was caused by duplicate email on contact_info table...
+            if (error.endsWith("for key 'contact_info.email'"))
+                // throw a user-friendly error
+                throw new BadRequestException("There is already a user registered with requested email address!");
+
             // if error was not expected, throw as is
             throw dpke;
         }
@@ -175,10 +187,28 @@ public class UserProfileDaoImpl implements UserProfileDao {
             put("city", request.city());
             put("stateCode", request.stateCode());
             put("zipCode", request.zipCode());
-            put("contactPreference", request.contactPreference().code);
+            put("contactPreference", request.contactPreference()==null?null:ContactPreference.valueOf(request.contactPreference()).code);
         }};
 
-        database.update(query, params);
+        try {
+            database.update(query, params);
+        } catch (DuplicateKeyException dpke) {
+            // extract database error message
+            final var error = dpke.getMostSpecificCause().getMessage();
+
+            // if error was caused by duplicate phone number on contact_info table...
+            if (error.endsWith("for key 'contact_info.phone_num'"))
+            // throw a user-friendly error
+                throw new BadRequestException("There is already a user registered with requested phone number!");
+
+            // if error was caused by duplicate email on contact_info table...
+            if (error.endsWith("for key 'contact_info.email'"))
+                // throw a user-friendly error
+                throw new BadRequestException("There is already a user registered with requested email address!");
+
+            // if error was not expected, throw as is
+            throw dpke;
+        }
     }
 
     @Override
