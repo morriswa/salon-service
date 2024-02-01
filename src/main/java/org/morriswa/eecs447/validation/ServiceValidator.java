@@ -68,7 +68,7 @@ public class ServiceValidator {
 
         if (!password.equals(confirmPassword))
             throw new ValidationException("confirmPassword", true, "********",
-                    "Fields password and confirmPassword must be matching!");
+                    "Fields 'password' and 'confirmPassword' must be matching!");
     }
 
     public static void validatePromoteRequestOrThrow(AccountRequest request) throws ValidationException, BadRequestException {
@@ -85,7 +85,7 @@ public class ServiceValidator {
         boolean userIdIsMissing = request.userId()==null;
 
         if (userIdIsMissing && usernameIsMissing)
-            throw new BadRequestException("Must include a userId or username in request!");
+            throw new BadRequestException("Must include 'userId' or 'username' field in request!");
     }
 
     public static void validateCreateProfileRequestOrThrow(ContactInfo createProfileRequest) throws ValidationException {

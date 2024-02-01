@@ -62,6 +62,7 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
 
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(temp));
         outputStream.write(content);
+        outputStream.close();
 
         if (!temp.exists())
             throw new FileSystemException("Failed to cache provided file for upload!");
