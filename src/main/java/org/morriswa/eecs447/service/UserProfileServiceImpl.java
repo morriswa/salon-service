@@ -40,10 +40,10 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfileResponse getUserProfile(UserAccount principal) {
 
         // get user contact info
+        var contactInfo = userProfileDao.getContactInfo(principal.getUserId());
 
         // attach info from authentication principal
-        var userProfile = new UserProfileResponse(
-            principal.getUserId(), principal.getUsername(), principal.getDateCreated());
+        var userProfile = new UserProfileResponse(principal, contactInfo);
         
         // return complete profile
         return userProfile;
