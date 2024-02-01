@@ -255,7 +255,7 @@ public class UserProfileEndpointTest extends ServiceTest {
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
             .contentType("application/json")
             .content(request))
-            .andExpect(status().is(501))
+            .andExpect(status().is(204))
         ;
 
         verify(userProfileDao).changeUsername(testingUserId, newUsername);
