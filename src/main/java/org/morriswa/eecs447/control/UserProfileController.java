@@ -1,5 +1,6 @@
 package org.morriswa.eecs447.control;
 
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.model.ContactInfo;
@@ -67,7 +68,7 @@ public class UserProfileController {
     @PostMapping("/user")
     public ResponseEntity<?> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
-        @RequestBody ContactInfo createProfileRequest) 
+        @RequestBody ContactInfo createProfileRequest) throws BadRequestException 
     {
         userService.createUserProfile(principal, createProfileRequest);
         return response.build(HttpStatus.NO_CONTENT,"You have successfully created a profile!");

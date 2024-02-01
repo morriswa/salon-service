@@ -2,6 +2,7 @@ package org.morriswa.eecs447.dao;
 
 import org.morriswa.eecs447.model.UserAccount;
 import org.morriswa.eecs447.enumerated.AccountType;
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.ContactInfo;
 
 
@@ -35,7 +36,7 @@ public interface UserProfileDao {
 
     void changeUsername(Long userId, String newUsername) throws Exception;
 
-    void createUserContactInfo(Long userId, ContactInfo request);
+    void createUserContactInfo(Long userId, ContactInfo request) throws BadRequestException;
 
     void updateUserContactInfo(Long userId, ContactInfo request);
 

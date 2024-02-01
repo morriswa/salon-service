@@ -2,6 +2,7 @@ package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.dao.UserProfileDao;
 import org.morriswa.eecs447.enumerated.AccountType;
+import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.ContactInfo;
 import org.morriswa.eecs447.model.AccountRequest;
 import org.morriswa.eecs447.model.UserAccount;
@@ -49,7 +50,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) {
+    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws BadRequestException {
         // add Contact Info validation rules here
 
         userProfileDao.createUserContactInfo(principal.getUserId(), createProfileRequest);

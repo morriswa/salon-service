@@ -105,7 +105,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void createUserContactInfo(Long userId, ContactInfo request) {
+    public void createUserContactInfo(Long userId, ContactInfo request) throws BadRequestException {
 
         final var query = String.format("""
             INSERT INTO contact_info 
@@ -127,8 +127,19 @@ public class UserProfileDaoImpl implements UserProfileDao {
             put("ZipCode", request.zipCode());
             put("ContactPref", request.contactPreferences().code);
         }};
-
-        database.update(query, params);
+        
+        try {
+            database.update(query, params);
+        } catch (DuplicateKeyException dpke) {
+            // extract database error message
+            final var error = dpke.getMostSpecificCause().getMessage();
+            // if error was caused by duplicate primary key on contact_info table...
+            if (error.endsWith("for key 'contact_info.PRIMARY'"))
+                // throw a user-friendly error
+                throw new BadRequestException("You have already entered your contact info! Please use update endpoint if you are attempting to update your profile.");
+            // if error was not expected, throw as is
+            throw dpke;
+        }
     }
 
     @Override
