@@ -4,6 +4,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.eecs447.annotations.WithUserAccount;
 import org.morriswa.eecs447.exception.BadRequestException;
+import org.morriswa.eecs447.model.ContactInfo;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -140,11 +141,251 @@ public class UserProfileEndpointTest extends ServiceTest {
 
     @Test
     @WithUserAccount
+    void createUserProfile() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "1234567890",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(204));
+
+        verify(userProfileDao).createUserContactInfo(any(), any());
+    }
+
+    @Test
+    @WithUserAccount
+    void createUserProfileBadContactPreference() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "1234567890",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Emai"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.stack[0].field", Matchers.is("contactPreference")));
+
+        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+    }
+
+    @Test
+    @WithUserAccount
+    void createUserProfileMissingNameFields() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "1234567890",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.stack[0].field", Matchers.is("firstName")))
+            .andExpect(jsonPath("$.stack[1].field", Matchers.is("lastName")));
+
+        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+    }
+
+    @Test
+    @WithUserAccount
+    void createUserProfileShortPhoneNumber() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "123456789",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+    }
+
+    @Test
+    @WithUserAccount
+    void createUserProfileLongPhoneNumber() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "12345678901",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+    }
+
+    @Test
+    @WithUserAccount
+    void createUserProfileBadPhoneNumber() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "123456789$",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+    }
+
+    @Test
+    @WithUserAccount
+    void createUserProfileBadStateCode() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "1234567890",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "K",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.stack[0].field", Matchers.is("stateCode")))
+        ;
+
+        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+    }
+    
+    @Test
+    @WithUserAccount
+    void createUserProfileDaoFailure() throws Exception {
+        String request = """
+            {
+                "firstName": "testing",
+                "lastName": "test",
+                "phoneNumber": "1234567890",
+                "email": "test@email.com",
+                "addressLineOne": "12345 Easy St.",
+                "city": "Lawrence",
+                "stateCode": "KS",
+                "zipCode": "66044-1234",
+                "contactPreference": "Email"
+            }
+            """;
+
+        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+
+        doThrow(BadRequestException.class).when(userProfileDao)
+            .createUserContactInfo(testingUserId, info);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.error", Matchers.is("BadRequestException")))
+        ;
+    }
+
+    @Test
+    @WithUserAccount
     void getUserProfile() throws Exception {
+
+        when(userProfileDao.getContactInfo(testingUserId))
+            .thenReturn(new ContactInfo("First", "Last",
+                "1234567890", "test@email.com", 
+                "1234 Test Ave.", null, "City", "ST", "12345-6789", "Email"));
+
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user"))
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
             .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
+            .andExpect(jsonPath("$.payload.address", Matchers.is("1234 Test Ave. City, ST 12345-6789")))
+            .andExpect(jsonPath("$.payload.phoneNumber", Matchers.is("+1 (123) 456-7890")))
+        ;
+    }
+
+    @Test
+    @WithUserAccount
+    void getUserProfileIncludingAddressLineTwo() throws Exception {
+
+        when(userProfileDao.getContactInfo(testingUserId))
+            .thenReturn(new ContactInfo("First", "Last",
+                "1234567890", "test@email.com", 
+                "1234 Test Ave.", "Apt 567", "City", "ST", "12345-6789", "Email"));
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user"))
+            .andExpect(status().is(200))
+            .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
+            .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
+            .andExpect(jsonPath("$.payload.address", Matchers.is("1234 Test Ave. Apt 567 City, ST 12345-6789")))
+            .andExpect(jsonPath("$.payload.phoneNumber", Matchers.is("+1 (123) 456-7890")))
         ;
     }
 
