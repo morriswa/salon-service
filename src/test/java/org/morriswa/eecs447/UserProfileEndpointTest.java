@@ -355,6 +355,89 @@ public class UserProfileEndpointTest extends ServiceTest {
 
     @Test
     @WithUserAccount
+    void updateUserProfile() throws Exception {
+        String request = """
+            {
+                "firstName": "testing"
+            }
+            """;
+
+        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(204))
+        ;
+
+        verify(userProfileDao).updateUserContactInfo(testingUserId, info);
+    }
+
+    @Test
+    @WithUserAccount
+    void updateUserProfileBadContactPreference() throws Exception {
+        String request = """
+            {
+                "contactPreference": "Phonecall"
+            }
+            """;
+
+        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+        ;
+
+        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
+    }
+
+    @Test
+    @WithUserAccount
+    void updateUserProfileShortPhoneNumber() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "1234567"
+            }
+            """;
+
+        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+        ;
+
+        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
+    }
+
+    @Test
+    @WithUserAccount
+    void updateUserProfileLongPhoneNumber() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "11234567890"
+            }
+            """;
+
+        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(request))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+        ;
+
+        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
+    }
+
+    @Test
+    @WithUserAccount
     void getUserProfile() throws Exception {
 
         when(userProfileDao.getContactInfo(testingUserId))
