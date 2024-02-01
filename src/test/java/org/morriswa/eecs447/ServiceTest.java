@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.morriswa.eecs447.config.TestConfig;
 import org.morriswa.eecs447.config.TestJdbcAuthenticationConfig;
+import org.morriswa.eecs447.dao.EmployeeDao;
 import org.morriswa.eecs447.dao.ExampleDao;
 import org.morriswa.eecs447.dao.UserProfileDao;
 import org.morriswa.eecs447.utility.AmazonS3Client;
@@ -37,6 +38,8 @@ public class ServiceTest {
     @MockBean protected ExampleDao exampleDao;
 
     @MockBean protected UserProfileDao userProfileDao;
+
+    @MockBean protected EmployeeDao employeeDao;
 
     @MockBean protected AmazonS3Client amazonS3Client;
 
