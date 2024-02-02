@@ -133,8 +133,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
                         .anyRequest().hasAuthority("ADMIN")
                 )
-                // not use csrf
-                .csrf(csrfConfiguration -> csrfConfiguration.disable())
                 // use custom cors config
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 // use default http basic authorization token, provided in http headers
