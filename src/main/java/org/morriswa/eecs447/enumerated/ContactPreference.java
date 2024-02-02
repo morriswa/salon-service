@@ -13,4 +13,17 @@ public enum ContactPreference {
         this.code = code;
         this.description = description;
     }
+
+    public static ContactPreference getEnum(String code) {
+        switch (code) {
+            case "EMAIL":
+                return Email;
+            case "PCALL":
+                return PhoneCall;
+            case "PTEXT":
+                return TextMessage;
+            default:
+                return null;
+        }
+    }
 }

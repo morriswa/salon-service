@@ -57,7 +57,7 @@ public class UserProfileController {
      * @return a nicely formatted Http Response
      */
     @GetMapping("/user")
-    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserAccount principal) {
+    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
         // using the user profile service, retrieve the current users profile
         var profile = userService.getUserProfile(principal);
         // and return it to them in JSON format
@@ -97,7 +97,7 @@ public class UserProfileController {
         @RequestBody AccountRequest updatePasswordRequest) throws Exception 
     {
         userService.updatePassword(principal, updatePasswordRequest);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return response.build(HttpStatus.NO_CONTENT,"Sucessfully updated password!");
     }
 
     @PatchMapping("/admin/promote")

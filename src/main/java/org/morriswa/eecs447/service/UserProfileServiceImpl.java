@@ -36,7 +36,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserProfileResponse getUserProfile(UserAccount principal) {
+    public UserProfileResponse getUserProfile(UserAccount principal) throws Exception {
 
         // get user contact info
         var contactInfo = userProfileDao.getContactInfo(principal.getUserId());
@@ -82,6 +82,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         userProfileDao.updateUserPassword(
                 principal.getUserId(),
+                principal.getPassword(),
                 updatePasswordRequest.currentPassword(),
                 updatePasswordRequest.password());
     }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component @SuppressWarnings("null")
 public class UserProfileDaoImpl implements UserProfileDao {
@@ -81,13 +82,53 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
 
     @Override
-    public ContactInfo getContactInfo(Long userId) {
-        return null;
+    public ContactInfo getContactInfo(Long userId) throws Exception {
+        //Retrieving all columns from the contact_info table where user_id col is = to the param userId
+        final var query = "select * from contact_info where user_id=:userId";
+        //Mapping the named param to the Java var
+        final var params = Map.of("userId",userId);
+
+        Optional<ContactInfo> retrievedRecord = database.query(query, params, resultSet ->{
+            //Checking if the record exists
+            if(resultSet.next()) {
+                //If it does, return the Contact Info
+                return Optional.of(new ContactInfo(
+                    //Grabbing cols as a string
+                    resultSet.getString("first_name"), 
+                    resultSet.getString("last_name"), 
+                    resultSet.getString("phone_num"), 
+                    resultSet.getString("email"), 
+                    resultSet.getString("addr_one"), 
+                    resultSet.getString("addr_two"), 
+                    resultSet.getString("city"), 
+                    resultSet.getString("state_code"), 
+                    resultSet.getString("zip_code"), 
+                    ContactPreference.getEnum(resultSet.getString("contact_pref")).description));
+            }
+
+            return Optional.empty(); //If it doesn't exist, return empty object
+        });
+        //If the retrievedRecord exists, return it, otherwise throw error
+        return retrievedRecord.orElseThrow(()->new BadRequestException("You have not entered your contact information. Please update your information."));
     }
 
     @Override
-    public void updateUserPassword(Long userId, String currentPassword, String newPassword) throws Exception {
+    public void updateUserPassword(Long userId, String currentEncodedPassword, String currentPassword, String newPassword) throws Exception {
+        //Checking to see if the current password coming from the form matches the encoded password in our table
+        if(!encoder.matches(currentPassword, currentEncodedPassword)){
+            throw new BadRequestException("The password you entered is incorrect. Try again.");
+            //Exception that is sent if it isn't.
+        }
 
+        //Encode the newPassword set by the user
+        final var newEncodedPassword = encoder.encode(newPassword);
+        //Query the user_account table to set the password to the newEncodedPassword by userID
+        final var query = "UPDATE user_account SET password = :newPassword WHERE user_id = :userId";
+        //Mapping
+        final var params = Map.of("userId",userId, "newPassword",newEncodedPassword); 
+
+        //Update the database with new encoded password
+        database.update(query, params);
     }
 
     @Override

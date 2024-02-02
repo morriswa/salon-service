@@ -29,9 +29,9 @@ public interface UserProfileDao {
      */
     void register(String username, String password) throws Exception;
 
-    ContactInfo getContactInfo(Long userId);
+    ContactInfo getContactInfo(Long userId) throws Exception;
 
-    void updateUserPassword(Long userId, String currentPassword, String newPassword) throws Exception;
+    void updateUserPassword(Long userId, String currentEncodedPassword, String currentPassword, String newPassword) throws Exception;
 
     void changeUsername(Long userId, String newUsername) throws Exception;
 

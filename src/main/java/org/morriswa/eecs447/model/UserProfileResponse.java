@@ -19,7 +19,7 @@ public record UserProfileResponse(
                     info.phoneNumber().substring(0, 3),
                     info.phoneNumber().substring(3,6),
                     info.phoneNumber().substring(6)), 
-                info.email(), ContactPreference.valueOf(info.contactPreference()).description
+                info.email(), info.contactPreference()
             );
     };
 }

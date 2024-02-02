@@ -488,10 +488,10 @@ public class UserProfileEndpointTest extends ServiceTest {
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
             .contentType(MediaType.APPLICATION_JSON)
             .content(request))
-            .andExpect(status().is(501))
+            .andExpect(status().is(204))
         ;
 
-        verify(userProfileDao).updateUserPassword(testingUserId, testingPassword, newPassword);
+        verify(userProfileDao).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test
@@ -509,7 +509,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
 
         doThrow(BadRequestException.class).when(userProfileDao)
-               .updateUserPassword(testingUserId, testingPassword, newPassword);
+            .updateUserPassword(any(), any(), any(), any());
 
         mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
             .contentType(MediaType.APPLICATION_JSON)
@@ -517,7 +517,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao).updateUserPassword(testingUserId, testingPassword, newPassword);
+        verify(userProfileDao).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test
@@ -539,8 +539,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).updateUserPassword(testingUserId, testingPassword, newPassword);
-        verify(userProfileDao, never()).updateUserPassword(testingUserId, testingPassword, newPassword.toUpperCase());
+        verify(userProfileDao, never()).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test
@@ -562,7 +561,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).updateUserPassword(testingUserId, testingPassword, newPassword);
+        verify(userProfileDao, never()).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test    

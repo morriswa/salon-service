@@ -15,7 +15,7 @@ public interface UserProfileService {
 
     String registerUser(AccountRequest request) throws Exception;
 
-    UserProfileResponse getUserProfile(UserAccount principal);
+    UserProfileResponse getUserProfile(UserAccount principal) throws Exception;
 
     void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception;
 
