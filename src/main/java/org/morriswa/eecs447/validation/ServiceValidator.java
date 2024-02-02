@@ -20,6 +20,10 @@ public class ServiceValidator {
         return !(check==null||check.isBlank()||check.isEmpty());
     }
 
+    public static boolean isNotNullButBlank(String check) {
+        return check!=null&&(check.isBlank()||check.isEmpty());
+    }
+
     // add static validation methods to be used throughout the application here
 
     public static void validateUsernameOrThrow(String requestedUsername) throws Exception {
@@ -171,10 +175,14 @@ public class ServiceValidator {
         // validate required fields
 
         // first name validation rules
+        if(isNotNullButBlank(updateProfileRequest.firstName())) error.addValidationError(
+            "firstName", true, updateProfileRequest.firstName(), "First name must not be blank!");
         if (hasValue(updateProfileRequest.firstName()) && updateProfileRequest.firstName().length() > 32) error.addValidationError(
             "firstName", true, updateProfileRequest.firstName(), "First name must be 32 characters or less!");
 
         // last name validation rules
+        if(isNotNullButBlank(updateProfileRequest.lastName())) error.addValidationError(
+            "lastName", true, updateProfileRequest.lastName(), "Last name must not be blank!");
         if (hasValue(updateProfileRequest.lastName())&& updateProfileRequest.lastName().length() > 32) error.addValidationError(
             "lastName", true, updateProfileRequest.lastName(), "Last name must be 32 characters or less!");
         
@@ -189,16 +197,22 @@ public class ServiceValidator {
        
 
         // email validation rules
+        if(isNotNullButBlank(updateProfileRequest.email())) error.addValidationError(
+            "email", true, updateProfileRequest.email(), "Email address must not be blank!");
         if (hasValue(updateProfileRequest.email()) && updateProfileRequest.email().length() > 100) error.addValidationError(
             "email", true, updateProfileRequest.email(), "Email must not be longer than 100 characters!"); 
             
         // address validation rules
+        if(isNotNullButBlank(updateProfileRequest.addressLineOne())) error.addValidationError(
+            "addressLineOne", true, updateProfileRequest.addressLineOne(), "Address must not be blank!");
         if (hasValue(updateProfileRequest.addressLineOne()) && updateProfileRequest.addressLineOne().length()>50) error.addValidationError(
             "addressLineOne", true, updateProfileRequest.addressLineOne(), "Address fields must be shorter than 50 characters!"); 
             
         if (hasValue(updateProfileRequest.addressLineTwo()) && updateProfileRequest.addressLineTwo().length()>50) error.addValidationError(
                     "addressLineTwo", true, updateProfileRequest.addressLineTwo(), "Address fields must be shorter than 50 characters!"); 
         
+        if(isNotNullButBlank(updateProfileRequest.city())) error.addValidationError(
+            "city", true, updateProfileRequest.city(), "City must not be blank!");
         if (hasValue(updateProfileRequest.city()) && updateProfileRequest.city().length()>50) error.addValidationError(
                 "city", true, updateProfileRequest.city(), "City name must be shorter than 50 characters!"); 
                   
