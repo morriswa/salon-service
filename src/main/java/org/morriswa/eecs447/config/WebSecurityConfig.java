@@ -67,13 +67,11 @@ public class WebSecurityConfig {
     }
 
     /**
-     * Register a Cors Configuration Bean.
-     * Contains all Cors (Cross Origin Resource Sharing) Configuration for the application
+     * Returns all Cors (Cross Origin Resource Sharing) Configuration for the application
      *
      * @return fully configured Cors Object, ready to be injected into Security Filter
      */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    private static CorsConfigurationSource corsConfigurationSource() {
 
         // configuration for Secured Routes
         final CorsConfiguration secureRoutesCors = new CorsConfiguration(){{
@@ -137,6 +135,8 @@ public class WebSecurityConfig {
                 )
                 // not use csrf
                 .csrf(csrfConfiguration -> csrfConfiguration.disable())
+                // use custom cors config
+                .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 // use default http basic authorization token, provided in http headers
                 // and register exception handler for requests with bad credentials (401)
                 .httpBasic(basic->basic.authenticationEntryPoint((request, response, authException) -> {
