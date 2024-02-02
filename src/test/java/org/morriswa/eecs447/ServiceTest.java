@@ -1,7 +1,6 @@
 package org.morriswa.eecs447;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.morriswa.eecs447.config.TestConfig;
 import org.morriswa.eecs447.config.TestJdbcAuthenticationConfig;
@@ -15,11 +14,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest(classes = {TestConfig.class, TestJdbcAuthenticationConfig.class})
 @ActiveProfiles("test")
@@ -50,4 +54,16 @@ public class ServiceTest {
     @Value("${testing.username}") protected String testingUsername;
 
     @Value("${testing.password}") protected String testingPassword;
+
+    protected ResultActions hit(HttpMethod method, String endpoint) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint).with(csrf()));
+    }
+
+    protected ResultActions hit(HttpMethod method, String endpoint, String body) throws Exception {
+        return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint)
+            .with(csrf())
+            .contentType("application/json")
+            .content(body));
+    }
+
 }

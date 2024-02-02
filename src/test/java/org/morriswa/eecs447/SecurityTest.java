@@ -16,7 +16,7 @@ public class SecurityTest extends ServiceTest {
 
     @Test
     void unauthenticatedRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/health"))
+        hit(HttpMethod.GET, "/health")
             .andExpect(status().is(401))
             .andExpect(jsonPath("$.error",
                 Matchers.is(InsufficientAuthenticationException.class.getSimpleName())))
@@ -36,7 +36,7 @@ public class SecurityTest extends ServiceTest {
     @Test
     @WithUserDetails
     void authenticatedRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/health"))
+        hit(HttpMethod.GET, "/health")
             .andExpect(status().is(200))
         ;
     }
@@ -44,7 +44,7 @@ public class SecurityTest extends ServiceTest {
     @Test
     @WithUserDetails
     void accessDeniedRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/employee/schedule"))
+        hit(HttpMethod.GET, "/employee/schedule")
             .andExpect(status().is(403))
         ;
     }

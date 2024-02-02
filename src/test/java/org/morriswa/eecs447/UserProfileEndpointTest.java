@@ -6,8 +6,6 @@ import org.morriswa.eecs447.annotations.WithUserAccount;
 import org.morriswa.eecs447.exception.BadRequestException;
 import org.morriswa.eecs447.model.ContactInfo;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -27,10 +25,8 @@ public class UserProfileEndpointTest extends ServiceTest {
             "password":"%s"
         }""", testingUsername, testingPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
-                        .contentType("application/json")
-                        .content(request))
-                .andExpect(status().is(201))
+        hit(HttpMethod.POST, "/register", request)
+            .andExpect(status().is(201))
         ;
 
         verify(userProfileDao).register(testingUsername, testingPassword);
@@ -48,9 +44,7 @@ public class UserProfileEndpointTest extends ServiceTest {
         doThrow(BadRequestException.class).when(userProfileDao)
                 .register(testingUsername, testingPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
-                        .contentType("application/json")
-                        .content(request))
+        hit(HttpMethod.POST, "/register", request)
                 .andExpect(status().is(400))
         ;
 
@@ -68,9 +62,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "password":"%s"
         }""", username, testingPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
-                        .contentType("application/json")
-                        .content(request))
+        hit(HttpMethod.POST, "/register", request)
                 .andExpect(status().is(400))
         ;
 
@@ -90,9 +82,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "password":"%s"
         }""", username, testingPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
-                        .contentType("application/json")
-                        .content(request))
+        hit(HttpMethod.POST, "/register", request)
                 .andExpect(status().is(400))
         ;
 
@@ -110,9 +100,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "password":"%s"
         }""", username, testingPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
-                        .contentType("application/json")
-                        .content(request))
+        hit(HttpMethod.POST, "/register", request)
                 .andExpect(status().is(400))
         ;
 
@@ -130,9 +118,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "password":"%s"
         }""", testingUsername, shortPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/register")
-                        .contentType("application/json")
-                        .content(request))
+        hit(HttpMethod.POST, "/register", request)
                 .andExpect(status().is(400))
         ;
 
@@ -156,9 +142,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(204));
 
         verify(userProfileDao).createUserContactInfo(any(), any());
@@ -181,9 +165,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.stack[0].field", Matchers.is("contactPreference")));
 
@@ -205,9 +187,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.stack[0].field", Matchers.is("firstName")))
             .andExpect(jsonPath("$.stack[1].field", Matchers.is("lastName")));
@@ -232,9 +212,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
         ;
@@ -259,9 +237,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
         ;
@@ -286,9 +262,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
         ;
@@ -313,9 +287,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.stack[0].field", Matchers.is("stateCode")))
         ;
@@ -345,9 +317,7 @@ public class UserProfileEndpointTest extends ServiceTest {
         doThrow(BadRequestException.class).when(userProfileDao)
             .createUserContactInfo(testingUserId, info);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("BadRequestException")))
         ;
@@ -364,9 +334,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         ContactInfo info = mapper.readValue(request, ContactInfo.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user", request)
             .andExpect(status().is(204))
         ;
 
@@ -384,9 +352,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         ContactInfo info = mapper.readValue(request, ContactInfo.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
@@ -405,9 +371,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         ContactInfo info = mapper.readValue(request, ContactInfo.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
@@ -426,9 +390,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         ContactInfo info = mapper.readValue(request, ContactInfo.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
@@ -445,7 +407,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 "1234567890", "test@email.com", 
                 "1234 Test Ave.", null, "City", "ST", "12345-6789", "Email"));
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user"))
+        hit(HttpMethod.GET, "/user")
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
             .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
@@ -463,7 +425,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 "1234567890", "test@email.com", 
                 "1234 Test Ave.", "Apt 567", "City", "ST", "12345-6789", "Email"));
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/user"))
+        hit(HttpMethod.GET, "/user")
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
             .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
@@ -485,9 +447,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "confirmPassword":"%s"
         }""", testingPassword, newPassword, newPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/password", request)
             .andExpect(status().is(204))
         ;
 
@@ -511,9 +471,7 @@ public class UserProfileEndpointTest extends ServiceTest {
         doThrow(BadRequestException.class).when(userProfileDao)
             .updateUserPassword(any(), any(), any(), any());
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/password", request)
             .andExpect(status().is(400))
         ;
 
@@ -533,9 +491,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "confirmPassword":"%s"
         }""", testingPassword, newPassword, newPassword.toUpperCase());
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/password")
             .andExpect(status().is(400))
         ;
 
@@ -555,9 +511,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "confirmPassword":"%s"
         }""", testingPassword, newPassword, newPassword);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/password")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/password")
             .andExpect(status().is(400))
         ;
 
@@ -575,9 +529,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "username":"%s"
         }""", newUsername);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
-            .contentType("application/json")
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/name", request)
             .andExpect(status().is(204))
         ;
 
@@ -598,9 +550,7 @@ public class UserProfileEndpointTest extends ServiceTest {
         doThrow(BadRequestException.class).when(userProfileDao)
                .changeUsername(testingUserId, duplicateUsername);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
-            .contentType("application/json")
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/name", request)
             .andExpect(status().is(400))
         ;
 
@@ -618,9 +568,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             "username":"%s"
         }""", username);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
-            .contentType("application/json")
-            .content(request))
+        hit(HttpMethod.PATCH, "/user/name", request)
             .andExpect(status().is(400))
         ;
 
@@ -640,10 +588,8 @@ public class UserProfileEndpointTest extends ServiceTest {
             "username":"%s"
         }""", username);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
-            .contentType("application/json")
-            .content(request))
-            .andExpect(status().is(400))
+        hit(HttpMethod.PATCH, "/user/name", request)
+                .andExpect(status().is(400))
         ;
 
         verify(userProfileDao, never()).register(any(), any());
@@ -660,10 +606,8 @@ public class UserProfileEndpointTest extends ServiceTest {
             "username":"%s"
         }""", username);
 
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.PATCH, "/user/name")
-            .contentType("application/json")
-            .content(request))
-            .andExpect(status().is(400))
+        hit(HttpMethod.PATCH, "/user/name", request)
+                .andExpect(status().is(400))
         ;
 
         verify(userProfileDao, never()).register(any(), any());
