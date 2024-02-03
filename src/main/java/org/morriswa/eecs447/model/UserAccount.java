@@ -2,8 +2,11 @@ package org.morriswa.eecs447.model;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.Set;
+
 import org.morriswa.eecs447.enumerated.AccountType;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -40,7 +43,25 @@ public class UserAccount implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAssociatedAuthorities();
+        switch (this.role) {
+            case Admin:
+                return Set.of(
+                    new SimpleGrantedAuthority("ADMIN"),
+                    new SimpleGrantedAuthority("EMPLOYEE"),
+                    new SimpleGrantedAuthority("CLIENT"),
+                    new SimpleGrantedAuthority("USER"));
+            case Employee:
+                return Set.of(
+                    new SimpleGrantedAuthority("EMPLOYEE"),
+                    new SimpleGrantedAuthority("CLIENT"),
+                    new SimpleGrantedAuthority("USER"));
+            case Client:
+                return Set.of(
+                    new SimpleGrantedAuthority("CLIENT"),
+                    new SimpleGrantedAuthority("USER"));
+            default:
+                return Set.of(new SimpleGrantedAuthority("USER"));
+        }
     }
 
     @Override
