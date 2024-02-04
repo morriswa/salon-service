@@ -14,6 +14,6 @@ CREATE TABLE contact_info(
     zip_code CHAR(10) NOT NULL,
     contact_pref CHAR(5) NOT NULL,
     -- For every new record, this column will be populated with the current date/time
-    -- Every insert/update will also modify this feild with the timestamp
+    -- Every insert/update will also modify this field with the timestamp
     last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
