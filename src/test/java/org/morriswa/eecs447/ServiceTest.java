@@ -56,12 +56,11 @@ public class ServiceTest {
     @Value("${testing.password}") protected String testingPassword;
 
     protected ResultActions hit(HttpMethod method, String endpoint) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint).with(csrf()));
+        return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint));
     }
 
     protected ResultActions hit(HttpMethod method, String endpoint, String body) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint)
-            .with(csrf())
             .contentType("application/json")
             .content(body));
     }
