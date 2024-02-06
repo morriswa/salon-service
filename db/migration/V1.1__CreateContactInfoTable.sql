@@ -1,5 +1,8 @@
--- Designed by Makenna Loewenherz, Kevin Rivers, and William Morris
--- Creating a new table named contact_info
+DELIMITER //
+
+-- AUTHOR: Makenna Loewenherz, Kevin Rivers, and William Morris
+-- CREATED: 2024-01-29
+-- PURPOSE: Creates a new table named contact_info to store all app user's contact information
 CREATE TABLE contact_info(
     -- The name, datatype, and rules for each column in table
     user_id BIGINT PRIMARY KEY,
@@ -17,3 +20,6 @@ CREATE TABLE contact_info(
     -- Every insert/update will also modify this field with the timestamp
     last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+//
+DELIMITER ;

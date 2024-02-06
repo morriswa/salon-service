@@ -18,8 +18,8 @@ mysql:
   protocol: jdbc:mysql
   hostname: localhost
   port: 3306
-  database: project
-  username: eecs447
+  database: dev_dynasty_salon
+  username: dev_dynasty_service
   password: password
 
 aws:

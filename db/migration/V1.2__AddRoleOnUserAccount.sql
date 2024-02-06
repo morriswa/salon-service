@@ -1,3 +1,5 @@
+DELIMITER //
+
 -- AUTHOR: William A. Morris
 -- CREATED: 2024-01-30
 -- PURPOSE: As role (client/employee/admin) is directly related to 
@@ -10,7 +12,7 @@ ADD promoter BIGINT,
 ADD promote_date TIMESTAMP;
 
 -- Rather than managing promote_date directly, I have added update trigger
-CREATE TRIGGER promoteTimestampTrigger 
+CREATE TRIGGER on_promote_update_timestamp_trigger
 BEFORE UPDATE ON user_account FOR EACH ROW BEGIN
     -- check for invalid entries
     IF NEW.account_type NOT IN ('USR', 'CLT', 'EMP', 'ADM') THEN
@@ -23,3 +25,6 @@ BEFORE UPDATE ON user_account FOR EACH ROW BEGIN
     -- if account_type column will not change, do nothing
     END IF;
 END;
+
+//
+DELIMITER ;

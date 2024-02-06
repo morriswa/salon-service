@@ -61,23 +61,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Required Database Migration Libraries -->
-            <!-- contains database migration library -->
-            <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>10.6.0</version>
-                <scope>runtime</scope>
-            </dependency>
-            <!-- contains classes for compatability with MySQL -->
-            <!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql -->
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-mysql</artifactId>
-                <version>10.6.0</version>
-                <scope>runtime</scope>
-            </dependency>
 
         <!-- Required for Amazon S3 Object Store -->
         <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
