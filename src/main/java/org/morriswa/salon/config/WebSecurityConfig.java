@@ -82,12 +82,12 @@ public class WebSecurityConfig {
             setAllowedHeaders(List.of("*"));
         }};
 
-        // configuration for User Registration Route
-        final CorsConfiguration registrationEndpointCors = new CorsConfiguration(){{
+        // configuration for Public Routes
+        final CorsConfiguration publicEndpointCors = new CorsConfiguration(){{
             // allow requests coming from any origin
             setAllowedOrigins(List.of("*"));
-            // only allow POST method, as that is the method of the registration endpoint
-            setAllowedMethods(List.of("POST"));
+            // only allow GET and POST methods
+            setAllowedMethods(List.of("GET", "POST"));
             // allow request to have any headers
             setAllowedHeaders(List.of("*"));
         }};
@@ -99,7 +99,10 @@ public class WebSecurityConfig {
         sources.registerCorsConfiguration("/**", secureRoutesCors);
 
         // register user registration route with appropriate config
-        sources.registerCorsConfiguration("/register", registrationEndpointCors);
+        sources.registerCorsConfiguration("/register", publicEndpointCors);
+
+        // register user registration route with appropriate config
+        sources.registerCorsConfiguration("/health", publicEndpointCors);
 
         // return fully configured cors source
         return sources;
@@ -125,9 +128,9 @@ public class WebSecurityConfig {
                 // Be authorized only by following below rules
                 .authorizeHttpRequests(authorize -> authorize
                         // requests to user registration endpoint shall be allowed
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/register", "/health").permitAll()
                         // all other requests must be authenticated
-                        .requestMatchers("/user", "/user/**", "/health", "/login").hasAuthority("USER")
+                        .requestMatchers("/login", "/user", "/user/**").hasAuthority("USER")
                         .requestMatchers("/client/**").hasAuthority("CLIENT")
                         .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
                         .anyRequest().hasAuthority("ADMIN")
