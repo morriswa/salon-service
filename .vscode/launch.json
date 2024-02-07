@@ -6,11 +6,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "ServiceRunner",
+            "name": "SalonService",
             "request": "launch",
-            "mainClass": "org.morriswa.eecs447.ServiceRunner",
+            "mainClass": "org.morriswa.salon.SalonService",
             "projectName": "eecs447-project-service",
             "envFile": "${workspaceFolder}/.env.local"
-        }
+        },
     ]
 }
