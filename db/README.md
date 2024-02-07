@@ -1,6 +1,6 @@
 
 # Salon MySQL Instance 
-## Current DB Version: 1.3
+## Current DB Version: 1.4
 #### Upgrade to V1 from New Schema (when run from project directory)
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1__CreateUserAccountTable.sql
 #### V1 -> V1.1
