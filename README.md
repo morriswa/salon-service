@@ -1,4 +1,5 @@
-# EECS 447 Term Project
+# Salon Web Service
+### EECS 447 Term Project
 ## Authors:
 - William A. Morris (morriswa) [morris.william@ku.edu]
 - Makenna B. Loewenherz (makennabrynn) [makennaloewenherz@ku.edu]

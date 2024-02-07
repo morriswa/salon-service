@@ -11,10 +11,14 @@
         <relativePath/>
     </parent>
     <groupId>org.morriswa</groupId>
-    <artifactId>eecs447-project-service</artifactId>
+    <artifactId>salon-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>EECS 447 Project Service</name>
-    <description>EECS 447 Group Term Project Microservice</description>
+    <name>Salon Web Service</name>
+    <description>
+        Dev Dynasty's EECS 447 Group Term Project Web Service.
+        This application is in charge of interacting with a MySQL instance and returning
+        formatted information to Client Application (UI).
+    </description>
     <packaging>jar</packaging>
     <properties>
         <java.version>17</java.version>

@@ -19,13 +19,13 @@ ENV SERVER_CACHE='/cache'
 WORKDIR /app
 
 # copy Java ARchieve (Jar) into /app folder
-COPY target/eecs447-project-service.jar eecs447-project-service.jar
+COPY target/salon-service.jar salon-service.jar
 
 # create file cache
 RUN mkdir /cache
 
 # set entrypoint (command which will run when container is started)
-ENTRYPOINT ["java","-jar","/app/eecs447-project-service.jar"]
+ENTRYPOINT ["java","-jar","/app/salon-service.jar"]
 
 # expose appropriate API port
 EXPOSE 8080

@@ -1,7 +1,12 @@
+# Salon Service Configuration V0.0.1
 # file to store ALL application configuration properties
 # all props can be overridden by injecting Java Environment Variables
 #   capitalize config property and replace periods and hyphens with underscores
 #   ex. server.port (spring environment) can be overridden by setting SERVER_PORT
+
+application:
+  title: @project.name@
+  version: @project.version@
 
 server:
   # service will be available on this port
@@ -9,6 +14,7 @@ server:
   cache: ./localfilecache/
 
 spring:
+  banner.location: classpath:banner.txt
   servlet:
     multipart:
       max-file-size: 20MB
@@ -26,14 +32,3 @@ aws:
   s3:
     bucket: circlesdevocean
     apppath: eecs447/local/
-
-#logging:
-#  level:
-#    root: ERROR
-#    org.morriswa.eecs447: INFO
-##    org.springframework.data.repository: OFF
-##    org.springframework.beans.factory: OFF
-##    org.springframework.boot.SpringApplication: OFF
-##    org.springframework.boot.web.servlet.context: OFF
-##    org.apache.catalina.core: OFF
-##    com.zaxxer.hikari: OFF
