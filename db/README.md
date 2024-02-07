@@ -9,6 +9,8 @@
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.2__AddRoleOnUserAccount.sql
 #### V1.2 -> V1.3
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.3__CreateServiceTable.sql
+#### V1.3 -> V1.4
+    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.4__CreateAppointmentTable.sql
 
 If you run into DAO errors, please ensure your database schema matches the current version.
 
