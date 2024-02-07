@@ -2,13 +2,13 @@ package org.morriswa.eecs447.service;
 
 import org.morriswa.eecs447.dao.UserProfileDao;
 import org.morriswa.eecs447.enumerated.AccountType;
-import org.morriswa.eecs447.model.ContactInfo;
-import org.morriswa.eecs447.model.AccountRequest;
-import org.morriswa.eecs447.model.UserAccount;
-import org.morriswa.eecs447.model.UserProfileResponse;
+import org.morriswa.eecs447.model.*;
 import org.morriswa.eecs447.validation.ServiceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
@@ -18,6 +18,18 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Autowired
     public UserProfileServiceImpl(UserProfileDao userProfileDao) {
         this.userProfileDao = userProfileDao;
+    }
+
+
+    @Override
+    public UserAccountResponse login(UserAccount principal) {
+        return new UserAccountResponse(
+                principal.getUserId(),
+                principal.getUsername(),
+                principal.getDateCreated(),
+                principal.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toSet()));
     }
 
     @Override
@@ -96,4 +108,5 @@ public class UserProfileServiceImpl implements UserProfileService {
             userProfileDao.promoteUser(principal.getUserId(), request.userId(), AccountType.getEnum(request.role()));
         else userProfileDao.promoteUser(principal.getUserId(), request.username(), AccountType.getEnum(request.role()));
     }
+
 }

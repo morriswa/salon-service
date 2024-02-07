@@ -1,9 +1,6 @@
 package org.morriswa.eecs447.service;
 
-import org.morriswa.eecs447.model.ContactInfo;
-import org.morriswa.eecs447.model.AccountRequest;
-import org.morriswa.eecs447.model.UserAccount;
-import org.morriswa.eecs447.model.UserProfileResponse;
+import org.morriswa.eecs447.model.*;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -12,6 +9,8 @@ import org.morriswa.eecs447.model.UserProfileResponse;
  * &emsp; provides an interface for performing essential User actions
  */
 public interface UserProfileService {
+
+    UserAccountResponse login(UserAccount principal);
 
     String registerUser(AccountRequest request) throws Exception;
 
@@ -26,4 +25,5 @@ public interface UserProfileService {
     void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception;
 
     void promoteUser(UserAccount principal, AccountRequest request) throws Exception;
+
 }

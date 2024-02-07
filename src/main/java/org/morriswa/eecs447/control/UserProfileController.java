@@ -31,6 +31,24 @@ public class UserProfileController {
         this.userService = userService;
     }
 
+
+    /**
+     * Http GET endpoint to return account information to the UI
+     *
+     * @param principal injected by the Spring Security filter,
+     *                  this object contains important information about the
+     *                  CURRENTLY AUTHENTICATED USER. When using this object,
+     *                  no further user authentication or authorization action is needed.
+     * @return JSON response with account information, notably user's granted authorities
+     */
+    @GetMapping("/login")
+    public ResponseEntity<?> login(@AuthenticationPrincipal UserAccount principal) {
+        // use the user profile service to register a new user, and retrieve the username they were registered with
+        var userInfo = userService.login(principal);
+        // return confirmation in JSON format
+        return response.build(HttpStatus.OK, "Successfully authenticated!", userInfo);
+    }
+
     /**
      * Http POST endpoint used to register a new User
      *
@@ -50,11 +68,8 @@ public class UserProfileController {
     /**
      * Http GET endpoint used to retrieve all stored information about the currently authenticated user
      *
-     * @param principal injected by the Spring Security filter,
-     *                  this object contains important information about the
-     *                  CURRENTLY AUTHENTICATED USER. When using this object,
-     *                  no further user authentication or authorization action is needed.
-     * @return a nicely formatted Http Response
+     * @param principal currently authenticated User Account
+     * @return profile and contact information about the user
      */
     @GetMapping("/user")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{

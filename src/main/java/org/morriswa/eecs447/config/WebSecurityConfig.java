@@ -127,7 +127,7 @@ public class WebSecurityConfig {
                         // requests to user registration endpoint shall be allowed
                         .requestMatchers("/register").permitAll()
                         // all other requests must be authenticated
-                        .requestMatchers("/user", "/user/**", "/health").hasAuthority("USER")
+                        .requestMatchers("/user", "/user/**", "/health", "/login").hasAuthority("USER")
                         .requestMatchers("/client/**").hasAuthority("CLIENT")
                         .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
                         .anyRequest().hasAuthority("ADMIN")

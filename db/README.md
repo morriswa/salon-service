@@ -1,5 +1,5 @@
 
-# Important Information
+# MySQL Info
 ## Current DB Version: 1.2
 #### Upgrade to V1 from New Schema (when run from project directory)
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1__CreateUserAccountTable.sql
