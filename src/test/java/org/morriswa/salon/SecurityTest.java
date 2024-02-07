@@ -16,7 +16,7 @@ public class SecurityTest extends ServiceTest {
 
     @Test
     void unauthenticatedRequest() throws Exception {
-        hit(HttpMethod.GET, "/health")
+        hit(HttpMethod.GET, "/login")
             .andExpect(status().is(401))
             .andExpect(jsonPath("$.error",
                 Matchers.is(InsufficientAuthenticationException.class.getSimpleName())))
@@ -25,7 +25,7 @@ public class SecurityTest extends ServiceTest {
 
     @Test
     void badCredentialsRequest() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/health")
+        mockMvc.perform(MockMvcRequestBuilders.request(HttpMethod.GET, "/login")
             .header("Authorization", badToken))
             .andExpect(status().is(401))
             .andExpect(jsonPath("$.error",
@@ -36,7 +36,7 @@ public class SecurityTest extends ServiceTest {
     @Test
     @WithUserDetails
     void authenticatedRequest() throws Exception {
-        hit(HttpMethod.GET, "/health")
+        hit(HttpMethod.GET, "/login")
             .andExpect(status().is(200))
         ;
     }
