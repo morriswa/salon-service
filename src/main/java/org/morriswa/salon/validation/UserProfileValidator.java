@@ -99,19 +99,19 @@ public class UserProfileValidator {
 
         // first name validation rules
         if (!hasValue(createProfileRequest.firstName())) error.addValidationError(
-            "firstName", true, createProfileRequest.firstName(), "Required field must not be blank!");
+            "firstName", true, createProfileRequest.firstName(), "First name must not be blank!");
         else if (createProfileRequest.firstName().length() > 32) error.addValidationError(
             "firstName", true, createProfileRequest.firstName(), "First name must be 32 characters or less!");
 
         // last name validation rules
         if (!hasValue(createProfileRequest.lastName())) error.addValidationError(
-            "lastName", true, createProfileRequest.lastName(), "Required field must not be blank!");
+            "lastName", true, createProfileRequest.lastName(), "Last name must not be blank!");
         else if (createProfileRequest.lastName().length() > 32) error.addValidationError(
             "lastName", true, createProfileRequest.lastName(), "Last name must be 32 characters or less!");
         
         // phone number validation rules
         if (!hasValue(createProfileRequest.phoneNumber())) error.addValidationError(
-            "phoneNumber", true, createProfileRequest.phoneNumber(), "Required field must not be blank!"); 
+            "phoneNumber", true, createProfileRequest.phoneNumber(), "Phone number must not be blank!");
         else {
             if (createProfileRequest.phoneNumber().length() != 10) error.addValidationError(
             "phoneNumber", true, createProfileRequest.phoneNumber(), "Phone number MUST be 10 digits!");
@@ -122,13 +122,13 @@ public class UserProfileValidator {
         
         // email validation rules
         if (!hasValue(createProfileRequest.email())) error.addValidationError(
-            "email", true, createProfileRequest.email(), "Required field must not be blank!"); 
+            "email", true, createProfileRequest.email(), "Email must not be blank!");
         else if (createProfileRequest.email().length() > 100) error.addValidationError(
             "email", true, createProfileRequest.email(), "Email must not be longer than 100 characters!"); 
             
         // address validation rules
         if (!hasValue(createProfileRequest.addressLineOne())) error.addValidationError(
-            "addressLineOne", true, createProfileRequest.addressLineOne(), "Required field must not be blank!"); 
+            "addressLineOne", true, createProfileRequest.addressLineOne(), "Address must not be blank!");
         else if (createProfileRequest.addressLineOne().length()>50) error.addValidationError(
                 "addressLineOne", true, createProfileRequest.addressLineOne(), "Address fields must be shorter than 50 characters!"); 
             
@@ -136,12 +136,12 @@ public class UserProfileValidator {
                     "addressLineTwo", true, createProfileRequest.addressLineTwo(), "Address fields must be shorter than 50 characters!"); 
         
         if (!hasValue(createProfileRequest.city())) error.addValidationError(
-            "city", true, createProfileRequest.city(), "Required field must not be blank!"); 
+            "city", true, createProfileRequest.city(), "City must not be blank!");
         else if (createProfileRequest.city().length()>50) error.addValidationError(
                 "city", true, createProfileRequest.city(), "City name must be shorter than 50 characters!"); 
                   
         if (!hasValue(createProfileRequest.stateCode())) error.addValidationError(
-            "stateCode", true, createProfileRequest.stateCode(), "Required field must not be blank!"); 
+            "stateCode", true, createProfileRequest.stateCode(), "State must not be blank!");
         else {
             if (createProfileRequest.stateCode().length() != 2) error.addValidationError(
                 "stateCode", true, createProfileRequest.stateCode(), "State code MUST be 2 characters!");
@@ -151,13 +151,13 @@ public class UserProfileValidator {
         } 
 
         if (!hasValue(createProfileRequest.zipCode())) error.addValidationError(
-            "zipCode", true, createProfileRequest.zipCode(), "Required field must not be blank!"); 
+            "zipCode", true, createProfileRequest.zipCode(), "Zip code must not be blank!");
         else if (createProfileRequest.zipCode().length() !=10) error.addValidationError(
             "zipCode", true, createProfileRequest.zipCode(), "Zip code MUST be 10 characters!");
 
         // contact preferences validation rules
         if (!hasValue(createProfileRequest.contactPreference())) error.addValidationError(
-            "contactPreference", true, createProfileRequest.contactPreference(), "Required field must not be blank!");
+            "contactPreference", true, createProfileRequest.contactPreference(), "Contact preference must not be blank!");
         else try { ContactPreference.valueOf(createProfileRequest.contactPreference()); } 
             catch (Exception e) {
                 error.addValidationError(
