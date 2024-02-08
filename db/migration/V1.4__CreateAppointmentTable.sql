@@ -13,7 +13,8 @@ CREATE TABLE appointment(
     reminder_preference CHAR(5),
     date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_due TIMESTAMP NOT NULL,
-    discount_applied decimal(3,2)
+    discount_applied DECIMAL(3,2),
+    status CHAR(6) NOT NULL DEFAULT 'OKGOOD'
 );
 
 //
