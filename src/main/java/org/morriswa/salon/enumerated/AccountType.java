@@ -13,17 +13,12 @@ public enum AccountType {
     }
 
     public static AccountType getEnum(String code) {
-        switch (code) {
-            case "USR":
-                return User;
-            case "EMP":
-                return Employee;
-            case "ADM":
-                return Admin;
-            case "CLT":
-                return Client;
-            default:
-                return null;
-        }
+        return switch (code) {
+            case "USR" -> User;
+            case "EMP" -> Employee;
+            case "ADM" -> Admin;
+            case "CLT" -> Client;
+            default -> null;
+        };
     }
 }

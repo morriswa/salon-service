@@ -1,5 +1,6 @@
 package org.morriswa.salon.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.morriswa.salon.dao.EmployeeDao;
@@ -7,6 +8,7 @@ import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.utility.AmazonS3Client;
+import org.morriswa.salon.validation.ProvidedServiceValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,27 +26,34 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createProvidedService'");
+    public void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) throws Exception {
+
+        // validate new provided service
+        ProvidedServiceValidator.validateCreateProvidedServiceRequestOrThrow(createProvidedServiceRequest);
+
+        // and execute database operation to save new provided service
+        employeeDao.createProvidedService(principal.getUserId(), createProvidedServiceRequest);
     }
 
     @Override
-    public void deleteProvidedService(UserAccount principal, ProvidedService deleteProvidedServiceRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteProvidedService'");
+    public void deleteProvidedService(UserAccount principal, Long serviceId) {
+
+        // execute db operation to delete an employees provided service
+        employeeDao.deleteProvidedService(principal.getUserId(), serviceId);
     }
 
     @Override
-    public List<Appointment> retrieveSchedule(UserAccount principal) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'retrieveSchedule'");
+    public List<Appointment> retrieveSchedule(UserAccount principal, LocalDateTime untilDate) {
+        // retrieve employees schedule from the database
+        return employeeDao.retrieveSchedule(principal.getUserId(), untilDate);
     }
 
     @Override
-    public void cancelAppointment(Appointment deleteRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'cancelAppointment'");
+    public void cancelAppointment(UserAccount principal, Long appointmentId) {
+        // confirm appointment is able to be canceled
+
+        // and cancel appointment
+        employeeDao.cancelAppointment(principal.getUserId(), appointmentId);
     }
 
     @Override

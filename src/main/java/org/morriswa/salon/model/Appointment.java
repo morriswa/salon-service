@@ -1,9 +1,27 @@
 package org.morriswa.salon.model;
 
-import java.time.ZonedDateTime;
+import org.morriswa.salon.enumerated.AppointmentStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record Appointment(
     Long appointmentId,
     Long serviceId,
-    ZonedDateTime time
-) { } 
+    Long employeeId,
+    LocalDateTime appointmentTime,
+    LocalDateTime dateCreated,
+    LocalDateTime paymentDueDate,
+    ClientInfo client,
+    BigDecimal appliedDiscount,
+    AppointmentStatus status
+) {
+    private record ClientInfo (
+        Long clientId,
+        String firstName,
+        String lastName,
+        String phoneNumber,
+        String email,
+        String contactPreference
+    ) {  }
+}

@@ -1,5 +1,6 @@
 package org.morriswa.salon.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.morriswa.salon.model.Appointment;
@@ -9,15 +10,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface EmployeeService {
     
-    void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest);
+    void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) throws Exception;
 
-    void deleteProvidedService(UserAccount principal, ProvidedService deleteProvidedServiceRequest);
+    void deleteProvidedService(UserAccount principal, Long serviceId);
 
-    List<Appointment> retrieveSchedule(UserAccount principal);
+    List<Appointment> retrieveSchedule(UserAccount principal, LocalDateTime untilDate);
 
-    void cancelAppointment(Appointment deleteRequest);
+    void cancelAppointment(UserAccount principal, Long appointmentId);
 
     void uploadProvidedServiceImage(UserAccount principal, Long serviceId, MultipartFile file);
 
     void getProvidedServiceDetails(UserAccount principal, Long serviceId);
+
 }

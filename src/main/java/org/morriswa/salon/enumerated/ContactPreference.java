@@ -15,15 +15,11 @@ public enum ContactPreference {
     }
 
     public static ContactPreference getEnum(String code) {
-        switch (code) {
-            case "EMAIL":
-                return Email;
-            case "PCALL":
-                return PhoneCall;
-            case "PTEXT":
-                return TextMessage;
-            default:
-                return null;
-        }
+        return switch (code) {
+            case "EMAIL" -> Email;
+            case "PCALL" -> PhoneCall;
+            case "PTEXT" -> TextMessage;
+            default -> null;
+        };
     }
 }
