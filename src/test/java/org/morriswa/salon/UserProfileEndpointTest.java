@@ -137,7 +137,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 "addressLineOne": "12345 Easy St.",
                 "city": "Lawrence",
                 "stateCode": "KS",
-                "zipCode": "66044-1234",
+                "zipCode": "66044",
                 "contactPreference": "Email"
             }
             """;
@@ -160,7 +160,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 "addressLineOne": "12345 Easy St.",
                 "city": "Lawrence",
                 "stateCode": "KS",
-                "zipCode": "66044-1234",
+                "zipCode": "66044",
                 "contactPreference": "Emai"
             }
             """;
@@ -307,7 +307,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 "addressLineOne": "12345 Easy St.",
                 "city": "Lawrence",
                 "stateCode": "KS",
-                "zipCode": "66044-1234",
+                "zipCode": "66044",
                 "contactPreference": "Email"
             }
             """;

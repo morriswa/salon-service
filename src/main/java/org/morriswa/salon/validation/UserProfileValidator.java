@@ -144,8 +144,10 @@ public class UserProfileValidator {
 
         if (!StrTools.hasValue(createProfileRequest.zipCode())) error.addValidationError(
             "zipCode", true, createProfileRequest.zipCode(), "Zip code must not be blank!");
-        else if (createProfileRequest.zipCode().length() !=10) error.addValidationError(
-            "zipCode", true, createProfileRequest.zipCode(), "Zip code MUST be 10 characters!");
+        else if (createProfileRequest.zipCode().length() !=5
+                || !createProfileRequest.zipCode().matches("^[0-9]*$")
+        ) error.addValidationError(
+            "zipCode", true, createProfileRequest.zipCode(), "Zip code MUST be 5 DIGITS!");
 
         // contact preferences validation rules
         if (!StrTools.hasValue(createProfileRequest.contactPreference())) error.addValidationError(
@@ -214,10 +216,12 @@ public class UserProfileValidator {
             if (!updateProfileRequest.stateCode().matches("^[A-Z]*$")) error.addValidationError(
                 "stateCode", true, updateProfileRequest.stateCode(), "State code must contain 2 uppercase characters!");
         }
-        
-    
-        if (StrTools.hasValue(updateProfileRequest.zipCode()) && updateProfileRequest.zipCode().length() !=10) error.addValidationError(
-            "zipCode", true, updateProfileRequest.zipCode(), "Zip code MUST be 10 characters!");
+
+        if (StrTools.hasValue(updateProfileRequest.zipCode()) && (
+                updateProfileRequest.zipCode().length() != 5
+                || !updateProfileRequest.zipCode().matches("^[0-9]*$")
+        )) error.addValidationError(
+            "zipCode", true, updateProfileRequest.zipCode(), "Zip code MUST be 5 DIGITS!");
 
         // contact preferences validation rules
         if (StrTools.hasValue(updateProfileRequest.contactPreference()))
