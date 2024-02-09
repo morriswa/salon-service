@@ -26,7 +26,7 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", testingUsername, testingPassword);
 
         hit(HttpMethod.POST, "/register", request)
-            .andExpect(status().is(201))
+            .andExpect(status().is(204))
         ;
 
         verify(userProfileDao).register(testingUsername, testingPassword);
@@ -167,7 +167,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.stack[0].field", Matchers.is("contactPreference")));
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("contactPreference")));
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
     }
@@ -189,8 +189,8 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.stack[0].field", Matchers.is("firstName")))
-            .andExpect(jsonPath("$.stack[1].field", Matchers.is("lastName")));
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("firstName")))
+            .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("lastName")));
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
     }
@@ -214,7 +214,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
@@ -239,7 +239,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
@@ -264,7 +264,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.stack[0].field", Matchers.is("phoneNumber")))
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
@@ -289,7 +289,7 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.stack[0].field", Matchers.is("stateCode")))
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("stateCode")))
         ;
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
@@ -409,10 +409,10 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.GET, "/user")
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
-            .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
-            .andExpect(jsonPath("$.payload.address", Matchers.is("1234 Test Ave. City, ST 12345-6789")))
-            .andExpect(jsonPath("$.payload.phoneNumber", Matchers.is("+1 (123) 456-7890")))
+            .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
+            .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
+            .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. City, ST 12345-6789")))
+            .andExpect(jsonPath("$.phoneNumber", Matchers.is("+1 (123) 456-7890")))
         ;
     }
 
@@ -427,10 +427,10 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.GET, "/user")
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.payload.userId", Matchers.is(Math.toIntExact(testingUserId))))
-            .andExpect(jsonPath("$.payload.username", Matchers.is(testingUsername)))
-            .andExpect(jsonPath("$.payload.address", Matchers.is("1234 Test Ave. Apt 567 City, ST 12345-6789")))
-            .andExpect(jsonPath("$.payload.phoneNumber", Matchers.is("+1 (123) 456-7890")))
+            .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
+            .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
+            .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. Apt 567 City, ST 12345-6789")))
+            .andExpect(jsonPath("$.phoneNumber", Matchers.is("+1 (123) 456-7890")))
         ;
     }
 
