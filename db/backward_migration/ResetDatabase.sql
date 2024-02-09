@@ -9,4 +9,4 @@ drop table if exists provided_service;
 drop table if exists appointment;
 
 -- Drop all triggers
-drop trigger if exists promoteTimestampTrigger;
+drop trigger if exists on_promote_update_timestamp_trigger;
