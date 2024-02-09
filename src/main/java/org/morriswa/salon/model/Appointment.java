@@ -10,6 +10,7 @@ public record Appointment(
     Long serviceId,
     Long employeeId,
     LocalDateTime appointmentTime,
+    Integer appointmentLength,
     LocalDateTime dateCreated,
     LocalDateTime paymentDueDate,
     ClientInfo client,

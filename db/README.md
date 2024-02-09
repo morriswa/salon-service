@@ -8,7 +8,7 @@
 #### V1.1 -> V1.2
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.2__AddRoleOnUserAccount.sql
 #### V1.2 -> V1.3
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.3__CreateServiceTable.sql
+    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.3__CreateProvidedServiceTable.sql
 #### V1.3 -> V1.4
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.4__CreateAppointmentTable.sql
 

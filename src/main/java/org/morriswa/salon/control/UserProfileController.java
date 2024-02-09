@@ -21,13 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserProfileController {
 
-    private final HttpResponseFactory response;
     private final UserProfileService userService;
 
     @Autowired
-    public UserProfileController(   HttpResponseFactory response,
-                                    UserProfileService userService) {
-        this.response = response;
+    public UserProfileController(UserProfileService userService) {
         this.userService = userService;
     }
 
@@ -46,7 +43,7 @@ public class UserProfileController {
         // use the user profile service to register a new user, and retrieve the username they were registered with
         var userInfo = userService.login(principal);
         // return confirmation in JSON format
-        return response.build(HttpStatus.OK, "Successfully authenticated!", userInfo);
+        return ResponseEntity.ok(userInfo);
     }
 
     /**
@@ -59,10 +56,9 @@ public class UserProfileController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody AccountRequest request) throws Exception {
         // use the user profile service to register a new user, and retrieve the username they were registered with
-        var registeredUsername = userService.registerUser(request);
+        userService.registerUser(request);
         // return confirmation in JSON format
-        return response.build(HttpStatus.CREATED,
-                String.format("Successfully registered user with username: %s", registeredUsername));
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -76,7 +72,7 @@ public class UserProfileController {
         // using the user profile service, retrieve the current users profile
         var profile = userService.getUserProfile(principal);
         // and return it to them in JSON format
-        return response.build(HttpStatus.OK, "Successfully retrieved user profile!", profile);
+        return ResponseEntity.ok(profile);
     }
 
     @PostMapping("/user")
@@ -85,7 +81,7 @@ public class UserProfileController {
         @RequestBody ContactInfo createProfileRequest
     ) throws Exception {
         userService.createUserProfile(principal, createProfileRequest);
-        return response.build(HttpStatus.NO_CONTENT,"You have successfully created a profile!");
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/user")
@@ -94,7 +90,7 @@ public class UserProfileController {
         @RequestBody ContactInfo updateProfileRequest
     ) throws Exception {
         userService.updateUserProfile(principal, updateProfileRequest);
-        return response.build(HttpStatus.NO_CONTENT,"Successfully updated your contact information!");
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/user/name")
@@ -103,7 +99,7 @@ public class UserProfileController {
         @RequestBody AccountRequest updateUsernameRequest) throws Exception 
     {
         userService.updateUsername(principal, updateUsernameRequest);
-        return response.build(HttpStatus.NO_CONTENT,"You have successfully updated your username!");
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/user/password")
@@ -112,7 +108,7 @@ public class UserProfileController {
         @RequestBody AccountRequest updatePasswordRequest) throws Exception 
     {
         userService.updatePassword(principal, updatePasswordRequest);
-        return response.build(HttpStatus.NO_CONTENT,"Sucessfully updated password!");
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/admin/promote")
@@ -121,6 +117,6 @@ public class UserProfileController {
         @RequestBody AccountRequest request
     ) throws Exception {
         userService.promoteUser(principal, request);
-        return response.build(HttpStatus.OK, "Successfully promoted user");
+        return ResponseEntity.noContent().build();
     }
 }

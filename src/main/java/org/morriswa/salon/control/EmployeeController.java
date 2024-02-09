@@ -24,13 +24,10 @@ import java.util.Optional;
 @RestController
 public class EmployeeController {
 
-    private final HttpResponseFactory response;
     private final EmployeeService employeeService;
 
     @Autowired
-    public EmployeeController(HttpResponseFactory response,
-                              EmployeeService employeeService) {
-        this.response = response;
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
@@ -41,7 +38,13 @@ public class EmployeeController {
         @RequestBody ProvidedService createProvidedServiceRequest
     ) throws Exception {
         employeeService.createProvidedService(principal, createProvidedServiceRequest);
-        return response.build(HttpStatus.OK,"This endpoint is still in development!");
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/employee/service")
+    public ResponseEntity<?> getProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
+        var services = employeeService.retrieveAllProvidedServices(principal);
+        return ResponseEntity.ok(services);
     }
 
     @GetMapping("/employee/service/{serviceId}")
@@ -50,7 +53,7 @@ public class EmployeeController {
         @PathVariable Long serviceId
     ) {
         employeeService.getProvidedServiceDetails(principal, serviceId);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @PostMapping("/employee/service/{serviceId}")
@@ -60,7 +63,7 @@ public class EmployeeController {
         @RequestPart MultipartFile file
     ) {
         employeeService.uploadProvidedServiceImage(principal, serviceId, file);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @DeleteMapping("/employee/service/{serviceId}")
@@ -69,7 +72,7 @@ public class EmployeeController {
         @PathVariable Long serviceId
     ) {
         employeeService.deleteProvidedService(principal, serviceId);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @GetMapping("/employee/schedule")
@@ -80,7 +83,7 @@ public class EmployeeController {
         final var schedule = employeeService.retrieveSchedule(principal,
             // if the user doesn't provide a date, only get the schedule for the next 2 weeks
             untilDate.orElse(LocalDateTime.now().plusWeeks(2L)));
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!", schedule);
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @DeleteMapping("/employee/schedule/{appointmentId}")
@@ -89,6 +92,6 @@ public class EmployeeController {
         @PathVariable Long appointmentId
     ) {
         employeeService.cancelAppointment(principal, appointmentId);
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

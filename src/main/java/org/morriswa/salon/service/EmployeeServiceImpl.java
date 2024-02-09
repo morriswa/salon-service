@@ -67,5 +67,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getProvidedServiceDetails'");
     }
-    
+
+    @Override
+    public List<ProvidedService> retrieveAllProvidedServices(UserAccount principal) {
+        return employeeDao.retrieveAllProvidedServices(principal.getUserId());
+    }
+
 }

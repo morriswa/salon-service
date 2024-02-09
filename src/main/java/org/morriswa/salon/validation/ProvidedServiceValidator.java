@@ -13,8 +13,12 @@ public class ProvidedServiceValidator {
             "defaultCost",true, createProvidedServiceRequest.defaultCost().toString(),
             "Please enter a valid monetary value (two decimal places).");
         if (createProvidedServiceRequest.defaultCost().precision() > 5) ve.addValidationError(
-                "defaultCost",true, createProvidedServiceRequest.defaultCost().toString(),
-                "Service charges over $999.99 are not permitted.");
+            "defaultCost",true, createProvidedServiceRequest.defaultCost().toString(),
+            "Service charges over $999.99 are not permitted.");
+        if (createProvidedServiceRequest.defaultCost().doubleValue() <= 0.00
+        || createProvidedServiceRequest.defaultCost().doubleValue() >= 1000) ve.addValidationError(
+            "defaultCost",true, createProvidedServiceRequest.defaultCost().toString(),
+            "Service charge must not be free or over $999.99");
 
         // service name rules
         if (!StrTools.hasValue(createProvidedServiceRequest.name())) ve.addValidationError(

@@ -26,6 +26,6 @@ public class HealthController {
 
     @GetMapping("/health")
     public ResponseEntity<?> getServiceHealth() {
-        return response.build(HttpStatus.OK, "All is good on our end!");
+        return response.serviceInfo(HttpStatus.OK, "All is good on our end!");
     }
 }

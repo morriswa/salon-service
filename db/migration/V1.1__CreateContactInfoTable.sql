@@ -16,6 +16,7 @@ CREATE TABLE contact_info(
     state_code CHAR(2) NOT NULL,
     zip_code CHAR(10) NOT NULL,
     contact_pref CHAR(5) NOT NULL,
+    CONSTRAINT contact_pref_values CHECK ( contact_pref IN ('EMAIL', 'PCALL', 'PTEXT')),
     -- For every new record, this column will be populated with the current date/time
     -- Every insert/update will also modify this field with the timestamp
     last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

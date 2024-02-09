@@ -11,11 +11,9 @@ import org.springframework.http.ResponseEntity;
  */
 public interface HttpResponseFactory {
 
-    ResponseEntity<?> build(HttpStatus status, String message);
-
-    ResponseEntity<?> build(HttpStatus status, String message, Object payload);
+    ResponseEntity<?> serviceInfo(HttpStatus status, String message);
 
     ResponseEntity<?> error(HttpStatus status, String exceptionName, String description);
 
-    ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object stack);
+    ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object additionalInfo);
 }

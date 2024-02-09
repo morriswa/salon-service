@@ -22,32 +22,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ClientController {
 
-    private final HttpResponseFactory response;
     private final ExampleService exampleService;
+
     @Autowired
-    public ClientController(HttpResponseFactory response,
-                            ExampleService exampleService) {
-        this.response = response;
+    public ClientController(ExampleService exampleService) {
         this.exampleService = exampleService;
     }
 
     @PostMapping("/client/register")
     public ResponseEntity<?> registerUserAsClient(@AuthenticationPrincipal UserAccount principal) {
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @PostMapping("/client/booking")
     public ResponseEntity<?> bookAppointment(@AuthenticationPrincipal UserAccount principal) {
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @DeleteMapping("/client/booking")
     public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal UserAccount principal) {
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @GetMapping("/client/booking")
     public ResponseEntity<?> retrieveAppointments(@AuthenticationPrincipal UserAccount principal) {
-        return response.build(HttpStatus.NOT_IMPLEMENTED,"This endpoint is still in development!");
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

@@ -22,4 +22,5 @@ public interface EmployeeService {
 
     void getProvidedServiceDetails(UserAccount principal, Long serviceId);
 
+    List<ProvidedService> retrieveAllProvidedServices(UserAccount principal);
 }

@@ -8,11 +8,13 @@ import java.util.List;
 
 public interface EmployeeDao {
 
-    void createProvidedService(Long userId, ProvidedService createProvidedServiceRequest);
+    void createProvidedService(Long employeeId, ProvidedService createProvidedServiceRequest);
 
-    void deleteProvidedService(Long userId, Long serviceId);
+    void deleteProvidedService(Long employeeId, Long serviceId);
 
-    List<Appointment> retrieveSchedule(Long userId, LocalDateTime untilDate);
+    List<Appointment> retrieveSchedule(Long employeeId, LocalDateTime untilDate);
 
-    void cancelAppointment(Long userId, Long appointmentId);
-} 
+    void cancelAppointment(Long employeeId, Long appointmentId);
+
+    List<ProvidedService> retrieveAllProvidedServices(Long employeeId);
+}

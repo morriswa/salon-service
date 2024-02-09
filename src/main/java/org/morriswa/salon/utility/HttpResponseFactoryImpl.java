@@ -14,24 +14,23 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
     /**
      * Default Service Response
      */
-    private record DefaultResponse<T> (
+    private record ServiceInfoResponse(
         String message,
         ZonedDateTime timestamp,
         String applicationName,
-        String version,
-        T payload
+        String version
     ) { }
 
     /**
      * Default Service Response when an error needs to be reported
      */
-    private record DefaultErrorResponse (
+    private record ServiceErrorResponse(
         String error,
         String description,
         ZonedDateTime timestamp,
         String applicationName,
         String version,
-        Object stack
+        Object additionalInfo
     ) { }
 
     private final String APPLICATION_NAME;
@@ -43,33 +42,25 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
         this.APPLICATION_VERSION = build.getVersion();
     }
 
-    public ResponseEntity<?> build(HttpStatus status, String message) {
+    public ResponseEntity<?> serviceInfo(HttpStatus status, String message) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultResponse<>(
-                    message, ZonedDateTime.now(), this.APPLICATION_NAME, this.APPLICATION_VERSION, null)
+                .body(new ServiceInfoResponse(
+                    message, ZonedDateTime.now(), this.APPLICATION_NAME, this.APPLICATION_VERSION)
                 );
-    }
-
-    public ResponseEntity<?> build(HttpStatus status, String message, Object payload) {
-        return ResponseEntity
-                .status(status)
-                .body(new DefaultResponse<>(
-                        message, ZonedDateTime.now(), this.APPLICATION_NAME, this.APPLICATION_VERSION, payload
-                ));
     }
 
     public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now(),
+                .body(new ServiceErrorResponse(exceptionName, description, ZonedDateTime.now(),
                         APPLICATION_NAME, APPLICATION_VERSION, null));
     }
 
-    public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object stack) {
+    public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object additionalInfo) {
         return ResponseEntity
                 .status(status)
-                .body(new DefaultErrorResponse(exceptionName, description, ZonedDateTime.now(),
-                        APPLICATION_NAME, APPLICATION_VERSION, stack));
+                .body(new ServiceErrorResponse(exceptionName, description, ZonedDateTime.now(),
+                        APPLICATION_NAME, APPLICATION_VERSION, additionalInfo));
     }
 }
