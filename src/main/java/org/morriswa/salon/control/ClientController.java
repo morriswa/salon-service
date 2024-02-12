@@ -1,16 +1,13 @@
 package org.morriswa.salon.control;
 
+import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.UserAccount;
-import org.morriswa.salon.service.ExampleService;
-import org.morriswa.salon.utility.HttpResponseFactory;
+import org.morriswa.salon.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -22,30 +19,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ClientController {
 
-    private final ExampleService exampleService;
+    private final ClientService clientService;
 
     @Autowired
-    public ClientController(ExampleService exampleService) {
-        this.exampleService = exampleService;
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
     }
 
-    @PostMapping("/client/register")
-    public ResponseEntity<?> registerUserAsClient(@AuthenticationPrincipal UserAccount principal) {
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-    }
 
     @PostMapping("/client/booking")
-    public ResponseEntity<?> bookAppointment(@AuthenticationPrincipal UserAccount principal) {
+    public ResponseEntity<?> bookAppointment(
+            @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
+    ) {
+        clientService.requestAppointment(principal, request);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
-    @DeleteMapping("/client/booking")
-    public ResponseEntity<?> deleteAppointment(@AuthenticationPrincipal UserAccount principal) {
+    @DeleteMapping("/client/booking/{appointmentId}")
+    public ResponseEntity<?> deleteAppointment(
+            @AuthenticationPrincipal UserAccount principal, @PathVariable Long appointmentId
+    ) {
+        clientService.cancelAppointment(principal, appointmentId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @GetMapping("/client/booking")
-    public ResponseEntity<?> retrieveAppointments(@AuthenticationPrincipal UserAccount principal) {
+    public ResponseEntity<?> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
+        clientService.retrieveScheduledAppointments(principal);
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @GetMapping("/client/billing")
+    public ResponseEntity<?> retrieveUnpaidAppointments(@AuthenticationPrincipal UserAccount principal) {
+        clientService.retrieveUnpaidAppointments(principal);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

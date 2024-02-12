@@ -18,11 +18,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final AmazonS3Client s3;
     private final EmployeeDao employeeDao;
+    private final SchedulingService schedule;
 
     @Autowired
-    public EmployeeServiceImpl(AmazonS3Client s3, EmployeeDao employeeDao) {
+    public EmployeeServiceImpl(AmazonS3Client s3, EmployeeDao employeeDao, SchedulingService schedule) {
         this.s3 = s3;
         this.employeeDao = employeeDao;
+        this.schedule = schedule;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         // confirm appointment is able to be canceled
 
         // and cancel appointment
-        employeeDao.cancelAppointment(principal.getUserId(), appointmentId);
+        schedule.employeeCancelsAppointment(principal.getUserId(), appointmentId);
     }
 
     @Override

@@ -4,17 +4,19 @@ import org.morriswa.salon.enumerated.AppointmentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public record Appointment(
     Long appointmentId,
-    Long serviceId,
-    Long employeeId,
-    LocalDateTime appointmentTime,
+    ServiceInfo service,
+    EmployeeInfo employee,
+    ZonedDateTime appointmentTime,
     Integer appointmentLength,
-    LocalDateTime dateCreated,
-    LocalDateTime paymentDueDate,
+    ZonedDateTime dateCreated,
+    ZonedDateTime paymentDueDate,
     ClientInfo client,
     BigDecimal appliedDiscount,
+    BigDecimal cost,
     AppointmentStatus status
 ) {
     private record ClientInfo (
@@ -24,5 +26,19 @@ public record Appointment(
         String phoneNumber,
         String email,
         String contactPreference
+    ) {  }
+
+    private record EmployeeInfo (
+            Long employeeId,
+            String firstName,
+            String lastName,
+            String phoneNumber,
+            String email,
+            String contactPreference
+    ) {  }
+
+    private record ServiceInfo (
+            Long serviceId,
+            String name
     ) {  }
 }
