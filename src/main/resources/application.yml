@@ -17,8 +17,6 @@ salon:
     close: '7:00 pm'
 
 
-
-
 # Vital server configuration
 server:
   # service will be available on this port
