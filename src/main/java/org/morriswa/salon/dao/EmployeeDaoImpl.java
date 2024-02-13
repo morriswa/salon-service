@@ -66,7 +66,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
             while(rs.next()) services.add(new ProvidedService(
                     rs.getLong("service_id"),
                     rs.getBigDecimal("default_cost"),
-                    rs.getInt("default_length"),
+                    rs.getInt("default_length") * 15,
                     rs.getString("provided_service_name")
             ));
 
