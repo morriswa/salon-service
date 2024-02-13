@@ -5,6 +5,7 @@ import org.morriswa.salon.model.AppointmentLength;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,13 +19,22 @@ import java.util.List;
 
 @Component
 public class ScheduleDaoImpl  implements ScheduleDao{
-    private final NamedParameterJdbcTemplate database;
-    private final ZoneId UTC = ZoneId.of("+00:00");
 
+    // this app was designed to support one salon, these static variables define important salon rules
+    private static final ZoneId SALON_TIME_ZONE = ZoneId.of("-06:00");
+    private static final LocalTime SALON_OPEN = LocalTime.of(9,0,0);
+    private static final LocalTime SALON_CLOSE = LocalTime.of(17,0,0);
+    private static final ZoneId UTC = ZoneId.of("+00:00");
+
+    private final NamedParameterJdbcTemplate database;
     private final Logger log = LoggerFactory.getLogger(ScheduleDaoImpl.class);
+
+
+    @Autowired
     public ScheduleDaoImpl(NamedParameterJdbcTemplate database) {
         this.database = database;
     }
+
 
     private int retrieveAppointmentLength(Long serviceId) throws BadRequestException {
 
@@ -54,6 +64,27 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     @Override
     public List<AppointmentLength> checkAvailableTimes(AppointmentRequest request) throws BadRequestException {
 
+        // get end of day in current timezone, mark as end of search
+        final var stopSearch = request.searchDate().atTime(23,59)
+                .atZone(SALON_TIME_ZONE);
+
+        // retrieve the current time
+        var currentTime = Instant.now()
+                .atZone(SALON_TIME_ZONE);
+
+        // if the current time is after the end of search boundary, throw appropriate exception.
+        if (currentTime.isAfter(stopSearch)) throw new BadRequestException("Appointments can not take place in the past!");
+
+        // get beginning of day in current timezone
+        var dayStart = request.searchDate().atTime(0,0)
+                .atZone(SALON_TIME_ZONE);
+
+        // if the current time is within the day to search, use current time as start search
+        // else use start of day as start of search
+        final var startSearch = dayStart.isAfter(currentTime)?
+                dayStart : currentTime;
+
+        // defn search query
         final var query = """
             select
                 appointment_time,
@@ -64,164 +95,153 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 appointment_time between :startSearch and :endSearch
             """;
 
-        var dayStart = request.searchDate().atTime(0,0)
-                .atZone(request.timeZone());
-
-        var currentTime = Instant.now()
-                .atZone(request.timeZone());
-
-        final var startSearch = dayStart.isAfter(currentTime)?
-                dayStart : currentTime;
-
-        final var stopSearch = request.searchDate().atTime(23,59)
-                .atZone(request.timeZone());
-
+        // inject params
         final var params = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
             put("startSearch", startSearch);
             put("endSearch", stopSearch);
         }};
 
-        List<AppointmentLength> takenTimes = database.query(query, params, rs -> {
+        // retrieve all preexisting appointments
+        List<AppointmentLength> preexistingAppointments = database.query(query, params, rs -> {
             var appts = new ArrayList<AppointmentLength>();
 
-            while (rs.next()) {
-                appts.add(new AppointmentLength(
-                        rs.getTimestamp("appointment_time")
-                                .toInstant()
-                                .atZone(request.timeZone()),
-                        rs.getInt("length") * 15
-                ));
-            }
+            while (rs.next()) appts.add(new AppointmentLength(
+                // retrieve every appointment's time in current time zone
+                rs.getTimestamp("appointment_time")
+                        .toInstant()
+                        .atZone(request.timeZone()),
+                // convert length to minutes
+                rs.getInt("length") * 15
+            ));
 
             return appts;
         });
+        // this list should never be null
+        assert preexistingAppointments != null;
 
+        // retrieve the length of requested service type
         int appointmentLength = retrieveAppointmentLength(request.serviceId());
 
-
+        // create list to store available appointment times
         var availableTimes = new ArrayList<AppointmentLength>();
 
-        assert takenTimes != null;
+        // ensure existing appointments are stored in correct order
+        preexistingAppointments.sort(Comparator.comparing(AppointmentLength::appointmentTime));
 
-        takenTimes.sort(Comparator.comparing(AppointmentLength::appointmentTime));
+        // record time salon opens and closes, in client's timezone
+        final var salonOpen = LocalDateTime.of(request.searchDate(), SALON_OPEN)
+                .atZone(SALON_TIME_ZONE).toInstant().atZone(request.timeZone());
 
-        ZonedDateTime scanStart = null;
-        ZonedDateTime dayEnd = null;
+        final var salonClose = LocalDateTime.of(request.searchDate(), SALON_CLOSE)
+                .atZone(SALON_TIME_ZONE).toInstant().atZone(request.timeZone());
 
+        // record first available appointment time
+        // (at least one hour ahead of the present to avoid last minute bookings)
+        final var firstAvailableAppointment = Instant.now().atZone(request.timeZone())
+                .plusMinutes(90).truncatedTo(ChronoUnit.MINUTES);
 
-        if (takenTimes.isEmpty()) {
+        // define var to keep track of time scanner is currently at
+        ZonedDateTime scanner = null;
 
-            // if day has not started mark opening time as first available slot
-            var salonOpen = LocalDateTime.of(
-                            request.searchDate(),
-                            LocalTime.NOON.minusHours(3))
-                    .atZone(request.timeZone());
+        // if there are no preexisting appointments on requested day
+        if (preexistingAppointments.isEmpty()) {
 
-            var roundedTime = Instant.now().atZone(request.timeZone())
-                    .plusHours(2).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
-
-            scanStart = currentTime.isAfter(salonOpen)?
-                    roundedTime :
+            // start scanning for available times at first available appointment
+            // or salon open time if search is in the future
+            scanner = currentTime.isAfter(salonOpen)?
+                    firstAvailableAppointment :
                     salonOpen;
 
-            // if day has not ended mark closing time as last available slot
-            dayEnd = LocalDateTime.of(
-                            LocalDate.from(startSearch),
-                            LocalTime.NOON.plusHours(5))
-                    .atZone(request.timeZone());
-
-
             // find the length between current time and end of day
-            Integer timeTilEndofDay =
-                    (int) Duration.between(scanStart, dayEnd).toMinutes();
+            int timeTilEndofDay =
+                    (int) Duration.between(scanner, salonClose).toMinutes();
 
+            // determine how many slots are available in current day
             int slots = (timeTilEndofDay / 15) - appointmentLength + 1;
             for (int i = 0; i < slots; i++) {
+
+                // add every open slot to available times
                 availableTimes.add(new AppointmentLength(
-                        scanStart,
+                        scanner,
                         appointmentLength * 15)
                 );
-                scanStart = scanStart.plusMinutes(15);
+
+                // and increment by slot length (15 minutes)
+                scanner = scanner.plusMinutes(15);
             }
-        } else for (int currentAptIdx = 0; currentAptIdx < takenTimes.size(); currentAptIdx++) {
+        // if there ARE existing appointments on requested day...
+        // iterate through all existing appointments
+        } else for (int existingAppointmentIdx = 0;
+                    existingAppointmentIdx < preexistingAppointments.size();
+                    existingAppointmentIdx++) {
 
-            // if day has not started mark opening time as first available slot
-            if (scanStart == null) {
-                var salonOpen = LocalDateTime.of(
-                                request.searchDate(),
-                                LocalTime.NOON.minusHours(3))
-                        .atZone(request.timeZone());
-
-                var roundedTime = Instant.now().atZone(request.timeZone())
-                        .plusHours(2).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
-
-                scanStart = currentTime.isAfter(salonOpen)?
-                        roundedTime :
+            // if scanner has not been initialized,
+            if (scanner == null)
+                // start scanning for available times at first available appointment
+                // or salon open time if search day is in the future
+                scanner = currentTime.isAfter(salonOpen)?
+                        firstAvailableAppointment :
                         salonOpen;
-            }
-
-            // if day has not ended mark closing time as last available slot
-            dayEnd = LocalDateTime.of(
-                            request.searchDate(),
-                            LocalTime.NOON.plusHours(5))
-                    .atZone(request.timeZone());
 
             // find the length in minutes between current time and next taken appointment
             Integer timeTilNextAppointment = (int)
-                    Duration.between(scanStart, takenTimes.get(currentAptIdx).appointmentTime()).toMinutes();
+                    Duration.between(scanner, preexistingAppointments.get(existingAppointmentIdx).appointmentTime()).toMinutes();
 
             // find the length between current time and end of day
-            Integer timeTilEndofDay =
-                    (int) Duration.between(scanStart, dayEnd).toMinutes();
+            int timeTilEndofDay =
+                    (int) Duration.between(scanner, salonClose).toMinutes();
 
-            // if current slot will not be long enough
+            // if current slot will not be long enough to fit requested appointment type
             if (timeTilNextAppointment < (appointmentLength * 15)) {
-                // iterate
-                scanStart = takenTimes.get(currentAptIdx)
+                // move scanner to end of next appointment and iterate
+                scanner = preexistingAppointments.get(existingAppointmentIdx)
                         .appointmentTime()
-                        .plusMinutes(takenTimes
-                                .get(currentAptIdx)
+                        .plusMinutes(preexistingAppointments
+                                .get(existingAppointmentIdx)
                                 .appointmentLength());
 
-            // if there are any more appointments happening before the end of day
-            } else if (timeTilNextAppointment <= timeTilEndofDay ) {
+            // if current slot will be long enough
+            // and there are more appointments happening before the end of day
+            } else if (timeTilNextAppointment <= timeTilEndofDay) {
 
-                // record open slots
+                // find number of open slots
                 int slots = (timeTilNextAppointment / 15) - appointmentLength + 1;
                 for (int i = 0; i < slots; i++) {
+
+                    // add every open slot to available times
                     availableTimes.add(new AppointmentLength(
-                            scanStart,
+                            scanner,
                             appointmentLength * 15)
                     );
-                    scanStart = scanStart.plusMinutes(15);
+
+                    // and increment by slot length (15 minutes)
+                    scanner = scanner.plusMinutes(15);
                 }
 
-                // iterate
-                scanStart = takenTimes.get(currentAptIdx).appointmentTime()
-                        .plusMinutes(takenTimes.get(currentAptIdx).appointmentLength());
+                // move scanner to end of next appointment
+                scanner = preexistingAppointments.get(existingAppointmentIdx).appointmentTime()
+                        .plusMinutes(preexistingAppointments.get(existingAppointmentIdx).appointmentLength());
 
-                // check if there are any more appointments on the schedule
-                // if so mark down available time
-                timeTilNextAppointment = currentAptIdx + 1 == takenTimes.size()?
-                        null :
-                        (int) Duration.between(scanStart, takenTimes.get(currentAptIdx+1).appointmentTime()).toMinutes();
-                // update end of day
-                timeTilEndofDay =
-                        (int) Duration.between(scanStart, dayEnd).toMinutes();
+                // if there are no more appointments on the schedule,
+                if (existingAppointmentIdx + 1 == preexistingAppointments.size()) {
 
-                // if there are no more appointments on the schedule for the current day
-                if (timeTilNextAppointment==null||timeTilNextAppointment >= timeTilEndofDay) {
+                    // update time til end of day
+                    timeTilEndofDay =
+                            (int) Duration.between(scanner, salonClose).toMinutes();
 
                     // record open slot until days end
                     slots = (timeTilEndofDay / 15) - appointmentLength + 1;
-
                     for (int i = 0; i < slots; i++) {
+
+                        // add every open slot to available times
                         availableTimes.add(new AppointmentLength(
-                                scanStart,
+                                scanner,
                                 appointmentLength * 15)
                         );
-                        scanStart = scanStart.plusMinutes(15);
+
+                        // and increment by slot length (15 minutes)
+                        scanner = scanner.plusMinutes(15);
                     }
                 }
             }
@@ -251,14 +271,14 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         if (request.appointmentTime().atZone(request.timeZone()).plusMinutes(appointmentLength * 15L).isAfter(
                 LocalDateTime.of(
                                 LocalDate.from(request.appointmentTime()),
-                                LocalTime.NOON.plusHours(5))
-                        .atZone(request.timeZone())
+                                SALON_CLOSE)
+                        .atZone(SALON_TIME_ZONE)
         )) throw new BadRequestException("Appointments should not end after salon close!");
         else if (request.appointmentTime().atZone(request.timeZone()).isBefore(
                 LocalDateTime.of(
                                 LocalDate.from(request.appointmentTime()),
-                                LocalTime.NOON.minusHours(3))
-                        .atZone(request.timeZone())
+                                SALON_OPEN)
+                        .atZone(SALON_TIME_ZONE)
         )) throw new BadRequestException("Appointments should not start before salon opens!");
 
 
