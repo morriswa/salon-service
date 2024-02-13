@@ -28,7 +28,7 @@ public class ClientValidator {
                 "serviceId",true,null, "Service ID is a required field!");
         if (request.employeeId()==null) ve.addValidationError(
                 "employeeId",true,null, "Employee ID is a required field!");
-        if (request.searchDate()==null) ve.addValidationError(
+        if (request.appointmentTime()==null) ve.addValidationError(
                 "appointmentTime",true,null, "Appointment Time is a required field!");
         if (request.timeZone()==null) ve.addValidationError(
                 "timeZone",true,null, "Time Zone is a required field!");
