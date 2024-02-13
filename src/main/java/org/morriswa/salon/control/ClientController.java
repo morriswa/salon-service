@@ -31,7 +31,7 @@ public class ClientController {
     @GetMapping("/client/book")
     public ResponseEntity<?> seeAvailableAppointmentTimes(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
-    ) throws BadRequestException {
+    ) throws Exception {
         var book = clientService.seeTimes(principal, request);
         return ResponseEntity.ok(book);
     }
@@ -39,7 +39,7 @@ public class ClientController {
     @PostMapping("/client/booking")
     public ResponseEntity<?> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
-    ) throws BadRequestException {
+    ) throws Exception {
         clientService.requestAppointment(principal, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

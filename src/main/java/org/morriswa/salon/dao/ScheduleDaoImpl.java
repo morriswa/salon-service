@@ -3,12 +3,13 @@ package org.morriswa.salon.dao;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.AppointmentLength;
 import org.morriswa.salon.model.AppointmentRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
 import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,7 +18,9 @@ import java.util.List;
 @Component
 public class ScheduleDaoImpl  implements ScheduleDao{
     private final NamedParameterJdbcTemplate database;
+    private final ZoneId UTC = ZoneId.of("+00:00");
 
+    private final Logger log = LoggerFactory.getLogger(ScheduleDaoImpl.class);
     public ScheduleDaoImpl(NamedParameterJdbcTemplate database) {
         this.database = database;
     }
@@ -60,8 +63,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 appointment_time between :startSearch and :endSearch
             """;
 
-        final var startSearch = request.appointmentTime().truncatedTo(ChronoUnit.DAYS);
-        final var stopSearch = request.appointmentTime().truncatedTo(ChronoUnit.DAYS).plusDays(1);
+        final var startSearch = request.searchDate().atTime(0,0)
+                .atZone(request.timeZone());
+        final var stopSearch = request.searchDate().atTime(23,59)
+                .atZone(request.timeZone());
 
         final var params = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
@@ -75,9 +80,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             while (rs.next()) {
                 appts.add(new AppointmentLength(
                         rs.getTimestamp("appointment_time")
-                                .toLocalDateTime()
-                                .atZone(ZoneId.systemDefault()),
-                        rs.getInt("length")
+                                .toInstant()
+                                .atZone(request.timeZone()),
+                        rs.getInt("length") * 15
                 ));
             }
 
@@ -103,13 +108,13 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             scanStart = LocalDateTime.of(
                             LocalDate.from(startSearch),
                             LocalTime.NOON.minusHours(3))
-                    .atZone(ZoneId.systemDefault());
+                    .atZone(request.timeZone());
 
             // if day has not ended mark closing time as last available slot
             dayEnd = LocalDateTime.of(
                             LocalDate.from(startSearch),
                             LocalTime.NOON.plusHours(5))
-                    .atZone(ZoneId.systemDefault());
+                    .atZone(request.timeZone());
 
 
             // find the length between current time and end of day
@@ -128,15 +133,15 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
             // if day has not started mark opening time as first available slot
             if (scanStart == null) scanStart = LocalDateTime.of(
-                            LocalDate.from(takenTimes.get(currentAptIdx).appointmentTime()),
+                            request.searchDate(),
                             LocalTime.NOON.minusHours(3))
-                    .atZone(ZoneId.systemDefault());
+                    .atZone(request.timeZone());
 
             // if day has not ended mark closing time as last available slot
             dayEnd = LocalDateTime.of(
-                                LocalDate.from(takenTimes.get(currentAptIdx).appointmentTime()),
-                                LocalTime.NOON.plusHours(5))
-                        .atZone(ZoneId.systemDefault());
+                            request.searchDate(),
+                            LocalTime.NOON.plusHours(5))
+                    .atZone(request.timeZone());
 
             // find the length in minutes between current time and next taken appointment
             Integer timeTilNextAppointment = (int)
@@ -153,7 +158,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                         .appointmentTime()
                         .plusMinutes(takenTimes
                                 .get(currentAptIdx)
-                                .appointmentLength() * 15L);
+                                .appointmentLength());
 
             // if there are any more appointments happening before the end of day
             } else if (timeTilNextAppointment <= timeTilEndofDay ) {
@@ -170,7 +175,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
                 // iterate
                 scanStart = takenTimes.get(currentAptIdx).appointmentTime()
-                        .plusMinutes(takenTimes.get(currentAptIdx).appointmentLength() * 15L);
+                        .plusMinutes(takenTimes.get(currentAptIdx).appointmentLength());
 
                 // check if there are any more appointments on the schedule
                 // if so mark down available time
@@ -205,7 +210,8 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     @Override
     public void registerAppointment(Long clientId, AppointmentRequest request) throws BadRequestException {
 
-        if (request.appointmentTime().isBefore(Instant.now().atZone(ZoneId.systemDefault())))
+        if (request.appointmentTime().atZone(request.timeZone())
+                .isBefore(Instant.now().atZone(UTC)))
             throw new BadRequestException("Appointments can not take place in the past!");
 
         int startMinute = request.appointmentTime().getMinute();
@@ -218,6 +224,20 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         int appointmentLength = retrieveAppointmentLength(request.serviceId());
 
+        if (request.appointmentTime().atZone(request.timeZone()).plusMinutes(appointmentLength * 15L).isAfter(
+                LocalDateTime.of(
+                                LocalDate.from(request.appointmentTime()),
+                                LocalTime.NOON.plusHours(5))
+                        .atZone(request.timeZone())
+        )) throw new BadRequestException("Appointments should not end after salon close!");
+        else if (request.appointmentTime().atZone(request.timeZone()).isBefore(
+                LocalDateTime.of(
+                                LocalDate.from(request.appointmentTime()),
+                                LocalTime.NOON.minusHours(3))
+                        .atZone(request.timeZone())
+        )) throw new BadRequestException("Appointments should not start before salon opens!");
+
+
         final var query = """
             select
                 appointment_time,
@@ -228,8 +248,11 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 appointment_time between :startSearch and :endSearch
             """;
 
-        final var startSearch = request.appointmentTime();
-        final var stopSearch = request.appointmentTime().plusMinutes(appointmentLength * 15L).minusMinutes(1);
+        final var startSearch = request.appointmentTime()
+                .atZone(request.timeZone());
+        final var stopSearch = request.appointmentTime()
+                .atZone(request.timeZone())
+                .plusMinutes(appointmentLength * 15L).minusMinutes(1);
         final var params2 = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
             put("startSearch", startSearch);
@@ -248,9 +271,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         final var addParams = new HashMap<String, Object>(){{
             put("clientId", clientId);
             put("employeeId", request.employeeId());
-            put("appointmentTime", request.appointmentTime());
+            put("appointmentTime", request.appointmentTime().atZone(request.timeZone()));
             put("serviceId", request.serviceId());
-            put("due", request.appointmentTime().plusWeeks(2));
+            put("due", request.appointmentTime().atZone(request.timeZone()).plusWeeks(2));
             put("length", appointmentLength);
         }};
 

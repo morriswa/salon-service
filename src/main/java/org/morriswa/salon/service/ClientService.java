@@ -8,7 +8,7 @@ import org.morriswa.salon.model.UserAccount;
 import java.util.List;
 
 public interface ClientService {
-    void requestAppointment(UserAccount principal, AppointmentRequest request) throws BadRequestException;
+    void requestAppointment(UserAccount principal, AppointmentRequest request) throws BadRequestException, Exception;
 
     void cancelAppointment(UserAccount principal, Long appointmentId);
 
@@ -16,5 +16,5 @@ public interface ClientService {
 
     void retrieveUnpaidAppointments(UserAccount principal);
 
-    List<AppointmentLength> seeTimes(UserAccount principal, AppointmentRequest request) throws BadRequestException;
+    List<AppointmentLength> seeTimes(UserAccount principal, AppointmentRequest request) throws BadRequestException, Exception;
 }
