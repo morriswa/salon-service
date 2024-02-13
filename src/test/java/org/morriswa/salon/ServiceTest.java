@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.morriswa.salon.config.TestConfig;
 import org.morriswa.salon.config.TestJdbcAuthenticationConfig;
-import org.morriswa.salon.dao.EmployeeDao;
-import org.morriswa.salon.dao.ExampleDao;
-import org.morriswa.salon.dao.UserProfileDao;
+import org.morriswa.salon.dao.*;
 import org.morriswa.salon.utility.AmazonS3Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +40,10 @@ public class ServiceTest {
     @MockBean protected UserProfileDao userProfileDao;
 
     @MockBean protected EmployeeDao employeeDao;
+
+    @MockBean protected ClientDao clientDao;
+
+    @MockBean protected ScheduleDao scheduleDao;
 
     @MockBean protected AmazonS3Client amazonS3Client;
 
