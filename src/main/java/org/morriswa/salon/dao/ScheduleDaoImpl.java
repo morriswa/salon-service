@@ -23,7 +23,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     // this app was designed to support one salon, these static variables define important salon rules
     private static final ZoneId SALON_TIME_ZONE = ZoneId.of("-06:00");
     private static final LocalTime SALON_OPEN = LocalTime.of(9,0,0);
-    private static final LocalTime SALON_CLOSE = LocalTime.of(17,0,0);
+    private static final LocalTime SALON_CLOSE = LocalTime.of(19,0,0);
     private static final ZoneId UTC = ZoneId.of("+00:00");
 
     private final NamedParameterJdbcTemplate database;
@@ -139,7 +139,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         // record first available appointment time
         // (at least one hour ahead of the present to avoid last minute bookings)
         final var firstAvailableAppointment = Instant.now().atZone(request.timeZone())
-                .plusMinutes(90).truncatedTo(ChronoUnit.MINUTES);
+                .plusMinutes(61).truncatedTo(ChronoUnit.HOURS);
 
         // define var to keep track of time scanner is currently at
         ZonedDateTime scanner = null;
@@ -194,7 +194,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
             // if current slot will not be long enough to fit requested appointment type
             if (timeTilNextAppointment < (appointmentLength * 15)) {
-                // move scanner to end of next appointment and iterate
+                // move scanner to end of next appointment
                 scanner = preexistingAppointments.get(existingAppointmentIdx)
                         .appointmentTime()
                         .plusMinutes(preexistingAppointments
@@ -222,29 +222,30 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 // move scanner to end of next appointment
                 scanner = preexistingAppointments.get(existingAppointmentIdx).appointmentTime()
                         .plusMinutes(preexistingAppointments.get(existingAppointmentIdx).appointmentLength());
+            }
 
-                // if there are no more appointments on the schedule,
-                if (existingAppointmentIdx + 1 == preexistingAppointments.size()) {
+            // if there are no more appointments on the schedule,
+            if (existingAppointmentIdx + 1 == preexistingAppointments.size()) {
 
-                    // update time til end of day
-                    timeTilEndofDay =
-                            (int) Duration.between(scanner, salonClose).toMinutes();
+                // update time til end of day
+                timeTilEndofDay =
+                        (int) Duration.between(scanner, salonClose).toMinutes();
 
-                    // record open slot until days end
-                    slots = (timeTilEndofDay / 15) - appointmentLength + 1;
-                    for (int i = 0; i < slots; i++) {
+                // record open slot until days end
+                int slots = (timeTilEndofDay / 15) - appointmentLength + 1;
+                for (int i = 0; i < slots; i++) {
 
-                        // add every open slot to available times
-                        availableTimes.add(new AppointmentLength(
-                                scanner,
-                                appointmentLength * 15)
-                        );
+                    // add every open slot to available times
+                    availableTimes.add(new AppointmentLength(
+                            scanner,
+                            appointmentLength * 15)
+                    );
 
-                        // and increment by slot length (15 minutes)
-                        scanner = scanner.plusMinutes(15);
-                    }
+                    // and increment by slot length (15 minutes)
+                    scanner = scanner.plusMinutes(15);
                 }
             }
+
         }
 
         return availableTimes;
