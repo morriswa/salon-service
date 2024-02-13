@@ -1,5 +1,6 @@
 package org.morriswa.salon.control;
 
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.service.ClientService;
@@ -27,12 +28,20 @@ public class ClientController {
     }
 
 
+    @GetMapping("/client/book")
+    public ResponseEntity<?> seeAvailableAppointmentTimes(
+            @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
+    ) throws BadRequestException {
+        var book = clientService.seeTimes(principal, request);
+        return ResponseEntity.ok(book);
+    }
+
     @PostMapping("/client/booking")
     public ResponseEntity<?> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
-    ) {
+    ) throws BadRequestException {
         clientService.requestAppointment(principal, request);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/client/booking/{appointmentId}")

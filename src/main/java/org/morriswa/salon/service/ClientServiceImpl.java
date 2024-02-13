@@ -1,10 +1,14 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ClientDao;
+import org.morriswa.salon.exception.BadRequestException;
+import org.morriswa.salon.model.AppointmentLength;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -20,7 +24,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void requestAppointment(UserAccount principal, AppointmentRequest request) {
+    public void requestAppointment(UserAccount principal, AppointmentRequest request) throws BadRequestException {
         schedule.scheduleAppointment(principal.getUserId(), request);
     }
 
@@ -37,5 +41,10 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void retrieveUnpaidAppointments(UserAccount principal) {
         clientDao.retrieveUnpaidAppointments(principal.getUserId());
+    }
+
+    @Override
+    public List<AppointmentLength> seeTimes(UserAccount principal, AppointmentRequest request) throws BadRequestException {
+        return schedule.seeAvailableTimes(principal.getUserId(), request);
     }
 }

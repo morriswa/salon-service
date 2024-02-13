@@ -17,7 +17,7 @@ CREATE TABLE appointment(
     status CHAR(6) NOT NULL DEFAULT 'OKGOOD',
     CONSTRAINT status_values CHECK ( status IN ('OKGOOD', 'CANCEL', 'MISSED')),
     length SMALLINT UNSIGNED NOT NULL,
-    CONSTRAINT length_range CHECK ( length BETWEEN 15 AND 480 )
+    CONSTRAINT length_range CHECK ( length BETWEEN 1 AND 32 )
 );
 
 //

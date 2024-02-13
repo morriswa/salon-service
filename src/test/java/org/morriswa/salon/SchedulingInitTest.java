@@ -93,6 +93,11 @@ public class SchedulingInitTest {
     @Test
     public void GetScheduleTestWeek() {
 
+        System.out.println(LocalDateTime.of(
+                        LocalDate.now(),
+                        LocalTime.NOON)
+                .atZone(ZoneId.systemDefault()));
+
         var takenTimes = new ArrayList<AppointmentLength>(){{
             add(new AppointmentLength(LocalDateTime.of(
                             LocalDate.now(),
