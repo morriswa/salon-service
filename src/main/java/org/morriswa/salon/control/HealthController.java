@@ -1,6 +1,6 @@
 package org.morriswa.salon.control;
 
-import org.morriswa.salon.utility.HttpResponseFactory;
+import org.morriswa.salon.utility.ServiceInfoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthController {
 
-    private final HttpResponseFactory response;
+    private final ServiceInfoFactory response;
 
     @Autowired
-    public HealthController(HttpResponseFactory response) {
+    public HealthController(ServiceInfoFactory response) {
         this.response = response;
     }
 
     @GetMapping("/health")
     public ResponseEntity<?> getServiceHealth() {
-        return response.serviceInfo(HttpStatus.OK, "All is good on our end!");
+        return response.getHttpResponseWithServiceInfo(HttpStatus.OK, "All is good on our end!");
     }
 }

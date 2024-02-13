@@ -8,7 +8,7 @@ DELIMITER //
 
 ALTER TABLE user_account
 ADD account_type CHAR(3) NOT NULL DEFAULT 'USR',
-ADD CONSTRAINT account_type_values CHECK ( account_type IN ('USR', 'CLT', 'EMP', 'ADM')),
+ADD CONSTRAINT account_type_values CHECK ( account_type IN ('USR', 'CLT', 'EMP', 'ADM') ),
 ADD promoter BIGINT,
 ADD promote_date TIMESTAMP;
 

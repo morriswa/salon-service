@@ -2,7 +2,7 @@ package org.morriswa.salon.control.advice;
 
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.utility.HttpResponseFactory;
+import org.morriswa.salon.utility.ServiceInfoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +25,10 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class WebErrorHandler {
     private final Environment env;
-    private final HttpResponseFactory responseFactory;
+    private final ServiceInfoFactory responseFactory;
     private final Logger log;
 
-    @Autowired public WebErrorHandler(Environment env, HttpResponseFactory responseFactory) {
+    @Autowired public WebErrorHandler(Environment env, ServiceInfoFactory responseFactory) {
         this.env = env;
         this.responseFactory = responseFactory;
         this.log = LoggerFactory.getLogger(WebErrorHandler.class);
@@ -41,7 +41,7 @@ public class WebErrorHandler {
         log.error("Encountered unexpected (500) error: ", e);
 
         // and return a 500 with as much relevant information as they deserve
-        return responseFactory.error(
+        return responseFactory.getHttpErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
             e.getClass().getSimpleName(),
             e.getMessage());
@@ -56,7 +56,7 @@ public class WebErrorHandler {
         log.error("Encountered unexpected data access exception {}: ", dae.getMessage(), dae);
 
         // and return a 500 with as much relevant information as they deserve
-        return responseFactory.error(
+        return responseFactory.getHttpErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "DataAccessException",
             "Encountered error in database layer, please contact your system administrator");
@@ -68,7 +68,7 @@ public class WebErrorHandler {
     })
     public ResponseEntity<?> badRequest(Exception e, WebRequest r) {
         // and assume user fault [400]
-        return responseFactory.error(
+        return responseFactory.getHttpErrorResponse(
             HttpStatus.BAD_REQUEST,
             e.getClass().getSimpleName(),
             e.getMessage());
@@ -79,7 +79,7 @@ public class WebErrorHandler {
         ValidationException ve = (ValidationException) e;
 
         // and assume user fault [400]
-        return responseFactory.error(
+        return responseFactory.getHttpErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 e.getClass().getSimpleName(),
                 "A validation error has occurred!!!",

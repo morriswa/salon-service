@@ -1,7 +1,7 @@
 package org.morriswa.salon.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.morriswa.salon.utility.HttpResponseFactory;
+import org.morriswa.salon.utility.ServiceInfoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,7 +119,7 @@ public class WebSecurityConfig {
      */
     @Bean @Autowired
     public SecurityFilterChain configure(HttpSecurity http,
-                                         HttpResponseFactory responseFactory,
+                                         ServiceInfoFactory responseFactory,
                                          ObjectMapper objectMapper) throws Exception {
 
         http    // All http requests will...
@@ -143,7 +143,7 @@ public class WebSecurityConfig {
                 .httpBasic(basic->basic.authenticationEntryPoint((request, response, authException) -> {
                     // create a formatted Http Response
                     var customErrorResponse =
-                        responseFactory.error(
+                        responseFactory.getHttpErrorResponse(
                             // status should be 401
                             HttpStatus.UNAUTHORIZED,
                             // error should be the exception encountered in the filter chain
@@ -168,7 +168,7 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint((request, response, authException) -> {
                     // create a formatted Http Response
                     var customErrorResponse =
-                        responseFactory.error(
+                        responseFactory.getHttpErrorResponse(
                             // status should be 401
                             HttpStatus.UNAUTHORIZED,
                             // error should be the exception encountered in the filter chain
@@ -192,7 +192,7 @@ public class WebSecurityConfig {
                 .accessDeniedHandler((request, response, authException) -> {
                     // create a formatted Http Response
                     var customErrorResponse =
-                        responseFactory.error(
+                        responseFactory.getHttpErrorResponse(
                             // status should be 401
                             HttpStatus.FORBIDDEN,
                             // error should be the exception encountered in the filter chain

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.time.ZonedDateTime;
 
 @Component
-public class HttpResponseFactoryImpl implements HttpResponseFactory {
+public class ServiceInfoFactoryImpl implements ServiceInfoFactory {
 
     /**
      * Default Service Response
@@ -37,12 +37,12 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
     private final String APPLICATION_VERSION;
 
     @Autowired
-    public HttpResponseFactoryImpl(BuildProperties build) {
+    public ServiceInfoFactoryImpl(BuildProperties build) {
         this.APPLICATION_NAME = build.getName();
         this.APPLICATION_VERSION = build.getVersion();
     }
 
-    public ResponseEntity<?> serviceInfo(HttpStatus status, String message) {
+    public ResponseEntity<?> getHttpResponseWithServiceInfo(HttpStatus status, String message) {
         return ResponseEntity
                 .status(status)
                 .body(new ServiceInfoResponse(
@@ -50,14 +50,14 @@ public class HttpResponseFactoryImpl implements HttpResponseFactory {
                 );
     }
 
-    public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description) {
+    public ResponseEntity<?> getHttpErrorResponse(HttpStatus status, String exceptionName, String description) {
         return ResponseEntity
                 .status(status)
                 .body(new ServiceErrorResponse(exceptionName, description, ZonedDateTime.now(),
                         APPLICATION_NAME, APPLICATION_VERSION, null));
     }
 
-    public ResponseEntity<?> error(HttpStatus status, String exceptionName, String description, Object additionalInfo) {
+    public ResponseEntity<?> getHttpErrorResponse(HttpStatus status, String exceptionName, String description, Object additionalInfo) {
         return ResponseEntity
                 .status(status)
                 .body(new ServiceErrorResponse(exceptionName, description, ZonedDateTime.now(),

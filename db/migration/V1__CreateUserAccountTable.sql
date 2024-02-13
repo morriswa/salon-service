@@ -1,4 +1,4 @@
-DELIMITER //
+DELIMITER ///
 -- Delimiter keyword documentation https://dev.mysql.com/doc/refman/8.0/en/stored-programs-defining.html
 
 -- AUTHOR: William A. Morris, Kevin Rivers
@@ -13,5 +13,5 @@ CREATE TABLE user_account(
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-//
+///
 DELIMITER ;

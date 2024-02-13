@@ -3,6 +3,7 @@ package org.morriswa.salon.dao;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.AppointmentLength;
 import org.morriswa.salon.model.AppointmentRequest;
+import org.morriswa.salon.model.ProvidedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +56,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
 
-    private int retrieveAppointmentLength(Long serviceId) throws BadRequestException {
+    private ProvidedService retrieveProvidedService(Long serviceId) throws BadRequestException {
 
         final var queryLength = """
-            select default_length
+            select *
             from provided_service
             where service_id=:serviceId
             """;
@@ -68,12 +69,14 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         }};
 
         try {
-            Integer appointmentLength = database.query(queryLength, params, rs -> {
-                if (rs.next()) return rs.getInt("default_length");
+            return database.query(queryLength, params, rs -> {
+                if (rs.next()) return new ProvidedService(
+                        rs.getLong("service_id"),
+                        rs.getBigDecimal("default_cost"),
+                        rs.getInt("default_length"),
+                        rs.getString("provided_service_name"));
                 else throw new SQLException("Service not found");
             });
-            assert appointmentLength != null;
-            return appointmentLength;
         } catch (Exception e) {
             throw new BadRequestException(e.getCause().getMessage());
         }
@@ -140,7 +143,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         assert preexistingAppointments != null;
 
         // retrieve the length of requested service type
-        int appointmentLength = retrieveAppointmentLength(request.serviceId());
+        int appointmentLength = retrieveProvidedService(request.serviceId()).defaultLength();
 
         // create list to store available appointment times
         var availableTimes = new ArrayList<AppointmentLength>();
@@ -286,9 +289,11 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 && startMinute!=45)
             throw new BadRequestException("Appointments should start in increments of 15 minutes");
 
-        int appointmentLength = retrieveAppointmentLength(request.serviceId());
+        ProvidedService serviceToSchedule = retrieveProvidedService(request.serviceId());
 
-        if (request.appointmentTime().atZone(request.timeZone()).plusMinutes(appointmentLength * 15L).isAfter(
+        if (request.appointmentTime().atZone(request.timeZone()).plusMinutes(
+                serviceToSchedule.defaultLength() * 15L
+        ).isAfter(
                 LocalDateTime.of(
                                 LocalDate.from(request.appointmentTime()),
                                 SALON_CLOSE)
@@ -316,7 +321,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 .atZone(request.timeZone());
         final var stopSearch = request.appointmentTime()
                 .atZone(request.timeZone())
-                .plusMinutes(appointmentLength * 15L).minusMinutes(1);
+                .plusMinutes(serviceToSchedule.defaultLength() * 15L).minusMinutes(1);
         final var params2 = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
             put("startSearch", startSearch);
@@ -328,8 +333,12 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
 
         final var addQuery = """
-            insert into appointment (client_id, employee_id, appointment_time, service_id, date_due, length)
-            values (:clientId, :employeeId, :appointmentTime, :serviceId, :due, :length)
+            insert into appointment
+                (client_id, employee_id, appointment_time,
+                    service_id, actual_amount, date_due, length)
+            values
+                (:clientId, :employeeId, :appointmentTime,
+                    :serviceId, :actualAmount, :due, :length)
             """;
 
         final var addParams = new HashMap<String, Object>(){{
@@ -337,8 +346,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             put("employeeId", request.employeeId());
             put("appointmentTime", request.appointmentTime().atZone(request.timeZone()));
             put("serviceId", request.serviceId());
+            put("actualAmount", serviceToSchedule.defaultCost());
             put("due", request.appointmentTime().atZone(request.timeZone()).plusWeeks(2));
-            put("length", appointmentLength);
+            put("length", serviceToSchedule.defaultLength());
         }};
 
         database.update(addQuery, addParams);

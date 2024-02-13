@@ -3,7 +3,6 @@ package org.morriswa.salon.control;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.service.EmployeeService;
-import org.morriswa.salon.utility.HttpResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

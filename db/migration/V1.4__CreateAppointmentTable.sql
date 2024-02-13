@@ -10,13 +10,13 @@ CREATE TABLE appointment(
     employee_id BIGINT NOT NULL,
     appointment_time TIMESTAMP NOT NULL,
     service_id BIGINT NOT NULL,
-    reminder_preference CHAR(5) NOT NULL DEFAULT '1DAYS',
-    CONSTRAINT reminder_preference_values CHECK ( reminder_preference IN ('1DAYS', '1HOUR', '2HOUR', '30MIN', 'ALLLL')),
     date_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_due TIMESTAMP NOT NULL,
-    discount_applied DECIMAL(3,2),
+    actual_amount DECIMAL(5,2) NOT NULL,
+    tip_amount DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    CONSTRAINT tip_amount_range CHECK ( tip_amount BETWEEN 0.00 AND 999.99 ),
     status CHAR(6) NOT NULL DEFAULT 'OKGOOD',
-    CONSTRAINT status_values CHECK ( status IN ('OKGOOD', 'CANCEL', 'MISSED')),
+    CONSTRAINT status_values CHECK ( status IN ('OKGOOD', 'CANCEL', 'MISSED') ),
     length SMALLINT UNSIGNED NOT NULL,
     CONSTRAINT length_range CHECK ( length BETWEEN 1 AND 32 )
 );
