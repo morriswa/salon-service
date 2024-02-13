@@ -4,22 +4,40 @@
 #   capitalize config property and replace periods and hyphens with underscores
 #   ex. server.port (spring environment) can be overridden by setting SERVER_PORT
 
-application:
-  title: @project.name@
-  version: @project.version@
 
+# Includes Salon Specific config
+salon:
+  # time zone MUST be in format '[+-][0-9]{2}:[0-9]{2}'
+  # ex '-00:00' for UTC, '-06:00' for America/Chicago
+  timezone: '-06:00'
+  # open and closing times MUST be in format 'h:mm a'
+  # ex '9:00 AM', '5:00 PM'
+  hours:
+    open: '9:00 AM'
+    close: '7:00 pm'
+
+
+
+
+# Vital server configuration
 server:
   # service will be available on this port
   port: 8080
   cache: ./localfilecache/
 
+
+# Settings for Spring Boot
 spring:
+  # Location of custom application banner
   banner.location: classpath:banner.txt
+  # Web Server Settings
   servlet:
     multipart:
       max-file-size: 20MB
       max-request-size: 30MB
 
+
+# Contains all mysql config
 mysql:
   protocol: jdbc:mysql
   hostname: localhost
@@ -28,7 +46,15 @@ mysql:
   username: dev_dynasty_service
   password: password
 
+
+# Contains all AWS config
 aws:
   s3:
     bucket: circlesdevocean
     apppath: eecs447/local/
+
+
+# Used to pass maven project name and project version to Spring Boot App
+application:
+  title: @project.name@
+  version: @project.version@

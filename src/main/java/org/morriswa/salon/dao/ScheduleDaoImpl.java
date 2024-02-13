@@ -6,11 +6,13 @@ import org.morriswa.salon.model.AppointmentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,18 +22,35 @@ import java.util.List;
 @Component
 public class ScheduleDaoImpl  implements ScheduleDao{
 
-    // this app was designed to support one salon, these static variables define important salon rules
-    private static final ZoneId SALON_TIME_ZONE = ZoneId.of("-06:00");
-    private static final LocalTime SALON_OPEN = LocalTime.of(9,0,0);
-    private static final LocalTime SALON_CLOSE = LocalTime.of(19,0,0);
-    private static final ZoneId UTC = ZoneId.of("+00:00");
+    // this app was designed to support one salon
+    // these variables define important salon rules
+    private final ZoneId SALON_TIME_ZONE;
+    private final LocalTime SALON_OPEN;
+    private final LocalTime SALON_CLOSE;
+    private final ZoneId UTC = ZoneId.of("+00:00");
 
     private final NamedParameterJdbcTemplate database;
     private final Logger log = LoggerFactory.getLogger(ScheduleDaoImpl.class);
 
 
     @Autowired
-    public ScheduleDaoImpl(NamedParameterJdbcTemplate database) {
+    public ScheduleDaoImpl(
+            Environment environment,
+            NamedParameterJdbcTemplate database) {
+        // retrieve all time related configuration about salon
+        final var tzString = environment.getRequiredProperty("salon.timezone");
+        final var openString = environment.getRequiredProperty("salon.hours.open").trim().toUpperCase();
+        final var closeString = environment.getRequiredProperty("salon.hours.close").trim().toUpperCase();
+
+        // initialize time settings
+        SALON_TIME_ZONE = ZoneId.of(tzString);
+        SALON_OPEN = LocalTime.parse(openString, DateTimeFormatter.ofPattern("h:mm a"));
+        SALON_CLOSE = LocalTime.parse(closeString, DateTimeFormatter.ofPattern("h:mm a"));
+
+        // print output on success
+        log.info("Starting service for a salon in timezone {} that opens at {} and closes at {}",
+                SALON_TIME_ZONE, SALON_OPEN, SALON_CLOSE);
+
         this.database = database;
     }
 
