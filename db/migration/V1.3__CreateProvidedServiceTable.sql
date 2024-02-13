@@ -10,7 +10,7 @@ CREATE TABLE provided_service(
     provided_service_name VARCHAR(128) NOT NULL,
     default_cost DECIMAL(5, 2) NOT NULL,
     CONSTRAINT default_cost_range CHECK ( default_cost BETWEEN 0.01 AND 999.99),
-    default_length SMALLINT UNSIGNED NOT NULL DEFAULT 60,
+    default_length SMALLINT UNSIGNED NOT NULL DEFAULT 2,
     CONSTRAINT default_length_range CHECK ( default_length BETWEEN 1 AND 32 )
 );
 
