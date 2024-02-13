@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -63,8 +64,15 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 appointment_time between :startSearch and :endSearch
             """;
 
-        final var startSearch = request.searchDate().atTime(0,0)
+        var dayStart = request.searchDate().atTime(0,0)
                 .atZone(request.timeZone());
+
+        var currentTime = Instant.now()
+                .atZone(request.timeZone());
+
+        final var startSearch = dayStart.isAfter(currentTime)?
+                dayStart : currentTime;
+
         final var stopSearch = request.searchDate().atTime(23,59)
                 .atZone(request.timeZone());
 
@@ -105,10 +113,17 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         if (takenTimes.isEmpty()) {
 
             // if day has not started mark opening time as first available slot
-            scanStart = LocalDateTime.of(
-                            LocalDate.from(startSearch),
+            var salonOpen = LocalDateTime.of(
+                            request.searchDate(),
                             LocalTime.NOON.minusHours(3))
                     .atZone(request.timeZone());
+
+            var roundedTime = Instant.now().atZone(request.timeZone())
+                    .plusHours(2).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
+
+            scanStart = currentTime.isAfter(salonOpen)?
+                    roundedTime :
+                    salonOpen;
 
             // if day has not ended mark closing time as last available slot
             dayEnd = LocalDateTime.of(
@@ -132,10 +147,19 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         } else for (int currentAptIdx = 0; currentAptIdx < takenTimes.size(); currentAptIdx++) {
 
             // if day has not started mark opening time as first available slot
-            if (scanStart == null) scanStart = LocalDateTime.of(
-                            request.searchDate(),
-                            LocalTime.NOON.minusHours(3))
-                    .atZone(request.timeZone());
+            if (scanStart == null) {
+                var salonOpen = LocalDateTime.of(
+                                request.searchDate(),
+                                LocalTime.NOON.minusHours(3))
+                        .atZone(request.timeZone());
+
+                var roundedTime = Instant.now().atZone(request.timeZone())
+                        .plusHours(2).withMinute(0).truncatedTo(ChronoUnit.MINUTES);
+
+                scanStart = currentTime.isAfter(salonOpen)?
+                        roundedTime :
+                        salonOpen;
+            }
 
             // if day has not ended mark closing time as last available slot
             dayEnd = LocalDateTime.of(
