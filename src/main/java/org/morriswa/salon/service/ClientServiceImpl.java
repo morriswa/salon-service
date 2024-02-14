@@ -25,8 +25,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public void requestAppointment(UserAccount principal, AppointmentRequest request) throws Exception {
-        ClientValidator.validateRegisterAppointmentRequestOrThrow(request);
-
         schedule.scheduleAppointment(principal.getUserId(), request);
     }
 
@@ -47,9 +45,6 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<AppointmentLength> seeTimes(UserAccount principal, AppointmentRequest request) throws Exception {
-
-        ClientValidator.validateSeeAvailableTimesRequestOrThrow(request);
-
-        return schedule.seeAvailableTimes(principal.getUserId(), request);
+        return schedule.seeAvailableTimes(request);
     }
 }

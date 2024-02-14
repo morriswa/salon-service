@@ -1,5 +1,6 @@
 package org.morriswa.salon.control;
 
+import org.morriswa.salon.model.EditAppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.service.EmployeeService;
@@ -82,6 +83,16 @@ public class EmployeeController {
         final var schedule = employeeService.retrieveSchedule(principal,
             // if the user doesn't provide a date, only get the schedule for the next 2 weeks
             untilDate.orElse(LocalDateTime.now().plusWeeks(2L)));
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    }
+
+    @GetMapping("/employee/schedule/{appointmentId}")
+    public ResponseEntity<?> updateAppointmentDetails(
+            @AuthenticationPrincipal UserAccount principal,
+            @PathVariable Long appointmentId,
+            @RequestBody EditAppointmentRequest request
+            ) throws Exception {
+        employeeService.editAppointment(principal, appointmentId, request);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 

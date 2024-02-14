@@ -1,9 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.AppointmentLength;
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.ProvidedService;
+import org.morriswa.salon.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +13,7 @@ import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class ScheduleDaoImpl  implements ScheduleDao{
@@ -93,9 +88,6 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         // retrieve the current time
         var currentTime = Instant.now()
                 .atZone(SALON_TIME_ZONE);
-
-        // if the current time is after the end of search boundary, throw appropriate exception.
-        if (currentTime.isAfter(stopSearch)) throw new BadRequestException("Appointments can not take place in the past!");
 
         // get beginning of day in current timezone
         var dayStart = request.searchDate().atTime(0,0)
@@ -277,18 +269,6 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     @Override
     public void registerAppointment(Long clientId, AppointmentRequest request) throws BadRequestException {
 
-        if (request.appointmentTime().atZone(request.timeZone())
-                .isBefore(Instant.now().atZone(UTC)))
-            throw new BadRequestException("Appointments can not take place in the past!");
-
-        int startMinute = request.appointmentTime().getMinute();
-
-        if (    startMinute!=0
-                &&startMinute!=15
-                && startMinute!=30
-                && startMinute!=45)
-            throw new BadRequestException("Appointments should start in increments of 15 minutes");
-
         ProvidedService serviceToSchedule = retrieveProvidedService(request.serviceId());
 
         if (request.appointmentTime().atZone(request.timeZone()).plusMinutes(
@@ -352,5 +332,62 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         }};
 
         database.update(addQuery, addParams);
+    }
+
+    @Override
+    public void employeeMovesAppointment(Long employeeId, Long appointmentId, EditAppointmentRequest request) throws BadRequestException {
+
+        final var newAppointmentTime = request.time().atZone(request.timeZone());
+        final var newAppointmentLength = request.length();
+
+        if (newAppointmentTime.plusMinutes(newAppointmentLength * 15L)
+                .isAfter(
+                    LocalDateTime.of(
+                                LocalDate.from(newAppointmentTime),
+                                SALON_CLOSE)
+                        .atZone(SALON_TIME_ZONE)
+        )) throw new BadRequestException("Appointments should not end after salon close!");
+        else if (newAppointmentTime.isBefore(
+                LocalDateTime.of(
+                                LocalDate.from(newAppointmentTime),
+                                SALON_OPEN)
+                        .atZone(SALON_TIME_ZONE)
+        )) throw new BadRequestException("Appointments should not start before salon opens!");
+
+        final var query = """
+            select
+                appointment_time,
+                length
+            from appointment
+            where employee_id = :employeeId
+            and   appointment_id != :appointmentId
+            and
+                appointment_time between :startSearch and :endSearch
+            """;
+
+        final var stopSearch = newAppointmentTime.plusMinutes(newAppointmentLength * 15L).minusMinutes(1);
+        final var params2 = new HashMap<String, Object>(){{
+            put("employeeId", employeeId);
+            put("appointmentId", appointmentId);
+            put("startSearch", newAppointmentTime);
+            put("endSearch", stopSearch);
+        }};
+
+        boolean allowed = Boolean.TRUE.equals(database.query(query, params2, rs -> !rs.next()));
+        if (!allowed) throw new BadRequestException("Could not move appointment because time is unavailable!");
+
+        final var moveAptQuery = """
+            update appointment set
+                appointment_time = :appointmentTime,
+                length = :length
+            where appointment_id = :appointmentId
+            """;
+
+        final var moveAptParams = new HashMap<String, Object>(){{
+            put("appointmentTime", newAppointmentTime);
+            put("length", newAppointmentLength);
+        }};
+
+        database.update(moveAptQuery, moveAptParams);
     }
 }

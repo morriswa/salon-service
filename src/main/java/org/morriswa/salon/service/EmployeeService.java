@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.morriswa.salon.model.Appointment;
+import org.morriswa.salon.model.EditAppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,4 +24,6 @@ public interface EmployeeService {
     void getProvidedServiceDetails(UserAccount principal, Long serviceId);
 
     List<ProvidedService> retrieveAllProvidedServices(UserAccount principal);
+
+    void editAppointment(UserAccount principal, Long appointmentId, EditAppointmentRequest request) throws Exception;
 }

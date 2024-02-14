@@ -1,6 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.model.Appointment;
+import org.morriswa.salon.model.EditAppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 
 import java.time.LocalDateTime;
@@ -17,4 +18,6 @@ public interface EmployeeDao {
     void cancelAppointment(Long employeeId, Long appointmentId);
 
     List<ProvidedService> retrieveAllProvidedServices(Long employeeId);
+
+    void updateAppointmentDetails(Long userId, Long appointmentId, EditAppointmentRequest request);
 }

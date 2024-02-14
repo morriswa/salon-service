@@ -1,6 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.model.Appointment;
+import org.morriswa.salon.model.EditAppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -72,5 +73,24 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
             return services;
         });
+    }
+
+    @Override
+    public void updateAppointmentDetails(Long employeeId, Long appointmentId, EditAppointmentRequest request) {
+        final var query = """
+            update appointment
+                set actual_amount = :newAmount
+            where
+                    employee_id = :employeeId
+                and
+                    appointment_id = :appointmentId""";
+
+        final var params = new HashMap<String, Object>(){{
+            put("newAmount", request.cost());
+            put("employeeId", employeeId);
+            put("appointmentId", appointmentId);
+        }};
+
+        database.update(query, params);
     }
 }
