@@ -2,7 +2,6 @@ package org.morriswa.salon.validation;
 
 import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.EditAppointmentRequest;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,7 +12,7 @@ import java.time.temporal.ChronoUnit;
 import static java.time.ZoneOffset.UTC;
 
 public class ScheduleRequestValidator {
-    public static void validateMoveAppointmentRequest(EditAppointmentRequest request) throws ValidationException {
+    public static void validateMoveAppointmentRequest(AppointmentRequest request) throws ValidationException {
 
         ValidationException ve = new ValidationException();
 
@@ -60,17 +59,17 @@ public class ScheduleRequestValidator {
             throw ve;
         }
 
-        if (request.appointmentTime() == null) ve.addValidationError(
-            "appointmentTime", true, null,
+        if (request.time() == null) ve.addValidationError(
+            "time", true, null,
             "Must provide appointment time.");
-        else if (request.appointmentTime().atZone(request.timeZone()).isBefore(Instant.now().atZone(UTC))) ve.addValidationError(
-            "appointmentTime", true, request.appointmentTime().toString(),
+        else if (request.time().atZone(request.timeZone()).isBefore(Instant.now().atZone(UTC))) ve.addValidationError(
+            "time", true, request.time().toString(),
             "Appointments can not take place in the past!");
-        else if (    request.appointmentTime().getMinute()!=0
-                &&request.appointmentTime().getMinute()!=15
-                && request.appointmentTime().getMinute()!=30
-                && request.appointmentTime().getMinute()!=45) ve.addValidationError(
-            "appointmentTime", true, request.appointmentTime().toString(),
+        else if (    request.time().getMinute()!=0
+                &&request.time().getMinute()!=15
+                && request.time().getMinute()!=30
+                && request.time().getMinute()!=45) ve.addValidationError(
+            "time", true, request.time().toString(),
             "Appointments should start in increments of 15 minutes (ie 7:00, 7:15, 7:30 or 7:45).");
 
         if (ve.containsErrors()) throw ve;

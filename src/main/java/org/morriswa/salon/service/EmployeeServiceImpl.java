@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.morriswa.salon.dao.EmployeeDao;
 import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.EditAppointmentRequest;
+import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.utility.AmazonS3Client;
@@ -77,7 +77,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void editAppointment(UserAccount principal, Long appointmentId, EditAppointmentRequest request) throws Exception {
+    public void editAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception {
 
 
 

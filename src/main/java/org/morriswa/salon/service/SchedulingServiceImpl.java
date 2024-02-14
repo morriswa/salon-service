@@ -1,9 +1,8 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ScheduleDao;
-import org.morriswa.salon.model.AppointmentLength;
+import org.morriswa.salon.model.AppointmentOpening;
 import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.EditAppointmentRequest;
 import org.morriswa.salon.validation.ScheduleRequestValidator;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ public class SchedulingServiceImpl implements SchedulingService{
 
 
     @Override
-    public List<AppointmentLength> seeAvailableTimes(AppointmentRequest request) throws Exception {
+    public List<AppointmentOpening> seeAvailableTimes(AppointmentRequest request) throws Exception {
 
         ScheduleRequestValidator.validateAvailableTimesRequest(request);
 
@@ -46,7 +45,7 @@ public class SchedulingServiceImpl implements SchedulingService{
     }
 
     @Override
-    public void employeeReschedulesAppointment(Long employeeId, Long appointmentId, EditAppointmentRequest request) throws Exception {
+    public void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws Exception {
 
         ScheduleRequestValidator.validateMoveAppointmentRequest(request);
 

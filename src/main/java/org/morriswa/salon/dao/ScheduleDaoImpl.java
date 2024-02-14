@@ -79,7 +79,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public List<AppointmentLength> checkAvailableTimes(AppointmentRequest request) throws BadRequestException {
+    public List<AppointmentOpening> checkAvailableTimes(AppointmentRequest request) throws BadRequestException {
 
         // get end of day in current timezone, mark as end of search
         final var stopSearch = request.searchDate().atTime(23,59)
@@ -117,10 +117,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         }};
 
         // retrieve all preexisting appointments
-        List<AppointmentLength> preexistingAppointments = database.query(query, params, rs -> {
-            var appts = new ArrayList<AppointmentLength>();
+        List<AppointmentOpening> preexistingAppointments = database.query(query, params, rs -> {
+            var appts = new ArrayList<AppointmentOpening>();
 
-            while (rs.next()) appts.add(new AppointmentLength(
+            while (rs.next()) appts.add(new AppointmentOpening(
                 // retrieve every appointment's time in current time zone
                 rs.getTimestamp("appointment_time")
                         .toInstant()
@@ -138,10 +138,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         int appointmentLength = retrieveProvidedService(request.serviceId()).defaultLength();
 
         // create list to store available appointment times
-        var availableTimes = new ArrayList<AppointmentLength>();
+        var availableTimes = new ArrayList<AppointmentOpening>();
 
         // ensure existing appointments are stored in correct order
-        preexistingAppointments.sort(Comparator.comparing(AppointmentLength::appointmentTime));
+        preexistingAppointments.sort(Comparator.comparing(AppointmentOpening::time));
 
         // record time salon opens and closes, in client's timezone
         final var salonOpen = LocalDateTime.of(request.searchDate(), SALON_OPEN)
@@ -176,7 +176,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             for (int i = 0; i < slots; i++) {
 
                 // add every open slot to available times
-                availableTimes.add(new AppointmentLength(
+                availableTimes.add(new AppointmentOpening(
                         scanner,
                         appointmentLength * 15)
                 );
@@ -200,7 +200,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
             // find the length in minutes between current time and next taken appointment
             Integer timeTilNextAppointment = (int)
-                    Duration.between(scanner, preexistingAppointments.get(existingAppointmentIdx).appointmentTime()).toMinutes();
+                    Duration.between(scanner, preexistingAppointments.get(existingAppointmentIdx).time()).toMinutes();
 
             // find the length between current time and end of day
             int timeTilEndofDay =
@@ -210,10 +210,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             if (timeTilNextAppointment < (appointmentLength * 15)) {
                 // move scanner to end of next appointment
                 scanner = preexistingAppointments.get(existingAppointmentIdx)
-                        .appointmentTime()
+                        .time()
                         .plusMinutes(preexistingAppointments
                                 .get(existingAppointmentIdx)
-                                .appointmentLength());
+                                .length());
 
             // if current slot will be long enough
             // and there are more appointments happening before the end of day
@@ -224,7 +224,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 for (int i = 0; i < slots; i++) {
 
                     // add every open slot to available times
-                    availableTimes.add(new AppointmentLength(
+                    availableTimes.add(new AppointmentOpening(
                             scanner,
                             appointmentLength * 15)
                     );
@@ -234,8 +234,8 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 }
 
                 // move scanner to end of next appointment
-                scanner = preexistingAppointments.get(existingAppointmentIdx).appointmentTime()
-                        .plusMinutes(preexistingAppointments.get(existingAppointmentIdx).appointmentLength());
+                scanner = preexistingAppointments.get(existingAppointmentIdx).time()
+                        .plusMinutes(preexistingAppointments.get(existingAppointmentIdx).length());
             }
 
             // if there are no more appointments on the schedule,
@@ -250,7 +250,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 for (int i = 0; i < slots; i++) {
 
                     // add every open slot to available times
-                    availableTimes.add(new AppointmentLength(
+                    availableTimes.add(new AppointmentOpening(
                             scanner,
                             appointmentLength * 15)
                     );
@@ -271,17 +271,17 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         ProvidedService serviceToSchedule = retrieveProvidedService(request.serviceId());
 
-        if (request.appointmentTime().atZone(request.timeZone()).plusMinutes(
+        if (request.time().atZone(request.timeZone()).plusMinutes(
                 serviceToSchedule.defaultLength() * 15L
         ).isAfter(
                 LocalDateTime.of(
-                                LocalDate.from(request.appointmentTime()),
+                                LocalDate.from(request.time()),
                                 SALON_CLOSE)
                         .atZone(SALON_TIME_ZONE)
         )) throw new BadRequestException("Appointments should not end after salon close!");
-        else if (request.appointmentTime().atZone(request.timeZone()).isBefore(
+        else if (request.time().atZone(request.timeZone()).isBefore(
                 LocalDateTime.of(
-                                LocalDate.from(request.appointmentTime()),
+                                LocalDate.from(request.time()),
                                 SALON_OPEN)
                         .atZone(SALON_TIME_ZONE)
         )) throw new BadRequestException("Appointments should not start before salon opens!");
@@ -297,9 +297,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 appointment_time between :startSearch and :endSearch
             """;
 
-        final var startSearch = request.appointmentTime()
+        final var startSearch = request.time()
                 .atZone(request.timeZone());
-        final var stopSearch = request.appointmentTime()
+        final var stopSearch = request.time()
                 .atZone(request.timeZone())
                 .plusMinutes(serviceToSchedule.defaultLength() * 15L).minusMinutes(1);
         final var params2 = new HashMap<String, Object>(){{
@@ -324,10 +324,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         final var addParams = new HashMap<String, Object>(){{
             put("clientId", clientId);
             put("employeeId", request.employeeId());
-            put("appointmentTime", request.appointmentTime().atZone(request.timeZone()));
+            put("appointmentTime", request.time().atZone(request.timeZone()));
             put("serviceId", request.serviceId());
             put("actualAmount", serviceToSchedule.defaultCost());
-            put("due", request.appointmentTime().atZone(request.timeZone()).plusWeeks(2));
+            put("due", request.time().atZone(request.timeZone()).plusWeeks(2));
             put("length", serviceToSchedule.defaultLength());
         }};
 
@@ -335,7 +335,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public void employeeMovesAppointment(Long employeeId, Long appointmentId, EditAppointmentRequest request) throws BadRequestException {
+    public void employeeMovesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException {
 
         final var newAppointmentTime = request.time().atZone(request.timeZone());
         final var newAppointmentLength = request.length();

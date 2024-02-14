@@ -1,6 +1,6 @@
 package org.morriswa.salon.control;
 
-import org.morriswa.salon.model.EditAppointmentRequest;
+import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.service.EmployeeService;
@@ -90,7 +90,7 @@ public class EmployeeController {
     public ResponseEntity<?> updateAppointmentDetails(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
-            @RequestBody EditAppointmentRequest request
+            @RequestBody AppointmentRequest request
             ) throws Exception {
         employeeService.editAppointment(principal, appointmentId, request);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

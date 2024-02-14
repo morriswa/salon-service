@@ -1,7 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.EditAppointmentRequest;
+import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -76,7 +76,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public void updateAppointmentDetails(Long employeeId, Long appointmentId, EditAppointmentRequest request) {
+    public void updateAppointmentDetails(Long employeeId, Long appointmentId, AppointmentRequest request) {
         final var query = """
             update appointment
                 set actual_amount = :newAmount
