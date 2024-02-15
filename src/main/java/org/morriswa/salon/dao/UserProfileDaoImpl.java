@@ -3,6 +3,7 @@ package org.morriswa.salon.dao;
 import org.morriswa.salon.enumerated.AccountType;
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.BadRequestException;
+import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,9 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // if error was caused by duplicate username on user_profile table...
             if (error.endsWith("for key 'user_account.username'"))
                 // throw a user-friendly error
-                throw new BadRequestException("There is already a user registered with that username! Try again :)");
+                throw new ValidationException(
+                    "username", true, username,
+                    "There is already a user registered with that username! Try again :)");
             // if error was not expected, throw as is
             throw dpke;
         }
@@ -144,7 +147,9 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // if error was caused by duplicate username on user_profile table...
             if (error.endsWith("for key 'user_account.username'"))
                 // throw a user-friendly error
-                throw new BadRequestException("There is already a user registered with that username! Try again :)");
+                throw new ValidationException(
+                        "username", true, newUsername,
+                        "There is already a user registered with that username! Try again :)");
             // if error was not expected, throw as is
             throw exception;
         }
@@ -183,16 +188,20 @@ public class UserProfileDaoImpl implements UserProfileDao {
             if (error.endsWith("for key 'contact_info.PRIMARY'"))
                 // throw a user-friendly error
                 throw new BadRequestException("You have already entered your contact info! Please use update endpoint if you are attempting to update your profile.");
-            
+
             // if error was caused by duplicate phone number on contact_info table...
             if (error.endsWith("for key 'contact_info.phone_num'"))
-            // throw a user-friendly error
-                throw new BadRequestException("There is already a user registered with requested phone number!");
+                // throw a user-friendly error
+                throw new ValidationException(
+                        "phoneNumber", true, request.phoneNumber(),
+                        "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
             if (error.endsWith("for key 'contact_info.email'"))
                 // throw a user-friendly error
-                throw new BadRequestException("There is already a user registered with requested email address!");
+                throw new ValidationException(
+                        "email", true, request.email(),
+                        "There is already a user registered with requested email address!");
 
             // if error was not expected, throw as is
             throw dpke;
@@ -240,13 +249,16 @@ public class UserProfileDaoImpl implements UserProfileDao {
             // if error was caused by duplicate phone number on contact_info table...
             if (error.endsWith("for key 'contact_info.phone_num'"))
             // throw a user-friendly error
-                throw new BadRequestException("There is already a user registered with requested phone number!");
+                throw new ValidationException(
+                        "phoneNumber", true, request.phoneNumber(),
+                        "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
             if (error.endsWith("for key 'contact_info.email'"))
                 // throw a user-friendly error
-                throw new BadRequestException("There is already a user registered with requested email address!");
-
+                throw new ValidationException(
+                        "email", true, request.email(),
+                        "There is already a user registered with requested email address!");
             // if error was not expected, throw as is
             throw dpke;
         }

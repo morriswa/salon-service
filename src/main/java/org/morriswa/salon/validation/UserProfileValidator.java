@@ -49,11 +49,11 @@ public class UserProfileValidator {
 
         if (!StrTools.hasValue(password))
             throw new ValidationException(field, true, "********",
-                    "Field must not be blank!");
+                    "Password must not be blank!");
 
         if (password.length() < 8)
             throw new ValidationException(field, true, "********",
-                    "Field must be longer than 8 characters!");
+                    "Password must be longer than 8 characters!");
     }
 
     public static void validatePasswordChangeOrThrow(String password, String confirmPassword) throws Exception {
