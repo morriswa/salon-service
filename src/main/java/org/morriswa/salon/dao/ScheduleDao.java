@@ -7,9 +7,9 @@ import org.morriswa.salon.model.AppointmentRequest;
 import java.util.List;
 
 public interface ScheduleDao {
-    List<AppointmentOpening> checkAvailableTimes(AppointmentRequest request) throws BadRequestException;
+    List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws BadRequestException;
 
-    void registerAppointment(Long clientId, AppointmentRequest request) throws BadRequestException;
+    void bookAppointment(Long clientId, AppointmentRequest request) throws BadRequestException;
 
-    void employeeMovesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException;
+    void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException;
 }

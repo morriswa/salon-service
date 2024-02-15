@@ -23,8 +23,8 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void requestAppointment(UserAccount principal, AppointmentRequest request) throws Exception {
-        schedule.scheduleAppointment(principal.getUserId(), request);
+    public void bookAppointment(UserAccount principal, AppointmentRequest request) throws Exception {
+        schedule.bookAppointment(principal.getUserId(), request);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<AppointmentOpening> seeTimes(UserAccount principal, AppointmentRequest request) throws Exception {
-        return schedule.seeAvailableTimes(request);
+    public List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws Exception {
+        return schedule.retrieveAppointmentOpenings(request);
     }
 }

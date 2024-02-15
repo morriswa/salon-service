@@ -1,6 +1,5 @@
 package org.morriswa.salon.control;
 
-import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.service.ClientService;
@@ -37,10 +36,10 @@ public class ClientController {
      * @throws Exception return error response if appointment openings could not be retrieved
      */
     @GetMapping("/client/booking")
-    public ResponseEntity<?> seeAvailableAppointmentTimes(
+    public ResponseEntity<?> retrieveAppointmentOpenings(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {
-        var book = clientService.seeTimes(principal, request);
+        var book = clientService.retrieveAppointmentOpenings(principal, request);
         return ResponseEntity.ok(book);
     }
 
@@ -56,12 +55,12 @@ public class ClientController {
     public ResponseEntity<?> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {
-        clientService.requestAppointment(principal, request);
+        clientService.bookAppointment(principal, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/client/booking/{appointmentId}")
-    public ResponseEntity<?> deleteAppointment(
+    public ResponseEntity<?> cancelAppointment(
             @AuthenticationPrincipal UserAccount principal, @PathVariable Long appointmentId
     ) {
         clientService.cancelAppointment(principal, appointmentId);

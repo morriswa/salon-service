@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -42,7 +41,7 @@ public class EmployeeController {
      * @throws Exception return error response if the service could not be registered
      */
     @PostMapping("/employee/service")
-    public ResponseEntity<?> addProvidedService(
+    public ResponseEntity<?> createProvidedService(
         @AuthenticationPrincipal UserAccount principal,
         @RequestBody ProvidedService createProvidedServiceRequest
     ) throws Exception {
@@ -58,7 +57,7 @@ public class EmployeeController {
      * @throws Exception return error response if employee's services could not be retrieved
      */
     @GetMapping("/employee/service")
-    public ResponseEntity<?> getProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
+    public ResponseEntity<?> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
         var services = employeeService.retrieveAllProvidedServices(principal);
         return ResponseEntity.ok(services);
     }
@@ -89,7 +88,7 @@ public class EmployeeController {
      * @throws Exception return error response if the image could not be stored
      */
     @PostMapping("/employee/service/{serviceId}")
-    public ResponseEntity<?> addPhotosToProvidedService(
+    public ResponseEntity<?> uploadProvidedServiceImage(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId,
         @RequestPart MultipartFile file
@@ -107,7 +106,7 @@ public class EmployeeController {
      * @return no content
      */
     @DeleteMapping("/employee/service/{serviceId}")
-    public ResponseEntity<?> deleteService(
+    public ResponseEntity<?> deleteProvidedService(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
     ) {
@@ -123,7 +122,7 @@ public class EmployeeController {
      * @return all scheduled appointments if successful, else error response
      */
     @GetMapping("/employee/schedule")
-    public ResponseEntity<?> retrieveEmployeeSchedule(
+    public ResponseEntity<?> retrieveSchedule(
             @AuthenticationPrincipal UserAccount principal,
             @RequestParam Optional<LocalDate> untilDate
     ) {
@@ -143,12 +142,12 @@ public class EmployeeController {
      * @throws Exception return error response if the appointment could not be rescheduled
      */
     @PatchMapping("/employee/schedule/{appointmentId}")
-    public ResponseEntity<?> moveAppointment(
+    public ResponseEntity<?> rescheduleAppointment(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
             @RequestBody AppointmentRequest request
     ) throws Exception {
-        employeeService.moveAppointment(principal, appointmentId, request);
+        employeeService.rescheduleAppointment(principal, appointmentId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -181,7 +180,7 @@ public class EmployeeController {
      * @throws Exception return error response if the appointment could not be canceled
      */
     @DeleteMapping("/employee/appointment/{appointmentId}")
-    public ResponseEntity<?> deleteAppointment(
+    public ResponseEntity<?> cancelAppointment(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId
     ) throws Exception {

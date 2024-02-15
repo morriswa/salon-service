@@ -19,19 +19,19 @@ public class SchedulingServiceImpl implements SchedulingService{
 
 
     @Override
-    public List<AppointmentOpening> seeAvailableTimes(AppointmentRequest request) throws Exception {
+    public List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception {
 
-        ScheduleRequestValidator.validateAvailableTimesRequest(request);
+        ScheduleRequestValidator.validateAppointmentOpeningsRequest(request);
 
-        return scheduleDao.checkAvailableTimes(request);
+        return scheduleDao.retrieveAppointmentOpenings(request);
     }
 
     @Override
-    public void scheduleAppointment(Long clientId, AppointmentRequest request) throws Exception {
+    public void bookAppointment(Long clientId, AppointmentRequest request) throws Exception {
 
-        ScheduleRequestValidator.validateCreateAppointmentRequest(request);
+        ScheduleRequestValidator.validateBookAppointmentRequest(request);
 
-        scheduleDao.registerAppointment(clientId, request);
+        scheduleDao.bookAppointment(clientId, request);
     }
 
     @Override
@@ -47,8 +47,8 @@ public class SchedulingServiceImpl implements SchedulingService{
     @Override
     public void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws Exception {
 
-        ScheduleRequestValidator.validateMoveAppointmentRequest(request);
+        ScheduleRequestValidator.validateRescheduleAppointmentRequest(request);
 
-        scheduleDao.employeeMovesAppointment(employeeId, appointmentId, request);
+        scheduleDao.employeeReschedulesAppointment(employeeId, appointmentId, request);
     }
 }

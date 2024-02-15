@@ -80,7 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void moveAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception {
+    public void rescheduleAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception {
          schedule.employeeReschedulesAppointment(principal.getUserId(), appointmentId, request);
     }
 

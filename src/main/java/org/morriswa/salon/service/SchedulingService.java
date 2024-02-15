@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface SchedulingService {
 
-    List<AppointmentOpening> seeAvailableTimes(AppointmentRequest request) throws Exception;
+    List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception;
 
-    void scheduleAppointment(Long clientId, AppointmentRequest request) throws Exception;
+    void bookAppointment(Long clientId, AppointmentRequest request) throws Exception;
 
     void employeeCancelsAppointment(Long employeeId, Long appointmentId);
 

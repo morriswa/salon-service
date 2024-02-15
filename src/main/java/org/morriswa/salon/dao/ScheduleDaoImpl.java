@@ -79,7 +79,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public List<AppointmentOpening> checkAvailableTimes(AppointmentRequest request) throws BadRequestException {
+    public List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws BadRequestException {
 
         // get end of day in current timezone, mark as end of search
         final var stopSearch = request.searchDate().atTime(23,59)
@@ -267,7 +267,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public void registerAppointment(Long clientId, AppointmentRequest request) throws BadRequestException {
+    public void bookAppointment(Long clientId, AppointmentRequest request) throws BadRequestException {
 
         ProvidedService serviceToSchedule = retrieveProvidedService(request.serviceId());
 
@@ -335,7 +335,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public void employeeMovesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException {
+    public void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException {
 
         final var newAppointmentTime = request.time().atZone(request.timeZone());
         final var newAppointmentLength = request.length();

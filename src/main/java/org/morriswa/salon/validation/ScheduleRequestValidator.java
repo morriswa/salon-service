@@ -12,7 +12,7 @@ import java.time.temporal.ChronoUnit;
 import static java.time.ZoneOffset.UTC;
 
 public class ScheduleRequestValidator {
-    public static void validateMoveAppointmentRequest(AppointmentRequest request) throws ValidationException {
+    public static void validateRescheduleAppointmentRequest(AppointmentRequest request) throws ValidationException {
 
         ValidationException ve = new ValidationException();
 
@@ -41,7 +41,7 @@ public class ScheduleRequestValidator {
 
     }
 
-    public static void validateCreateAppointmentRequest(AppointmentRequest request) throws ValidationException {
+    public static void validateBookAppointmentRequest(AppointmentRequest request) throws ValidationException {
         ValidationException ve = new ValidationException();
 
         if (request.serviceId() == null) ve.addValidationError(
@@ -75,7 +75,7 @@ public class ScheduleRequestValidator {
         if (ve.containsErrors()) throw ve;
     }
 
-    public static void validateAvailableTimesRequest(AppointmentRequest request) throws ValidationException {
+    public static void validateAppointmentOpeningsRequest(AppointmentRequest request) throws ValidationException {
 
         ValidationException ve = new ValidationException();
 

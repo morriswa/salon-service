@@ -1,7 +1,6 @@
 package org.morriswa.salon.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.morriswa.salon.model.Appointment;
@@ -24,7 +23,7 @@ public interface EmployeeService {
 
     List<Appointment> retrieveSchedule(UserAccount principal, LocalDate untilDate);
 
-    void moveAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception;
+    void rescheduleAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception;
 
     void updateAppointmentDetails(UserAccount principal, Long appointmentId, AppointmentRequest request);
 
