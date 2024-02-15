@@ -63,7 +63,7 @@ public class UserProfileController {
      * Http GET endpoint used to retrieve all stored information about the currently authenticated user
      *
      * @param principal currently authenticated User Account
-     * @return profile and contact information about the user
+     * @return profile and contact information about the user if operation was successful, else error response
      */
     @GetMapping("/user")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
@@ -73,6 +73,15 @@ public class UserProfileController {
         return ResponseEntity.ok(profile);
     }
 
+    /**
+     * HTTP Post used to finish account creation
+     * after successful account creation, the user will be able to access the client portal
+     *
+     * @param principal authenticated user
+     * @param createProfileRequest containing all contact info required by the app
+     * @return blank response
+     * @throws Exception return error response if the user's profile cannot be created
+     */
     @PostMapping("/user")
     public ResponseEntity<?> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
@@ -82,6 +91,14 @@ public class UserProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * HTTP Patch endpoint to update an existing user's contact info
+     *
+     * @param principal authenticated user
+     * @param updateProfileRequest containing contact info to be updated
+     * @return blank response
+     * @throws Exception return error response if user's profile cannot be updated
+     */
     @PatchMapping("/user")
     public ResponseEntity<?> updateUserProfile(
         @AuthenticationPrincipal UserAccount principal, 
@@ -91,6 +108,14 @@ public class UserProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * HTTP Patch endpoint to change an existing user's account username
+     *
+     * @param principal authenticated user
+     * @param updateUsernameRequest containing all information required to process username change
+     * @return blank response
+     * @throws Exception return error response if user's name could not be changed
+     */
     @PatchMapping("/user/name")
     public ResponseEntity<?> updateUsername(
         @AuthenticationPrincipal UserAccount principal, 
@@ -100,6 +125,14 @@ public class UserProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * HTTP Patch endpoint to change an existing user's account password
+     *
+     * @param principal authenticated user
+     * @param updatePasswordRequest containing all information required to process password change
+     * @return blank response
+     * @throws Exception return error response if the user's password could not be changed
+     */
     @PatchMapping("/user/password")
     public ResponseEntity<?> updatePassword(
         @AuthenticationPrincipal UserAccount principal, 
@@ -109,6 +142,14 @@ public class UserProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * HTTP Patch endpoint used to promote existing users. Can only be accessed by system administrators
+     *
+     * @param principal authenticated administrator
+     * @param request containing information about the user to promote and their new application role
+     * @return blank response
+     * @throws Exception return error response if the user could not be promoted
+     */
     @PatchMapping("/admin/promote")
     public ResponseEntity<?> promoteUser(
         @AuthenticationPrincipal UserAccount principal,

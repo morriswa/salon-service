@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public List<Appointment> retrieveSchedule(Long employeeId, LocalDateTime untilDate) {
+    public List<Appointment> retrieveSchedule(Long employeeId, LocalDate untilDate) {
         return null;
     }
 
@@ -57,10 +58,16 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public List<ProvidedService> retrieveAllProvidedServices(Long employeeId) {
-        final var query = "select * from provided_service where employee_id=:employeeId";
+        final var query = """
+            select *
+            from provided_service
+            where employee_id=:employeeId
+            order by offered desc""";
+
         final var params = new HashMap<String, Object>(){{
             put("employeeId", employeeId);
         }};
+
         return database.query(query, params, rs -> {
             var services = new ArrayList<ProvidedService>();
 
@@ -79,7 +86,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     public void updateAppointmentDetails(Long employeeId, Long appointmentId, AppointmentRequest request) {
         final var query = """
             update appointment
-                set actual_amount = :newAmount
+                set actual_amount = IFNULL(:newAmount, actual_amount)
             where
                     employee_id = :employeeId
                 and

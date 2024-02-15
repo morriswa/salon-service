@@ -1,5 +1,6 @@
 package org.morriswa.salon.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,17 +14,22 @@ public interface EmployeeService {
     
     void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) throws Exception;
 
-    void deleteProvidedService(UserAccount principal, Long serviceId);
-
-    List<Appointment> retrieveSchedule(UserAccount principal, LocalDateTime untilDate);
-
-    void cancelAppointment(UserAccount principal, Long appointmentId);
-
-    void uploadProvidedServiceImage(UserAccount principal, Long serviceId, MultipartFile file);
-
     void getProvidedServiceDetails(UserAccount principal, Long serviceId);
 
     List<ProvidedService> retrieveAllProvidedServices(UserAccount principal);
 
-    void editAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception;
+    void uploadProvidedServiceImage(UserAccount principal, Long serviceId, MultipartFile file);
+
+    void deleteProvidedService(UserAccount principal, Long serviceId);
+
+    List<Appointment> retrieveSchedule(UserAccount principal, LocalDate untilDate);
+
+    void moveAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception;
+
+    void updateAppointmentDetails(UserAccount principal, Long appointmentId, AppointmentRequest request);
+
+    void cancelAppointment(UserAccount principal, Long appointmentId);
+
+
+
 }

@@ -24,6 +24,10 @@ public class HealthController {
         this.response = response;
     }
 
+    /**
+     * Public HTTP Get method used by deployment service (AWS Lightsail) to ensure application is running and healthy
+     * @return important information about the currently running application
+     */
     @GetMapping("/health")
     public ResponseEntity<?> getServiceHealth() {
         return response.getHttpResponseWithServiceInfo(HttpStatus.OK, "All is good on our end!");

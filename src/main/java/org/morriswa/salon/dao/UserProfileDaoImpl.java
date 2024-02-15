@@ -154,8 +154,8 @@ public class UserProfileDaoImpl implements UserProfileDao {
     public void createUserContactInfo(Long userId, ContactInfo request) throws Exception {
 
         final var query = """
-            INSERT INTO contact_info 
-            (user_id, first_name, last_name, phone_num, email, addr_one, addr_two, city, state_code, zip_code, contact_pref) 
+            INSERT INTO contact_info
+            (user_id, first_name, last_name, phone_num, email, addr_one, addr_two, city, state_code, zip_code, contact_pref)
             VALUES 
             (:UserId, :FirstName, :LastName, :PhoneNum, :Email, :AddrOne, :AddrTwo, :City, :StateCode, :ZipCode, :ContactPref) 
             """;
@@ -263,6 +263,13 @@ public class UserProfileDaoImpl implements UserProfileDao {
     public void promoteUser(Long promoterId, String username, AccountType role) {
         final var query = "update user_account set account_type = :accountCode, promoter = :promoterId where username = :username";
         final var params = Map.of("accountCode", role.code, "promoterId", promoterId, "username", username);
+        database.update(query, params);
+    }
+
+    @Override
+    public void unlockClientPermissions(Long userId) {
+        final var query = "update user_account set account_type = 'CLT' where user_id = :userId";
+        final var params = Map.of("userId", userId);
         database.update(query, params);
     }
 }

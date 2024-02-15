@@ -42,4 +42,6 @@ public interface UserProfileDao {
     void promoteUser(Long promoterId, Long userId, AccountType role);
 
     void promoteUser(Long promoterId, String username, AccountType role);
+
+    void unlockClientPermissions(Long userId);
 }

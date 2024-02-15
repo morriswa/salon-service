@@ -146,6 +146,9 @@ public class UserProfileEndpointTest extends ServiceTest {
             .andExpect(status().is(204));
 
         verify(userProfileDao).createUserContactInfo(any(), any());
+
+        verify(userProfileDao).unlockClientPermissions(any());
+
     }
 
     @Test

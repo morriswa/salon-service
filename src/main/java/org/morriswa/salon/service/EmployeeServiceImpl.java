@@ -1,5 +1,6 @@
 package org.morriswa.salon.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,12 +42,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteProvidedService(UserAccount principal, Long serviceId) {
 
+        throw new UnsupportedOperationException("Unimplemented method 'deleteProvidedService'");
+
         // execute db operation to delete an employees provided service
-        employeeDao.deleteProvidedService(principal.getUserId(), serviceId);
+//        employeeDao.deleteProvidedService(principal.getUserId(), serviceId);
     }
 
     @Override
-    public List<Appointment> retrieveSchedule(UserAccount principal, LocalDateTime untilDate) {
+    public List<Appointment> retrieveSchedule(UserAccount principal, LocalDate untilDate) {
         // retrieve employees schedule from the database
         return employeeDao.retrieveSchedule(principal.getUserId(), untilDate);
     }
@@ -77,12 +80,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public void editAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception {
+    public void moveAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception {
+         schedule.employeeReschedulesAppointment(principal.getUserId(), appointmentId, request);
+    }
 
-
-
-        schedule.employeeReschedulesAppointment(principal.getUserId(), appointmentId, request);
-
+    @Override
+    public void updateAppointmentDetails(UserAccount principal, Long appointmentId, AppointmentRequest request) {
         employeeDao.updateAppointmentDetails(principal.getUserId(), appointmentId, request);
     }
 

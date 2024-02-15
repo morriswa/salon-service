@@ -62,10 +62,16 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception {
+
         // add Contact Info validation rules here
         UserProfileValidator.validateCreateProfileRequestOrThrow(createProfileRequest);
 
+        // attempt to store provided contact information
         userProfileDao.createUserContactInfo(principal.getUserId(), createProfileRequest);
+
+        // if the user successfully added the required contact info
+        // allow them to access client portal
+        userProfileDao.unlockClientPermissions(principal.getUserId());
     }
 
     @Override

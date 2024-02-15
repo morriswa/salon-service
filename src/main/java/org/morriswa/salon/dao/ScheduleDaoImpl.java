@@ -386,6 +386,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         final var moveAptParams = new HashMap<String, Object>(){{
             put("appointmentTime", newAppointmentTime);
             put("length", newAppointmentLength);
+            put("appointmentId", appointmentId);
         }};
 
         database.update(moveAptQuery, moveAptParams);

@@ -28,7 +28,15 @@ public class ClientController {
     }
 
 
-    @GetMapping("/client/book")
+    /**
+     * HTTP Get endpoint to see available appointment times for a given day
+     *
+     * @param principal currently authenticated client
+     * @param request search parameters
+     * @return all appointment openings
+     * @throws Exception return error response if appointment openings could not be retrieved
+     */
+    @GetMapping("/client/booking")
     public ResponseEntity<?> seeAvailableAppointmentTimes(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {
@@ -36,6 +44,14 @@ public class ClientController {
         return ResponseEntity.ok(book);
     }
 
+    /**
+     * Http Post endpoint to book an appointment
+     *
+     * @param principal currently authenticated client
+     * @param request all info required to book appointment
+     * @return no content
+     * @throws Exception return error response if appointment was not booked
+     */
     @PostMapping("/client/booking")
     public ResponseEntity<?> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
@@ -52,7 +68,7 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
-    @GetMapping("/client/booking")
+    @GetMapping("/client/booked")
     public ResponseEntity<?> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
         clientService.retrieveScheduledAppointments(principal);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();

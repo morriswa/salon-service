@@ -11,7 +11,9 @@ CREATE TABLE provided_service(
     default_cost DECIMAL(5, 2) NOT NULL,
     CONSTRAINT default_cost_range CHECK ( default_cost BETWEEN 0.01 AND 999.99 ),
     default_length SMALLINT UNSIGNED NOT NULL DEFAULT 2,
-    CONSTRAINT default_length_range CHECK ( default_length BETWEEN 1 AND 32 )
+    CONSTRAINT default_length_range CHECK ( default_length BETWEEN 1 AND 32 ),
+    offered CHAR(1) NOT NULL DEFAULT 'Y',
+    CONSTRAINT offered_values CHECK ( offered IN ('Y', 'N') )
 );
 
 //
