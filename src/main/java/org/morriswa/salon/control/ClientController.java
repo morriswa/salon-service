@@ -59,7 +59,7 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/client/booking/{appointmentId}")
+    @DeleteMapping("/client/booked/{appointmentId}")
     public ResponseEntity<?> cancelAppointment(
             @AuthenticationPrincipal UserAccount principal, @PathVariable Long appointmentId
     ) {
