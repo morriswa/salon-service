@@ -1,7 +1,12 @@
 package org.morriswa.salon.dao;
 
-public interface ClientDao {
-    void retrieveScheduledAppointments(Long userId);
+import org.morriswa.salon.model.Appointment;
 
-    void retrieveUnpaidAppointments(Long userId);
+import java.util.List;
+
+public interface ClientDao {
+
+    List<Appointment> retrieveScheduledAppointments(Long userId);
+
+    List<Appointment> retrieveUnpaidAppointments(Long userId);
 }

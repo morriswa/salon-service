@@ -1,11 +1,13 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ScheduleDao;
+import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AppointmentOpening;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.validation.ScheduleRequestValidator;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,5 +52,10 @@ public class SchedulingServiceImpl implements SchedulingService{
         ScheduleRequestValidator.validateRescheduleAppointmentRequest(request);
 
         scheduleDao.employeeReschedulesAppointment(employeeId, appointmentId, request);
+    }
+
+    @Override
+    public List<Appointment> retrieveEmployeeSchedule(Long employeeId, LocalDate untilDate) {
+        return scheduleDao.retrieveEmployeeSchedule(employeeId, untilDate);
     }
 }

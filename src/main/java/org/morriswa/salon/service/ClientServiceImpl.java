@@ -1,6 +1,7 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ClientDao;
+import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AppointmentOpening;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.UserAccount;
@@ -33,13 +34,13 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void retrieveScheduledAppointments(UserAccount principal) {
-        clientDao.retrieveScheduledAppointments(principal.getUserId());
+    public List<Appointment> retrieveScheduledAppointments(UserAccount principal) {
+        return clientDao.retrieveScheduledAppointments(principal.getUserId());
     }
 
     @Override
-    public void retrieveUnpaidAppointments(UserAccount principal) {
-        clientDao.retrieveUnpaidAppointments(principal.getUserId());
+    public List<Appointment> retrieveUnpaidAppointments(UserAccount principal) {
+        return clientDao.retrieveUnpaidAppointments(principal.getUserId());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.morriswa.salon.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.morriswa.salon.dao.EmployeeDao;
@@ -51,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<Appointment> retrieveSchedule(UserAccount principal, LocalDate untilDate) {
         // retrieve employees schedule from the database
-        return employeeDao.retrieveSchedule(principal.getUserId(), untilDate);
+        return schedule.retrieveEmployeeSchedule(principal.getUserId(), untilDate);
     }
 
     @Override

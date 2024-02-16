@@ -1,14 +1,11 @@
 package org.morriswa.salon.dao;
 
-import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,11 +41,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
     @Override
     public void deleteProvidedService(Long employeeId, Long serviceId) {
 
-    }
-
-    @Override
-    public List<Appointment> retrieveSchedule(Long employeeId, LocalDate untilDate) {
-        return null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.exception.BadRequestException;
+import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AppointmentOpening;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.UserAccount;
@@ -12,9 +13,9 @@ public interface ClientService {
 
     void cancelAppointment(UserAccount principal, Long appointmentId);
 
-    void retrieveScheduledAppointments(UserAccount principal);
+    List<Appointment> retrieveScheduledAppointments(UserAccount principal);
 
-    void retrieveUnpaidAppointments(UserAccount principal);
+    List<Appointment> retrieveUnpaidAppointments(UserAccount principal);
 
     List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws BadRequestException, Exception;
 }

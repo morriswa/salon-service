@@ -69,13 +69,13 @@ public class ClientController {
 
     @GetMapping("/client/booked")
     public ResponseEntity<?> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
-        clientService.retrieveScheduledAppointments(principal);
+        final var appointments = clientService.retrieveScheduledAppointments(principal);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
     @GetMapping("/client/billing")
     public ResponseEntity<?> retrieveUnpaidAppointments(@AuthenticationPrincipal UserAccount principal) {
-        clientService.retrieveUnpaidAppointments(principal);
+        final var appointments = clientService.retrieveUnpaidAppointments(principal);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

@@ -391,4 +391,12 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         database.update(moveAptQuery, moveAptParams);
     }
+
+    @Override
+    public List<Appointment> retrieveEmployeeSchedule(Long employeeId, LocalDate untilDate) {
+        final var currentTime = Instant.now();
+        final var stopSearch = ZonedDateTime.of(untilDate, LocalTime.MIDNIGHT, SALON_TIME_ZONE);
+
+        return null;
+    }
 }
