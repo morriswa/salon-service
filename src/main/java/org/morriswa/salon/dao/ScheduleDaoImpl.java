@@ -1,5 +1,7 @@
 package org.morriswa.salon.dao;
 
+import org.morriswa.salon.enumerated.AppointmentStatus;
+import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.*;
 import org.slf4j.Logger;
@@ -397,6 +399,73 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         final var currentTime = Instant.now();
         final var stopSearch = ZonedDateTime.of(untilDate, LocalTime.MIDNIGHT, SALON_TIME_ZONE);
 
-        return null;
+        final var query = """
+            select
+                appt.appointment_id ,   
+                appt.client_id ,
+                appt.appointment_time ,
+                appt.service_id ,
+                ps.provided_service_name ,
+                appt.date_created ,
+                appt.date_due ,
+                appt.actual_amount ,
+                appt.tip_amount ,
+                appt.status ,
+                appt.length ,
+                ci.first_name ,
+                ci.last_name ,
+                ci.phone_num ,
+                ci.email ,
+                ci.contact_pref
+
+            from appointment appt
+            LEFT JOIN contact_info ci ON appt.client_id = ci.user_id
+            LEFT JOIN provided_service ps ON appt.service_id = ps.service_id
+            where appt.employee_id = :employeeId
+            and
+                appt.appointment_time between :startSearch and :endSearch
+
+            ORDER BY
+                appt.appointment_time
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("employeeId", employeeId);
+            put("startSearch", currentTime);
+            put("endSearch", stopSearch);
+        }};
+
+        return database.query(query, params, rs->{ 
+            List<Appointment> result = new ArrayList<>();
+
+            while (rs.next()) {
+                final var client = new Appointment.ClientInfo(
+                    rs.getLong("client_id"),
+                    rs.getString("first_name"), 
+                    rs.getString("last_name"),  
+                    rs.getString("phone_num"),
+                    rs.getString("email"), 
+                    ContactPreference.getEnum(rs.getString("contact_pref")).description);
+
+                final var service_info = new Appointment.ServiceInfo(
+                    rs.getLong("service_id"),
+                    rs.getString("provided_service_name"));  
+
+                result.add(new Appointment(
+                    rs.getLong("appointment_id"),
+                    rs.getTimestamp("appointment_time").toInstant().atZone(SALON_TIME_ZONE),
+                    rs.getInt("length")*15,
+                    rs.getTimestamp("date_created").toInstant().atZone(SALON_TIME_ZONE),
+                    rs.getTimestamp("date_due").toInstant().atZone(SALON_TIME_ZONE),
+                    rs.getBigDecimal("actual_amount"),
+                    rs.getBigDecimal("tip_amount"),
+                    AppointmentStatus.getEnum(rs.getString("status")).toString(),
+                    service_info,
+                    null,
+                    client 
+                ));
+            }
+            return result;
+        });
     }
 }

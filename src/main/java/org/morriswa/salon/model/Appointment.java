@@ -13,12 +13,12 @@ public record Appointment(
     ZonedDateTime paymentDueDate,
     BigDecimal cost,
     BigDecimal tipAmount,
-    AppointmentStatus status,
+    String status,
     ServiceInfo service,
     EmployeeInfo employee,
     ClientInfo client
 ) {
-    private record ClientInfo (
+    public record ClientInfo (
         Long clientId,
         String firstName,
         String lastName,
@@ -27,7 +27,7 @@ public record Appointment(
         String contactPreference
     ) {  }
 
-    private record EmployeeInfo (
+    public record EmployeeInfo (
         Long employeeId,
         String firstName,
         String lastName,
@@ -36,7 +36,7 @@ public record Appointment(
         String contactPreference
     ) {  }
 
-    private record ServiceInfo (
+    public record ServiceInfo (
         Long serviceId,
         String name
     ) {  }

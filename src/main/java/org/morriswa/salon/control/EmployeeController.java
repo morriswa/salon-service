@@ -129,7 +129,7 @@ public class EmployeeController {
         final var schedule = employeeService.retrieveSchedule(principal,
             // if the user doesn't provide a date, only get the schedule for the next 2 weeks
             untilDate.orElse(LocalDate.now().plusWeeks(2L)));
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(schedule);
     }
 
     /**
