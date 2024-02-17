@@ -70,7 +70,7 @@ public class ClientController {
     @GetMapping("/client/booked")
     public ResponseEntity<?> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
         final var appointments = clientService.retrieveScheduledAppointments(principal);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.ok(appointments);
     }
 
     @GetMapping("/client/billing")

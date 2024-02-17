@@ -9,8 +9,15 @@
             "name": "SalonService",
             "request": "launch",
             "mainClass": "org.morriswa.salon.SalonService",
+            "projectName": "salon-service"
+        },
+        {
+            "type": "java",
+            "name": "SalonService",
+            "request": "launch",
+            "mainClass": "org.morriswa.salon.SalonService",
             "projectName": "eecs447-project-service",
             "envFile": "${workspaceFolder}/.env.local"
-        },
+        }
     ]
 }
