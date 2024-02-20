@@ -11,9 +11,9 @@ that can be consumed by a UI client, rather than accessing the
 MySQL Database directly. 
 
 This was done for several reasons. <br>
-All frameworks support HTTP requests so providing a web service
+All frontend frameworks support making HTTP requests so providing a web service
 maximizes compatibility with front-end frameworks (Including Vanilla JS). 
-Application stability and security can be enhanced by providing a 
+Application stability and security can be enhanced by providing an additional
 layer between the UI and DB that abstracts away business logic 
 and all sensitive configuration information.
 Additionally, thanks to the rich Java community, this Microservice
@@ -34,8 +34,11 @@ These libraries include:
   
 ## Purpose
 ### Business Owners
-This service will provide an API for business owners to manage
-their employees and provided services.
+This service will provide an API for Salon owners to manage
+their employees, manage the services they provide to clients, and utilize a (mock) payroll system.
+### Employees
+This service will provide an API for Salon employees to provide services to clients,
+manage their schedule, and collect (mock) paychecks and tips.
 ### Clients
-This service will provide an API for clients to book services 
-with employees and make payments.
+This service will provide an API for clients to book Salon services 
+with employees and make (mock) payments.
