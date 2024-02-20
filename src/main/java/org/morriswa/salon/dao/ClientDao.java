@@ -1,5 +1,6 @@
 package org.morriswa.salon.dao;
 
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AvailableService;
 
@@ -12,4 +13,6 @@ public interface ClientDao {
     List<Appointment> retrieveUnpaidAppointments(Long userId);
 
     List<AvailableService> searchAvailableService(String searchText);
+
+    AvailableService retrieveServiceDetails(Long serviceId) throws BadRequestException;
 }

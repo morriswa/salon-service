@@ -17,4 +17,6 @@ public interface ClientService {
     List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws BadRequestException, Exception;
 
     List<AvailableService> searchAvailableService(UserAccount principal, String searchText);
+
+    AvailableService retrieveServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException;
 }

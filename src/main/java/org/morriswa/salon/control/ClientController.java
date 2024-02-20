@@ -87,4 +87,13 @@ public class ClientController {
         final var services = clientService.searchAvailableService(principal, searchText);
         return ResponseEntity.ok(services);
     }
+
+    @GetMapping("/client/service/{serviceId}")
+    public ResponseEntity<?> retrieveServiceDetails(
+            @AuthenticationPrincipal UserAccount principal,
+            @PathVariable Long serviceId
+    ) throws Exception {
+        final var service = clientService.retrieveServiceDetails(principal, serviceId);
+        return ResponseEntity.ok(service);
+    }
 }

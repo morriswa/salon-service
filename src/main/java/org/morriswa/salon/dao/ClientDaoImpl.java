@@ -2,6 +2,7 @@ package org.morriswa.salon.dao;
 
 import org.morriswa.salon.enumerated.AppointmentStatus;
 import org.morriswa.salon.enumerated.ContactPreference;
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AvailableService;
 import org.slf4j.Logger;
@@ -140,5 +141,48 @@ public class ClientDaoImpl implements ClientDao {
 
             return services;
         });
+    }
+
+    @Override
+    public AvailableService retrieveServiceDetails(Long serviceId) throws BadRequestException {
+
+        final var query = """
+                SELECT *
+                FROM provided_service ps
+                JOIN contact_info ci ON ps.employee_id = ci.user_id
+                WHERE
+                    ps.offered = 'Y' AND
+                    ps.service_id = :serviceId
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("serviceId", serviceId);
+        }};
+
+        Optional<AvailableService> service = database.query(query, params, rs -> {
+
+            if (rs.next()) {
+                final var employeeInfo = new AvailableService.EmployeeInfo(
+                        rs.getLong("employee_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone_num"),
+                        rs.getString("email"),
+                        ContactPreference.getEnum(rs.getString("contact_pref")).description
+                );
+
+                return Optional.of(new AvailableService(
+                        rs.getLong("service_id"),
+                        rs.getString("provided_service_name"),
+                        rs.getBigDecimal("default_cost"),
+                        rs.getInt("default_length")*15,
+                        employeeInfo
+                ));
+            }
+
+            return Optional.empty();
+        });
+
+        return service.orElseThrow(()->new BadRequestException("Could not find requested service!"));
     }
 }

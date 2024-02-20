@@ -1,6 +1,7 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ClientDao;
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.*;
 import org.morriswa.salon.validation.StrTools;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,10 @@ public class ClientServiceImpl implements ClientService {
         if (StrTools.hasValue(searchText)) return clientDao.searchAvailableService(searchText);
 
         return new ArrayList<>();
+    }
+
+    @Override
+    public AvailableService retrieveServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException {
+        return clientDao.retrieveServiceDetails(serviceId);
     }
 }
