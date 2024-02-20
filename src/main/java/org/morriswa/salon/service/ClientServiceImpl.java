@@ -2,9 +2,11 @@ package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ClientDao;
 import org.morriswa.salon.model.*;
+import org.morriswa.salon.validation.StrTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -47,6 +49,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<AvailableService> searchAvailableService(UserAccount principal, String searchText) {
-        return clientDao.searchAvailableService(searchText);
+
+        if (StrTools.hasValue(searchText)) return clientDao.searchAvailableService(searchText);
+
+        return new ArrayList<>();
     }
 }
