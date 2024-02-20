@@ -78,4 +78,13 @@ public class ClientController {
         final var appointments = clientService.retrieveUnpaidAppointments(principal);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
+
+    @GetMapping("/client/services")
+    public ResponseEntity<?> searchAvailableService(
+            @AuthenticationPrincipal UserAccount principal,
+            @RequestParam String searchText
+    ) throws Exception {
+        final var services = clientService.searchAvailableService(principal, searchText);
+        return ResponseEntity.ok(services);
+    }
 }

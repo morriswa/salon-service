@@ -1,10 +1,7 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.AppointmentOpening;
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.*;
 
 import java.util.List;
 
@@ -18,4 +15,6 @@ public interface ClientService {
     List<Appointment> retrieveUnpaidAppointments(UserAccount principal);
 
     List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws BadRequestException, Exception;
+
+    List<AvailableService> searchAvailableService(UserAccount principal, String searchText);
 }

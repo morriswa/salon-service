@@ -1,7 +1,5 @@
 package org.morriswa.salon.model;
 
-import org.morriswa.salon.enumerated.AppointmentStatus;
-
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 

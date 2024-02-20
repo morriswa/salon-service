@@ -1,10 +1,7 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ClientDao;
-import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.AppointmentOpening;
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +43,10 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws Exception {
         return schedule.retrieveAppointmentOpenings(request);
+    }
+
+    @Override
+    public List<AvailableService> searchAvailableService(UserAccount principal, String searchText) {
+        return clientDao.searchAvailableService(searchText);
     }
 }

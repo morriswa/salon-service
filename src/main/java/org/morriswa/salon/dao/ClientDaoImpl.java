@@ -1,17 +1,17 @@
 package org.morriswa.salon.dao;
 
-import org.joda.time.Instant;
 import org.morriswa.salon.enumerated.AppointmentStatus;
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.model.Appointment;
+import org.morriswa.salon.model.AvailableService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ClientDaoImpl implements ClientDao {
@@ -19,6 +19,7 @@ public class ClientDaoImpl implements ClientDao {
 
     private final ZoneId SALON_TIME_ZONE = ZoneId.of("-06:00");
 
+    private final Logger log = LoggerFactory.getLogger(ClientDaoImpl.class);
     @Autowired
     public ClientDaoImpl(NamedParameterJdbcTemplate database) {
         this.database = database;
@@ -26,9 +27,8 @@ public class ClientDaoImpl implements ClientDao {
 
     @Override
     public List<Appointment> retrieveScheduledAppointments(Long userId) {
-        final var currentTime = Instant.now();
         final var query = """
-            select 
+            select
                 appt.appointment_id,
                 appt.appointment_time,
                 appt.length,
@@ -92,5 +92,53 @@ public class ClientDaoImpl implements ClientDao {
     @Override
     public List<Appointment> retrieveUnpaidAppointments(Long userId) {
         return null;
+    }
+
+    @Override
+    public List<AvailableService> searchAvailableService(String searchText) {
+
+        var tokens = searchText.split(" ");
+        var sqlTokens = String.join(" ", Arrays.stream(tokens).map(token->String.format(
+           "%%%s%% *%s*", token, token
+        )).toList());
+
+        final var query = """
+                SELECT *
+                FROM provided_service ps
+                JOIN contact_info ci ON ps.employee_id = ci.user_id
+                WHERE
+                    ps.offered = 'Y' AND
+                    MATCH (ps.provided_service_name)
+                    AGAINST ((:searchText) IN BOOLEAN MODE)
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("searchText", sqlTokens);
+        }};
+
+        return database.query(query, params, rs -> {
+            var services = new ArrayList<AvailableService>();
+
+            while (rs.next()) {
+                final var employeeInfo = new AvailableService.EmployeeInfo(
+                    rs.getLong("employee_id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("phone_num"),
+                    rs.getString("email"),
+                    ContactPreference.getEnum(rs.getString("contact_pref")).description
+                );
+
+                services.add(new AvailableService(
+                    rs.getLong("service_id"),
+                    rs.getString("provided_service_name"),
+                    rs.getBigDecimal("default_cost"),
+                    rs.getInt("default_length")*15,
+                    employeeInfo
+                ));
+            }
+
+            return services;
+        });
     }
 }
