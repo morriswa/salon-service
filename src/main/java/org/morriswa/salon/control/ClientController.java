@@ -35,7 +35,7 @@ public class ClientController {
      * @return all appointment openings
      * @throws Exception return error response if appointment openings could not be retrieved
      */
-    @GetMapping("/client/booking")
+    @PostMapping("/client/booking")
     public ResponseEntity<?> retrieveAppointmentOpenings(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {
@@ -51,7 +51,7 @@ public class ClientController {
      * @return no content
      * @throws Exception return error response if appointment was not booked
      */
-    @PostMapping("/client/booking")
+    @PostMapping("/client/book")
     public ResponseEntity<?> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {

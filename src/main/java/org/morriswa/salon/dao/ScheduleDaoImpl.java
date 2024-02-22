@@ -3,19 +3,23 @@ package org.morriswa.salon.dao;
 import org.morriswa.salon.enumerated.AppointmentStatus;
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.*;
+import org.morriswa.salon.model.Appointment;
+import org.morriswa.salon.model.AppointmentOpening;
+import org.morriswa.salon.model.AppointmentRequest;
+import org.morriswa.salon.model.ProvidedService;
+import org.morriswa.salon.utility.TimeZoneUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class ScheduleDaoImpl  implements ScheduleDao{
@@ -33,21 +37,12 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
     @Autowired
     public ScheduleDaoImpl(
-            Environment environment,
+            TimeZoneUtil time,
             NamedParameterJdbcTemplate database) {
-        // retrieve all time related configuration about salon
-        final var tzString = environment.getRequiredProperty("salon.timezone");
-        final var openString = environment.getRequiredProperty("salon.hours.open").trim().toUpperCase();
-        final var closeString = environment.getRequiredProperty("salon.hours.close").trim().toUpperCase();
-
         // initialize time settings
-        SALON_TIME_ZONE = ZoneId.of(tzString);
-        SALON_OPEN = LocalTime.parse(openString, DateTimeFormatter.ofPattern("h:mm a"));
-        SALON_CLOSE = LocalTime.parse(closeString, DateTimeFormatter.ofPattern("h:mm a"));
-
-        // print output on success
-        log.info("Starting service for a salon in timezone {} that opens at {} and closes at {}",
-                SALON_TIME_ZONE, SALON_OPEN, SALON_CLOSE);
+        SALON_TIME_ZONE = time.getZoneOfSalon();
+        SALON_OPEN = time.getSalonOpen();
+        SALON_CLOSE = time.getSalonClose();
 
         this.database = database;
     }
@@ -83,22 +78,31 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     @Override
     public List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws BadRequestException {
 
-        // get end of day in current timezone, mark as end of search
-        final var stopSearch = request.searchDate().atTime(23,59)
-                .atZone(SALON_TIME_ZONE);
+        // get beginning of day in salon's timezone
+        final var salonOpen = request.searchDate().toInstant()
+                .atZone(SALON_TIME_ZONE)
+                .withHour(SALON_OPEN.getHour())
+                .withMinute(SALON_OPEN.getMinute())
+                .truncatedTo(ChronoUnit.MINUTES)
+                .toInstant().atZone(UTC);
+
+        // get end of day in salon's timezone, mark as end of search
+        final var salonClose = request.searchDate().toInstant()
+                .atZone(SALON_TIME_ZONE)
+                .withHour(SALON_CLOSE.getHour())
+                .withMinute(SALON_CLOSE.getMinute())
+                .truncatedTo(ChronoUnit.MINUTES)
+                .toInstant().atZone(UTC);
 
         // retrieve the current time
-        var currentTime = Instant.now()
-                .atZone(SALON_TIME_ZONE);
+        final var currentTime = Instant.now()
+                .atZone(UTC);
 
-        // get beginning of day in current timezone
-        var dayStart = request.searchDate().atTime(0,0)
-                .atZone(SALON_TIME_ZONE);
-
-        // if the current time is within the day to search, use current time as start search
-        // else use start of day as start of search
-        final var startSearch = dayStart.isAfter(currentTime)?
-                dayStart : currentTime;
+        // if the current time is within the day to search,
+        // use current time as start search
+        // else use salon open of day as start of search
+        final var startSearch = salonOpen.isAfter(currentTime)?
+                salonOpen : currentTime;
 
         // defn search query
         final var query = """
@@ -109,13 +113,14 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             where employee_id=:employeeId
             and
                 appointment_time between :startSearch and :endSearch
+            order by appointment_time
             """;
 
         // inject params
         final var params = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
             put("startSearch", startSearch);
-            put("endSearch", stopSearch);
+            put("endSearch", salonClose);
         }};
 
         // retrieve all preexisting appointments
@@ -125,8 +130,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             while (rs.next()) appts.add(new AppointmentOpening(
                 // retrieve every appointment's time in current time zone
                 rs.getTimestamp("appointment_time")
-                        .toInstant()
-                        .atZone(request.timeZone()),
+                        .toInstant().atZone(UTC),
                 // convert length to minutes
                 rs.getInt("length") * 15
             ));
@@ -142,19 +146,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         // create list to store available appointment times
         var availableTimes = new ArrayList<AppointmentOpening>();
 
-        // ensure existing appointments are stored in correct order
-        preexistingAppointments.sort(Comparator.comparing(AppointmentOpening::time));
-
-        // record time salon opens and closes, in client's timezone
-        final var salonOpen = LocalDateTime.of(request.searchDate(), SALON_OPEN)
-                .atZone(SALON_TIME_ZONE).toInstant().atZone(request.timeZone());
-
-        final var salonClose = LocalDateTime.of(request.searchDate(), SALON_CLOSE)
-                .atZone(SALON_TIME_ZONE).toInstant().atZone(request.timeZone());
-
         // record first available appointment time
         // (at least one hour ahead of the present to avoid last minute bookings)
-        final var firstAvailableAppointment = Instant.now().atZone(request.timeZone())
+        final var firstAvailableAppointment = Instant.now()
+                .atZone(UTC)
                 .plusMinutes(61).truncatedTo(ChronoUnit.HOURS);
 
         // define var to keep track of time scanner is currently at
@@ -273,21 +268,28 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         ProvidedService serviceToSchedule = retrieveProvidedService(request.serviceId());
 
-        if (request.time().atZone(request.timeZone()).plusMinutes(
-                serviceToSchedule.defaultLength() * 15L
-        ).isAfter(
-                LocalDateTime.of(
-                                LocalDate.from(request.time()),
-                                SALON_CLOSE)
-                        .atZone(SALON_TIME_ZONE)
-        )) throw new BadRequestException("Appointments should not end after salon close!");
-        else if (request.time().atZone(request.timeZone()).isBefore(
-                LocalDateTime.of(
-                                LocalDate.from(request.time()),
-                                SALON_OPEN)
-                        .atZone(SALON_TIME_ZONE)
-        )) throw new BadRequestException("Appointments should not start before salon opens!");
+        // get beginning of day in salon's timezone
+        final var salonOpen = request.time().toInstant()
+                .atZone(SALON_TIME_ZONE)
+                .withHour(SALON_OPEN.getHour())
+                .withMinute(SALON_OPEN.getMinute())
+                .truncatedTo(ChronoUnit.MINUTES)
+                .toInstant().atZone(UTC);
 
+        // get end of day in salon's timezone, mark as end of search
+        final var salonClose = request.time().toInstant()
+                .atZone(SALON_TIME_ZONE)
+                .withHour(SALON_CLOSE.getHour())
+                .withMinute(SALON_CLOSE.getMinute())
+                .truncatedTo(ChronoUnit.MINUTES)
+                .toInstant().atZone(UTC);
+
+        if (request.time().plusMinutes(
+                serviceToSchedule.defaultLength() * 15L
+        ).isAfter(salonClose))
+            throw new BadRequestException("Appointments should not end after salon close!");
+        else if (request.time().isBefore(salonOpen))
+            throw new BadRequestException("Appointments should not start before salon opens!");
 
         final var query = """
             select
@@ -299,10 +301,8 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 appointment_time between :startSearch and :endSearch
             """;
 
-        final var startSearch = request.time()
-                .atZone(request.timeZone());
-        final var stopSearch = request.time()
-                .atZone(request.timeZone())
+        final var startSearch = request.time().truncatedTo(ChronoUnit.MINUTES);
+        final var stopSearch = request.time().truncatedTo(ChronoUnit.MINUTES)
                 .plusMinutes(serviceToSchedule.defaultLength() * 15L).minusMinutes(1);
         final var params2 = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
@@ -326,10 +326,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         final var addParams = new HashMap<String, Object>(){{
             put("clientId", clientId);
             put("employeeId", request.employeeId());
-            put("appointmentTime", request.time().atZone(request.timeZone()));
+            put("appointmentTime", request.time().truncatedTo(ChronoUnit.MINUTES));
             put("serviceId", request.serviceId());
             put("actualAmount", serviceToSchedule.defaultCost());
-            put("due", request.time().atZone(request.timeZone()).plusWeeks(2));
+            put("due", request.time().plusWeeks(2).truncatedTo(ChronoUnit.MINUTES));
             put("length", serviceToSchedule.defaultLength());
         }};
 
@@ -339,22 +339,27 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     @Override
     public void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException {
 
-        final var newAppointmentTime = request.time().atZone(request.timeZone());
+        final var newAppointmentTime = request.time().truncatedTo(ChronoUnit.MINUTES);
         final var newAppointmentLength = request.length();
 
+        // get beginning of day in salon's timezone
+        final var salonOpen = request.time().toInstant()
+                .atZone(SALON_TIME_ZONE)
+                .withHour(SALON_OPEN.getHour())
+                .withMinute(SALON_OPEN.getMinute())
+                .truncatedTo(ChronoUnit.MINUTES);
+
+        // get end of day in salon's timezone, mark as end of search
+        final var salonClose = request.time().toInstant()
+                .atZone(SALON_TIME_ZONE)
+                .withHour(SALON_CLOSE.getHour())
+                .withMinute(SALON_CLOSE.getMinute())
+                .truncatedTo(ChronoUnit.MINUTES);
+
         if (newAppointmentTime.plusMinutes(newAppointmentLength * 15L)
-                .isAfter(
-                    LocalDateTime.of(
-                                LocalDate.from(newAppointmentTime),
-                                SALON_CLOSE)
-                        .atZone(SALON_TIME_ZONE)
-        )) throw new BadRequestException("Appointments should not end after salon close!");
-        else if (newAppointmentTime.isBefore(
-                LocalDateTime.of(
-                                LocalDate.from(newAppointmentTime),
-                                SALON_OPEN)
-                        .atZone(SALON_TIME_ZONE)
-        )) throw new BadRequestException("Appointments should not start before salon opens!");
+                .isAfter(salonClose)) throw new BadRequestException("Appointments should not end after salon close!");
+        else if (newAppointmentTime.isBefore(salonOpen))
+            throw new BadRequestException("Appointments should not start before salon opens!");
 
         final var query = """
             select
@@ -381,12 +386,14 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         final var moveAptQuery = """
             update appointment set
                 appointment_time = :appointmentTime,
+                date_due = :dueDate,
                 length = :length
             where appointment_id = :appointmentId
             """;
 
         final var moveAptParams = new HashMap<String, Object>(){{
             put("appointmentTime", newAppointmentTime);
+            put("dueDate", newAppointmentTime.plusWeeks(2));
             put("length", newAppointmentLength);
             put("appointmentId", appointmentId);
         }};
@@ -401,7 +408,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         final var query = """
             select
-                appt.appointment_id ,   
+                appt.appointment_id ,
                 appt.client_id ,
                 appt.appointment_time ,
                 appt.service_id ,

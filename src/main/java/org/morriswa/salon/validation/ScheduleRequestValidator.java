@@ -4,14 +4,12 @@ import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.AppointmentRequest;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import static java.time.ZoneOffset.UTC;
 
 public class ScheduleRequestValidator {
+
     public static void validateRescheduleAppointmentRequest(AppointmentRequest request) throws ValidationException {
 
         ValidationException ve = new ValidationException();
@@ -26,7 +24,7 @@ public class ScheduleRequestValidator {
         if (request.time() == null) ve.addValidationError(
                 "time", true, null,
                 "Must provide new appointment time.");
-        else if (request.time().atZone(request.timeZone()).isBefore(Instant.now().atZone(UTC))) ve.addValidationError(
+        else if (request.time().isBefore(Instant.now().atZone(UTC))) ve.addValidationError(
                 "time", true, request.time().toString(),
                 "Appointments can not take place in the past!");
 
@@ -52,17 +50,10 @@ public class ScheduleRequestValidator {
                 "employeeId", true, null,
                 "Must provide employee to book appointment with via Employee ID.");
 
-        if (request.timeZone() == null) {
-            ve.addValidationError(
-                    "timeZone", true, null,
-                    "Must provide a time zone for all scheduling requests.");
-            throw ve;
-        }
-
         if (request.time() == null) ve.addValidationError(
             "time", true, null,
             "Must provide appointment time.");
-        else if (request.time().atZone(request.timeZone()).isBefore(Instant.now().atZone(UTC))) ve.addValidationError(
+        else if (request.time().isBefore(Instant.now().atZone(UTC))) ve.addValidationError(
             "time", true, request.time().toString(),
             "Appointments can not take place in the past!");
         else if (    request.time().getMinute()!=0
@@ -87,19 +78,10 @@ public class ScheduleRequestValidator {
                 "employeeId", true, null,
                 "Must provide employee to book appointment with via Employee ID.");
 
-        if (request.timeZone() == null) {
-            ve.addValidationError(
-                    "timeZone", true, null,
-                    "Must provide a time zone for all scheduling requests.");
-            throw ve;
-        }
-
         if (request.searchDate() == null) ve.addValidationError(
                 "searchDate", true, null,
                 "Must provide search date.");
-        else if (LocalDateTime.of(
-                    LocalDate.from(request.searchDate()),
-                    LocalTime.MIDNIGHT).atZone(request.timeZone())
+        else if (request.searchDate()
                 .isBefore(Instant.now().atZone(UTC).truncatedTo(ChronoUnit.DAYS))) ve.addValidationError(
                 "searchDate", true, request.searchDate().toString(),
                 "Appointments can not take place in the past!");

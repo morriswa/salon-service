@@ -6,8 +6,8 @@ import java.time.*;
 public record AppointmentRequest(
     Long serviceId,
     Long employeeId,
-    LocalDate searchDate,
-    LocalDateTime time,
+    ZonedDateTime searchDate,
+    ZonedDateTime time,
     Integer length,
     BigDecimal cost,
     ZoneId timeZone
