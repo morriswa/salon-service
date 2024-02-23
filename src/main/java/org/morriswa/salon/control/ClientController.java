@@ -63,7 +63,7 @@ public class ClientController {
     public ResponseEntity<?> cancelAppointment(
             @AuthenticationPrincipal UserAccount principal, @PathVariable Long appointmentId
     ) {
-        clientService.cancelAppointment(principal, appointmentId);
+//        clientService.cancelAppointment(principal, appointmentId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
@@ -75,7 +75,7 @@ public class ClientController {
 
     @GetMapping("/client/billing")
     public ResponseEntity<?> retrieveUnpaidAppointments(@AuthenticationPrincipal UserAccount principal) {
-        final var appointments = clientService.retrieveUnpaidAppointments(principal);
+//        final var appointments = clientService.retrieveUnpaidAppointments(principal);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 

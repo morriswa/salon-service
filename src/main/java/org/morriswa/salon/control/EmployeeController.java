@@ -74,7 +74,7 @@ public class EmployeeController {
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
     ) {
-        employeeService.getProvidedServiceDetails(principal, serviceId);
+//        employeeService.getProvidedServiceDetails(principal, serviceId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
@@ -93,7 +93,7 @@ public class EmployeeController {
         @PathVariable Long serviceId,
         @RequestPart MultipartFile file
     ) throws Exception {
-        employeeService.uploadProvidedServiceImage(principal, serviceId, file);
+//        employeeService.uploadProvidedServiceImage(principal, serviceId, file);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
@@ -110,7 +110,7 @@ public class EmployeeController {
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
     ) {
-        employeeService.deleteProvidedService(principal, serviceId);
+//        employeeService.deleteProvidedService(principal, serviceId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
@@ -184,7 +184,7 @@ public class EmployeeController {
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId
     ) throws Exception {
-        employeeService.cancelAppointment(principal, appointmentId);
+//        employeeService.cancelAppointment(principal, appointmentId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }
