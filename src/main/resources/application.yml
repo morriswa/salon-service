@@ -50,9 +50,3 @@ aws:
   s3:
     bucket: circlesdevocean
     apppath: eecs447/local/
-
-
-# Used to pass maven project name and project version to Spring Boot App
-application:
-  title: @project.name@
-  version: @project.version@
