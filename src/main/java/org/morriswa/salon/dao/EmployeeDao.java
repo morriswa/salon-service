@@ -16,4 +16,8 @@ public interface EmployeeDao {
     void updateAppointmentDetails(Long userId, Long appointmentId, AppointmentRequest request);
 
     void cancelAppointment(Long employeeId, Long appointmentId);
+
+    void addContentToProvidedService(Long serviceId, String contentId);
+
+    boolean serviceBelongsTo(Long serviceId, Long userId);
 }

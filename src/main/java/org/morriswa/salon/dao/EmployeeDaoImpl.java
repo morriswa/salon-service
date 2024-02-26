@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class EmployeeDaoImpl implements EmployeeDao {
@@ -46,6 +48,33 @@ public class EmployeeDaoImpl implements EmployeeDao {
     @Override
     public void cancelAppointment(Long employeeId, Long appointmentId) {
 
+    }
+
+    @Override
+    public void addContentToProvidedService(Long serviceId, String contentId) {
+        final var query = """
+            insert into provided_service_content (service_id, content_id)
+            values (:serviceId, :contentId)
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("serviceId", serviceId);
+            put("contentId", contentId);
+        }};
+
+        database.update(query, params);
+    }
+
+    @Override
+    public boolean serviceBelongsTo(Long serviceId, Long userId) {
+        final var query = """
+            select 1 from provided_service
+            where service_id = :serviceId
+            and employee_id = :employeeId""";
+
+        final var params = Map.of("serviceId", serviceId, "employeeId", userId);
+
+        return Boolean.TRUE.equals(database.query(query, params, ResultSet::next));
     }
 
     @Override
