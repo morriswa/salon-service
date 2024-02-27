@@ -4,7 +4,7 @@ import org.morriswa.salon.enumerated.AppointmentStatus;
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.AvailableService;
+import org.morriswa.salon.model.ServiceDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 import java.time.ZoneId;
 import java.util.*;
 
+/**
+ * AUTHOR: William A. Morris, Kevin Rivers
+ * DATE CREATED: 2024-02-12
+ * PURPOSE: Implements Client DAO to CRUD client info
+ */
 @Component
 public class ClientDaoImpl implements ClientDao {
     private final NamedParameterJdbcTemplate database;
@@ -96,7 +101,7 @@ public class ClientDaoImpl implements ClientDao {
     }
 
     @Override
-    public List<AvailableService> searchAvailableService(String searchText) {
+    public List<ServiceDetails> searchAvailableService(String searchText) {
 
         var tokens = searchText.split(" ");
         var sqlTokens = String.join(" ", Arrays.stream(tokens).map(token->String.format(
@@ -118,10 +123,10 @@ public class ClientDaoImpl implements ClientDao {
         }};
 
         return database.query(query, params, rs -> {
-            var services = new ArrayList<AvailableService>();
+            var services = new ArrayList<ServiceDetails>();
 
             while (rs.next()) {
-                final var employeeInfo = new AvailableService.EmployeeInfo(
+                final var employeeInfo = new ServiceDetails.EmployeeInfo(
                     rs.getLong("employee_id"),
                     rs.getString("first_name"),
                     rs.getString("last_name"),
@@ -130,7 +135,7 @@ public class ClientDaoImpl implements ClientDao {
                     ContactPreference.getEnum(rs.getString("contact_pref")).description
                 );
 
-                services.add(new AvailableService(
+                services.add(new ServiceDetails(
                     rs.getLong("service_id"),
                     rs.getString("provided_service_name"),
                     rs.getBigDecimal("default_cost"),
@@ -144,7 +149,7 @@ public class ClientDaoImpl implements ClientDao {
     }
 
     @Override
-    public AvailableService retrieveServiceDetails(Long serviceId) throws BadRequestException {
+    public ServiceDetails retrieveServiceDetails(Long serviceId) throws BadRequestException {
 
         final var query = """
                 SELECT *
@@ -159,10 +164,10 @@ public class ClientDaoImpl implements ClientDao {
             put("serviceId", serviceId);
         }};
 
-        Optional<AvailableService> service = database.query(query, params, rs -> {
+        Optional<ServiceDetails> service = database.query(query, params, rs -> {
 
             if (rs.next()) {
-                final var employeeInfo = new AvailableService.EmployeeInfo(
+                final var employeeInfo = new ServiceDetails.EmployeeInfo(
                         rs.getLong("employee_id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
@@ -171,7 +176,7 @@ public class ClientDaoImpl implements ClientDao {
                         ContactPreference.getEnum(rs.getString("contact_pref")).description
                 );
 
-                return Optional.of(new AvailableService(
+                return Optional.of(new ServiceDetails(
                         rs.getLong("service_id"),
                         rs.getString("provided_service_name"),
                         rs.getBigDecimal("default_cost"),

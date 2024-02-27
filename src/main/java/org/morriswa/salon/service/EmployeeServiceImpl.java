@@ -2,10 +2,7 @@ package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.EmployeeDao;
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.ProvidedService;
-import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.*;
 import org.morriswa.salon.utility.AmazonS3Client;
 import org.morriswa.salon.utility.ImageScaleUtil;
 import org.morriswa.salon.validation.ImageValidator;
@@ -93,9 +90,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<URL> getProvidedServiceDetails(UserAccount principal, Long serviceId) throws Exception {
+    public ServiceDetailsResponse getProvidedServiceDetails(UserAccount principal, Long serviceId) throws Exception {
 
         var contentIds = employeeDao.retrieveProvidedServiceContent(principal.getUserId(), serviceId);
+
+        var providedService = employeeDao.retrieveProvidedServiceDetails(serviceId);
 
         List<URL> contentUrls = new ArrayList<>();
 
@@ -104,7 +103,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             contentUrls.add(url);
         }
 
-        return contentUrls;
+        return new ServiceDetailsResponse(providedService, contentUrls);
     }
 
     @Override

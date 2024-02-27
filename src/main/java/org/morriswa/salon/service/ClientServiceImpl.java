@@ -53,7 +53,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<AvailableService> searchAvailableService(UserAccount principal, String searchText) {
+    public List<ServiceDetails> searchAvailableService(UserAccount principal, String searchText) {
 
         if (StrTools.hasValue(searchText)) return clientDao.searchAvailableService(searchText);
 
@@ -61,7 +61,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public AvailableService retrieveServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException {
+    public ServiceDetails retrieveServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException {
         return clientDao.retrieveServiceDetails(serviceId);
     }
 }

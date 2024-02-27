@@ -20,6 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * AUTHOR: William A. Morris, Kevin Rivers, Makenna Loewenherz <br>
+ * CREATION_DATE: 2024-01-22 <br>
+ * PURPOSE: <br>
+ * &emsp; provides an interface for interacting with the database to perform essential User actions
+ */
+
 @Component @SuppressWarnings("null")
 public class UserProfileDaoImpl implements UserProfileDao {
 

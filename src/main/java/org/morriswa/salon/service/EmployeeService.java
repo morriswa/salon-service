@@ -1,21 +1,17 @@
 package org.morriswa.salon.service;
 
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.Appointment;
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.ProvidedService;
-import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface EmployeeService {
     
     void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) throws Exception;
 
-    List<URL> getProvidedServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException, Exception;
+    ServiceDetailsResponse getProvidedServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException, Exception;
 
     List<ProvidedService> retrieveAllProvidedServices(UserAccount principal);
 

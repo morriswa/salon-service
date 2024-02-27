@@ -10,6 +10,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * AUTHOR: William A. Morris
+ * DATE CREATED: 2024-02-26
+ * PURPOSE: Scales images using Java
+ */
+
 @Component
 public class ImageScaleUtilImpl implements ImageScaleUtil {
 

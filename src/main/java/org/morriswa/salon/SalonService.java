@@ -10,11 +10,11 @@ import java.util.TimeZone;
  * AUTHOR: William A. Morris <br>
  * CREATION_DATE: 2024-01-19 <br>
  * PURPOSE: <br>
- * &emsp; will bootstrap and run the eecs447 project service
+ * &emsp; will bootstrap and run the eecs447 project salon service
  */
 
 // Do NOT use Spring Data Source Configuration,
-// Data Source will be manually configured in org.morriswa.eecs447.config.DatasourceConfig
+// Data Source will be manually configured in org.morriswa.salon.config.DatasourceConfig
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class SalonService {
     public static void main(String[] args) {

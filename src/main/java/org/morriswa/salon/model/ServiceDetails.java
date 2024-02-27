@@ -2,7 +2,7 @@ package org.morriswa.salon.model;
 
 import java.math.BigDecimal;
 
-public record AvailableService(
+public record ServiceDetails(
     Long serviceId,
     String name,
     BigDecimal cost,

@@ -1,17 +1,22 @@
 package org.morriswa.salon.dao;
 
+import org.morriswa.salon.enumerated.ContactPreference;
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.AppointmentRequest;
+import org.morriswa.salon.model.ServiceDetails;
 import org.morriswa.salon.model.ProvidedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * AUTHOR: William A. Morris
+ * DATE CREATED: 2024-02-01
+ * PURPOSE: Implements Employee DAO to CRUD employee info
+ */
 @Component
 public class EmployeeDaoImpl implements EmployeeDao {
      
@@ -92,6 +97,44 @@ public class EmployeeDaoImpl implements EmployeeDao {
                 response.add(rs.getString("content_id"));
             return response;
         });
+    }
+
+    @Override
+    public ServiceDetails retrieveProvidedServiceDetails(Long serviceId) throws Exception {
+        final var query = """
+            select *
+            from provided_service ps
+            left join contact_info emp on ps.employee_id=emp.user_id
+            where service_id=:serviceId""";
+
+        final var params = new HashMap<String, Object>(){{
+            put("serviceId", serviceId);
+        }};
+
+        final Optional<ServiceDetails> providedService = database.query(query, params, rs -> {
+             if (rs.next()) {
+                 final var employeeInfo = new ServiceDetails.EmployeeInfo(
+                         rs.getLong("employee_id"),
+                         rs.getString("first_name"),
+                         rs.getString("last_name"),
+                         rs.getString("phone_num"),
+                         rs.getString("email"),
+                         ContactPreference.getEnum(rs.getString("contact_pref")).description
+                 );
+
+                 return Optional.of(new ServiceDetails(
+                         rs.getLong("service_id"),
+                         rs.getString("provided_service_name"),
+                         rs.getBigDecimal("default_cost"),
+                         rs.getInt("default_length") * 15,
+                         employeeInfo
+                 ));
+             }
+
+            return Optional.empty();
+        });
+
+        return providedService.orElseThrow(()->new BadRequestException("Could not find provided service!"));
     }
 
     @Override
