@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -84,21 +86,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         final UUID newResourceId = UUID.randomUUID();
 
         // upload content to S3
-        s3.uploadToS3(scaledImage, newResourceId.toString());
+        s3.uploadToS3(scaledImage, image.getContentType(), newResourceId.toString());
 
         // and add to db
         employeeDao.addContentToProvidedService(serviceId, newResourceId.toString());
     }
 
     @Override
-    public void getProvidedServiceDetails(UserAccount principal, Long serviceId) throws Exception {
+    public List<URL> getProvidedServiceDetails(UserAccount principal, Long serviceId) throws Exception {
 
-        // ensure service belongs to authenticated user
-        if (!employeeDao.serviceBelongsTo(serviceId, principal.getUserId()))
-            throw new BadRequestException("You are not allowed to edit this service!");
+        var contentIds = employeeDao.retrieveProvidedServiceContent(principal.getUserId(), serviceId);
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getProvidedServiceDetails'");
+        List<URL> contentUrls = new ArrayList<>();
+
+        for (var id : contentIds) {
+            final var url = s3.getSignedObjectUrl(id, 30);
+            contentUrls.add(url);
+        }
+
+        return contentUrls;
     }
 
     @Override

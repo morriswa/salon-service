@@ -78,6 +78,23 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public List<String> retrieveProvidedServiceContent(Long userId, Long serviceId) {
+
+        final var query = """
+            select content_id from provided_service_content
+            where service_id = :serviceId""";
+
+        final var params = Map.of("serviceId", serviceId);
+
+        return database.query(query, params, rs -> {
+            List<String> response = new ArrayList<>();
+            while(rs.next())
+                response.add(rs.getString("content_id"));
+            return response;
+        });
+    }
+
+    @Override
     public List<ProvidedService> retrieveAllProvidedServices(Long employeeId) {
         final var query = """
             select *

@@ -21,7 +21,6 @@ salon:
 server:
   # service will be available on this port
   port: 8080
-  cache: ./localfilecache/
 
 
 # Settings for Spring Boot

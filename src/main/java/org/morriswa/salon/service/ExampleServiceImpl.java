@@ -35,7 +35,7 @@ public class ExampleServiceImpl implements ExampleService {
 
     @Override
     public void testImageUpload(MultipartFile file, String path) throws Exception {
-        store.uploadToS3(file.getBytes(), path);
+//        store.uploadToS3(file.getBytes(), path);
     }
 
     @Override

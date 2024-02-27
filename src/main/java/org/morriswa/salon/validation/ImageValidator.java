@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ImageValidator {
 
-    public static final List<String> permittedContentTypes = List.of("jpg","png");
+    public static final List<String> permittedContentTypes = List.of("image/jpg","image/jpeg","image/png");
 
     public static void validateImageFormat(MultipartFile image) throws ValidationException {
         ValidationException ve = new ValidationException();

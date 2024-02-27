@@ -20,4 +20,6 @@ public interface EmployeeDao {
     void addContentToProvidedService(Long serviceId, String contentId);
 
     boolean serviceBelongsTo(Long serviceId, Long userId);
+
+    List<String> retrieveProvidedServiceContent(Long userId, Long serviceId);
 }

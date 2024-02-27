@@ -64,8 +64,13 @@ public class ImageScaleUtilImpl implements ImageScaleUtil {
 
         // open bytestream
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+        final String imageFormat = imageRequest.getContentType().substring(
+                imageRequest.getContentType().indexOf("/") + 1
+        );
+
         // write image to bytestream in original format
-        ImageIO.write(outputImage, imageRequest.getContentType(), byteStream);
+        ImageIO.write(outputImage, imageFormat, byteStream);
         // close bytestream
         byteStream.close();
 

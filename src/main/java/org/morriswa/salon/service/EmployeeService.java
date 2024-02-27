@@ -1,5 +1,6 @@
 package org.morriswa.salon.service;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface EmployeeService {
     
     void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) throws Exception;
 
-    void getProvidedServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException, Exception;
+    List<URL> getProvidedServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException, Exception;
 
     List<ProvidedService> retrieveAllProvidedServices(UserAccount principal);
 

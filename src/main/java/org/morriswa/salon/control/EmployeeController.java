@@ -74,8 +74,8 @@ public class EmployeeController {
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
     ) throws Exception {
-        employeeService.getProvidedServiceDetails(principal, serviceId);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        var urls = employeeService.getProvidedServiceDetails(principal, serviceId);
+        return ResponseEntity.ok(urls);
     }
 
     /**
@@ -94,7 +94,7 @@ public class EmployeeController {
         @RequestPart MultipartFile image
     ) throws Exception {
         employeeService.uploadProvidedServiceImage(principal, serviceId, image);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.noContent().build();
     }
 
     /**
