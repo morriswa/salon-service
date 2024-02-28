@@ -1,10 +1,7 @@
 package org.morriswa.salon.validation;
 
-import org.morriswa.salon.enumerated.AccountType;
 import org.morriswa.salon.enumerated.ContactPreference;
-import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.AccountRequest;
 import org.morriswa.salon.model.ContactInfo;
 
 /**
@@ -65,23 +62,6 @@ public class UserProfileValidator {
         if (!password.equals(confirmPassword))
             throw new ValidationException("confirmPassword", true, "********",
                     "Fields 'password' and 'confirmPassword' must be matching!");
-    }
-
-    public static void validatePromoteRequestOrThrow(AccountRequest request) throws ValidationException, BadRequestException {
-        
-        if (!StrTools.hasValue(request.role()))
-            throw new ValidationException("role", true, request.role(), "Field must not be blank!");
-
-        if (AccountType.getEnum(request.role())==null) 
-            throw new BadRequestException("Invalid account type code! Must be 'USR', 'CLT', 'EMP', 'ADM'...");
-
-        boolean usernameIsMissing = false;
-        if (!StrTools.hasValue(request.username())) usernameIsMissing = true;
-
-        boolean userIdIsMissing = request.userId()==null;
-
-        if (userIdIsMissing && usernameIsMissing)
-            throw new BadRequestException("Must include 'userId' or 'username' field in request!");
     }
 
     public static void validateCreateProfileRequestOrThrow(ContactInfo createProfileRequest) throws ValidationException {

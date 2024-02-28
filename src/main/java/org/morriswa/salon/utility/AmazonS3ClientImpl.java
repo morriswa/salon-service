@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,30 +15,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.FileSystemException;
 import java.time.Instant;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 public class AmazonS3ClientImpl implements AmazonS3Client {
     private final Logger log;
-    private final String FILE_DEST_PREFIX;
-    private final String INTERNAL_FILE_CACHE_PATH;
-    private final Environment e;
     private final AmazonS3 s3;
+
     private final String ACTIVE_BUCKET;
+    private final String FILE_DEST_PREFIX;
 
     @Autowired
     AmazonS3ClientImpl(Environment e) {
         this.log = LoggerFactory.getLogger(AmazonS3ClientImpl.class);
-        this.e = e;
         this.s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
         this.ACTIVE_BUCKET = e.getRequiredProperty("aws.s3.bucket");
         this.FILE_DEST_PREFIX = e.getRequiredProperty("aws.s3.apppath");
-        this.INTERNAL_FILE_CACHE_PATH = e.getRequiredProperty("server.cache");
         try { // attempt to access test file within S3 bucket
             s3.doesObjectExist(this.ACTIVE_BUCKET, "eecs447/hello-world.txt");
             log.info("Successfully started Amazon S3 Client!");
@@ -54,25 +51,20 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
     }
 
     @Override
-    public void uploadToS3(byte[] content, String destination) throws IOException {
+    public void uploadToS3(byte[] content, String contentType, String destination) {
 
-        final UUID cachePath = UUID.randomUUID();
+        InputStream inputStream = new ByteArrayInputStream(content);
 
-        File temp = new File(this.INTERNAL_FILE_CACHE_PATH + cachePath);
-
-        OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(temp));
-        outputStream.write(content);
-        outputStream.close();
-
-        if (!temp.exists())
-            throw new FileSystemException("Failed to cache provided file for upload!");
+        final ObjectMetadata imageInfo; {
+            var info = new ObjectMetadata();
+            info.setContentLength(content.length);
+            info.setContentType(contentType);
+            imageInfo = info;
+        }
 
         s3.putObject(new PutObjectRequest(ACTIVE_BUCKET,
                 this.FILE_DEST_PREFIX+destination,
-                temp));
-
-        if (!temp.delete())
-            throw new FileSystemException("Failed to delete cached file after upload!");
+                inputStream, imageInfo));
     }
 
     @Override

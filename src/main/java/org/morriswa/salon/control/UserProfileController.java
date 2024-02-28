@@ -143,19 +143,37 @@ public class UserProfileController {
     }
 
     /**
-     * HTTP Patch endpoint used to promote existing users. Can only be accessed by system administrators
+     * HTTP Patch endpoint for users to enter an access code to gain access to the employee portal
      *
-     * @param principal authenticated administrator
-     * @param request containing information about the user to promote and their new application role
+     * @param principal of the authenticated user
+     * @param accessCode employee access code
      * @return blank response
-     * @throws Exception return error response if the user could not be promoted
+     * @throws Exception return error response if access code is incorrect
      */
-    @PatchMapping("/admin/promote")
-    public ResponseEntity<?> promoteUser(
-        @AuthenticationPrincipal UserAccount principal,
-        @RequestBody AccountRequest request
+    @PatchMapping("/user/access/employee")
+    public ResponseEntity<?> unlockEmployeePortal(
+            @AuthenticationPrincipal UserAccount principal,
+            @RequestParam String accessCode
     ) throws Exception {
-        userService.promoteUser(principal, request);
+        userService.unlockEmployeePortalWithCode(principal, accessCode);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * HTTP Patch endpoint for legacy users
+     * and users experiencing registration errors
+     * to access the client portal
+     *
+     * @param principal of the authenticated user
+     * @return blank response
+     * @throws Exception return error response if client access cannot be granted
+     */
+    @PatchMapping("/user/access/client")
+    public ResponseEntity<?> unlockClientPortal(
+            @AuthenticationPrincipal UserAccount principal
+    ) throws Exception {
+        userService.unlockClientPortal(principal);
+        return ResponseEntity.noContent().build();
+    }
+
 }

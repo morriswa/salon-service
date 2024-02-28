@@ -23,12 +23,9 @@ public class DatasourceConfig {  //will provide all mysql config for the applica
 
     private final Environment e;
 
-    private final Logger log;
-
 
     @Autowired public DatasourceConfig(Environment e) {
         this.e = e;
-        this.log = LoggerFactory.getLogger(DatasourceConfig.class);
     }
 
 

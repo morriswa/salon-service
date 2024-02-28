@@ -21,6 +21,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * AUTHOR: William A. Morris, Makenna Loewenherz
+ * DATE CREATED: 2024-02-01
+ * PURPOSE: Implements Schedule DAO to CRUD the salon's schedule
+ */
 @Component
 public class ScheduleDaoImpl  implements ScheduleDao{
 
@@ -460,10 +465,10 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
                 result.add(new Appointment(
                     rs.getLong("appointment_id"),
-                    rs.getTimestamp("appointment_time").toInstant().atZone(SALON_TIME_ZONE),
+                    rs.getTimestamp("appointment_time").toInstant().atZone(UTC),
                     rs.getInt("length")*15,
-                    rs.getTimestamp("date_created").toInstant().atZone(SALON_TIME_ZONE),
-                    rs.getTimestamp("date_due").toInstant().atZone(SALON_TIME_ZONE),
+                    rs.getTimestamp("date_created").toInstant().atZone(UTC),
+                    rs.getTimestamp("date_due").toInstant().atZone(UTC),
                     rs.getBigDecimal("actual_amount"),
                     rs.getBigDecimal("tip_amount"),
                     AppointmentStatus.getEnum(rs.getString("status")).toString(),

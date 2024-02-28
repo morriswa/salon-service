@@ -73,9 +73,9 @@ public class EmployeeController {
     public ResponseEntity<?> getProvidedServiceDetails(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
-    ) {
-//        employeeService.getProvidedServiceDetails(principal, serviceId);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    ) throws Exception {
+        var urls = employeeService.getProvidedServiceDetails(principal, serviceId);
+        return ResponseEntity.ok(urls);
     }
 
     /**
@@ -83,7 +83,7 @@ public class EmployeeController {
      *
      * @param principal currently authenticated employee
      * @param serviceId associated with the service to modify
-     * @param file an image to add to service's profile
+     * @param image an image to add to service's profile
      * @return no content
      * @throws Exception return error response if the image could not be stored
      */
@@ -91,10 +91,10 @@ public class EmployeeController {
     public ResponseEntity<?> uploadProvidedServiceImage(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId,
-        @RequestPart MultipartFile file
+        @RequestPart MultipartFile image
     ) throws Exception {
-//        employeeService.uploadProvidedServiceImage(principal, serviceId, file);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        employeeService.uploadProvidedServiceImage(principal, serviceId, image);
+        return ResponseEntity.noContent().build();
     }
 
     /**

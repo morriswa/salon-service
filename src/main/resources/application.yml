@@ -1,4 +1,4 @@
-# Salon Service Configuration V0.0.1
+# Salon Service Configuration V0.0.5
 # file to store ALL application configuration properties
 # all props can be overridden by injecting Java Environment Variables
 #   capitalize config property and replace periods and hyphens with underscores
@@ -15,13 +15,14 @@ salon:
   hours:
     open: '9:00 AM'
     close: '7:00 pm'
+  # salon's employee access code
+  employee-code: 'IAMEMPLOYEE'
 
 
 # Vital server configuration
 server:
   # service will be available on this port
   port: 8080
-  cache: ./localfilecache/
 
 
 # Settings for Spring Boot

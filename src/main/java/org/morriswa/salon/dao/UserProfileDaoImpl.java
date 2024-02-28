@@ -1,9 +1,9 @@
 package org.morriswa.salon.dao;
 
-import org.morriswa.salon.enumerated.AccountType;
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
+import org.morriswa.salon.model.AccountPermissions;
 import org.morriswa.salon.model.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +19,13 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+/**
+ * AUTHOR: William A. Morris, Kevin Rivers, Makenna Loewenherz <br>
+ * CREATION_DATE: 2024-01-22 <br>
+ * PURPOSE: <br>
+ * &emsp; provides an interface for interacting with the database to perform essential User actions
+ */
 
 @Component @SuppressWarnings("null")
 public class UserProfileDaoImpl implements UserProfileDao {
@@ -41,7 +48,14 @@ public class UserProfileDaoImpl implements UserProfileDao {
         final var params = Map.of("username",username);
         return database.query(query, params, rs->{
             // check that a database record exists
-            if (rs.next())
+            if (rs.next()) {
+                final AccountPermissions perms = new AccountPermissions(
+                    true,
+                    rs.getString("access_client").equals("Y"),
+                    rs.getString("access_employee").equals("Y"),
+                    rs.getString("access_admin").equals("Y")
+                );
+
                 // and return the requested user, formatted for compatibility with Spring Security Filter
                 return new UserAccount(
                     // retrieve column "user_id" from result set as Long
@@ -54,7 +68,8 @@ public class UserProfileDaoImpl implements UserProfileDao {
                     rs.getTimestamp("date_created")
                         // and cast to Zoned Date Time at System Date.
                         .toLocalDateTime().atZone(ZoneId.systemDefault()),
-                    rs.getString("account_type"));
+                    perms);
+            }
             // if a record is not found, throw an exception. This will trigger a 401 Http Response.
             throw new UsernameNotFoundException(String.format("Could not locate user %s", username));
         });
@@ -265,22 +280,15 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void promoteUser(Long promoterId, Long userId, AccountType role) {
-        final var query = "update user_account set account_type = :accountCode, promoter = :promoterId where user_id = :userId";
-        final var params = Map.of("accountCode", role.code, "promoterId", promoterId, "userId", userId);
-        database.update(query, params);
-    }
-
-    @Override
-    public void promoteUser(Long promoterId, String username, AccountType role) {
-        final var query = "update user_account set account_type = :accountCode, promoter = :promoterId where username = :username";
-        final var params = Map.of("accountCode", role.code, "promoterId", promoterId, "username", username);
-        database.update(query, params);
-    }
-
-    @Override
     public void unlockClientPermissions(Long userId) {
-        final var query = "update user_account set account_type = 'CLT' where user_id = :userId";
+        final var query = "update user_account set access_client = 'Y' where user_id = :userId";
+        final var params = Map.of("userId", userId);
+        database.update(query, params);
+    }
+
+    @Override
+    public void unlockEmployeePermissions(Long userId) {
+        final var query = "update user_account set access_employee = 'Y' where user_id = :userId";
         final var params = Map.of("userId", userId);
         database.update(query, params);
     }

@@ -5,7 +5,7 @@ import java.net.URL;
 
 public interface AmazonS3Client {
 
-    void uploadToS3(byte[] content, String destination) throws IOException;
+    void uploadToS3(byte[] content, String contentType, String destination) throws IOException;
 
     boolean doesObjectExist(String path);
 
