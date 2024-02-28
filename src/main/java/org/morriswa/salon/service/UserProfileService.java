@@ -26,4 +26,6 @@ public interface UserProfileService {
     void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception;
 
     void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException;
+
+    void unlockClientPortal(UserAccount principal) throws Exception;
 }

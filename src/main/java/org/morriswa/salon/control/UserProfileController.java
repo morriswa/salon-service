@@ -159,4 +159,19 @@ public class UserProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * HTTP Patch endpoint for users to enter an access code to gain access to the employee portal
+     *
+     * @param principal of the authenticated user
+     * @return blank response
+     * @throws Exception return error response if access code is incorrect
+     */
+    @PatchMapping("/user/access/client")
+    public ResponseEntity<?> unlockClientPortal(
+            @AuthenticationPrincipal UserAccount principal
+    ) throws Exception {
+        userService.unlockClientPortal(principal);
+        return ResponseEntity.noContent().build();
+    }
+
 }

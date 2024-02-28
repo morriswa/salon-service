@@ -117,4 +117,11 @@ public class UserProfileServiceImpl implements UserProfileService {
         userProfileDao.unlockEmployeePermissions(principal.getUserId());
     }
 
+    @Override
+    public void unlockClientPortal(UserAccount principal) throws Exception {
+        userProfileDao.getContactInfo(principal.getUserId());
+
+        userProfileDao.unlockClientPermissions(principal.getUserId());
+    }
+
 }
