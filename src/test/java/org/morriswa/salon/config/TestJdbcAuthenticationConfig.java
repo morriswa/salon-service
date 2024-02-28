@@ -2,7 +2,7 @@ package org.morriswa.salon.config;
 
 import java.time.ZonedDateTime;
 
-import org.morriswa.salon.enumerated.AccountType;
+import org.morriswa.salon.model.AccountPermissions;
 import org.morriswa.salon.model.UserAccount;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -32,6 +32,34 @@ public class TestJdbcAuthenticationConfig {
     @Value("${testing.password}")
     private String testingPassword;
 
+    private final AccountPermissions userPermissions = new AccountPermissions(
+            true,
+            false,
+            false,
+            false
+    );
+
+    private final AccountPermissions clientPermissions = new AccountPermissions(
+            true,
+            true,
+            false,
+            false
+    );
+
+    private final AccountPermissions employeePermissions = new AccountPermissions(
+            true,
+            true,
+            true,
+            false
+    );
+
+    private final AccountPermissions adminPermissions = new AccountPermissions(
+            true,
+            true,
+            true,
+            true
+    );
+
     @Bean("testUserAccount") @Primary
     public UserDetailsService getTestUserAccount() {
         return username -> new UserAccount(
@@ -39,7 +67,7 @@ public class TestJdbcAuthenticationConfig {
             testingUsername,
             testingPassword,
             ZonedDateTime.now().minusDays(3),
-            AccountType.User.code);
+            userPermissions);
     }
 
     @Bean("testClientAccount")
@@ -49,7 +77,7 @@ public class TestJdbcAuthenticationConfig {
             testingUsername,
             testingPassword,
             ZonedDateTime.now().minusDays(3),
-            AccountType.Client.code);
+            clientPermissions);
     }
 
     @Bean("testEmployeeAccount")
@@ -59,7 +87,7 @@ public class TestJdbcAuthenticationConfig {
             testingUsername,
             testingPassword,
             ZonedDateTime.now().minusDays(3),
-            AccountType.Employee.code);
+            employeePermissions);
     }
 
     @Bean("testAdminAccount")
@@ -69,6 +97,6 @@ public class TestJdbcAuthenticationConfig {
             testingUsername,
             testingPassword,
             ZonedDateTime.now().minusDays(3),
-            AccountType.Admin.code);
+            adminPermissions);
     }
 }

@@ -35,8 +35,6 @@ public class ServiceTest {
 
     @Autowired protected Environment e;
 
-    @MockBean protected ExampleDao exampleDao;
-
     @MockBean protected UserProfileDao userProfileDao;
 
     @MockBean protected EmployeeDao employeeDao;

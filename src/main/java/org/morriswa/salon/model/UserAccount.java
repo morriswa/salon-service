@@ -1,13 +1,12 @@
 package org.morriswa.salon.model;
 
-import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.Set;
-
-import org.morriswa.salon.enumerated.AccountType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Custom implementation of Spring Security's User Details interface
@@ -23,14 +22,14 @@ public class UserAccount implements UserDetails {
     private final String username;
     private final String encodedPassword;
     private final ZonedDateTime dateCreated;
-    private final AccountType role;
+    private final AccountPermissions permissions;
 
-    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated, String role) {
+    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated, AccountPermissions permissions) {
         this.userId = userId;
         this.username = username;
         this.encodedPassword = encodedPassword;
         this.dateCreated = dateCreated;
-        this.role = AccountType.getEnum(role);
+        this.permissions = permissions;
     }
 
     public Long getUserId() {
@@ -43,25 +42,15 @@ public class UserAccount implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        switch (this.role) {
-            case Admin:
-                return Set.of(
-                    new SimpleGrantedAuthority("ADMIN"),
-                    new SimpleGrantedAuthority("EMPLOYEE"),
-                    new SimpleGrantedAuthority("CLIENT"),
-                    new SimpleGrantedAuthority("USER"));
-            case Employee:
-                return Set.of(
-                    new SimpleGrantedAuthority("EMPLOYEE"),
-                    new SimpleGrantedAuthority("CLIENT"),
-                    new SimpleGrantedAuthority("USER"));
-            case Client:
-                return Set.of(
-                    new SimpleGrantedAuthority("CLIENT"),
-                    new SimpleGrantedAuthority("USER"));
-            default:
-                return Set.of(new SimpleGrantedAuthority("USER"));
-        }
+        var authorities = new HashSet<GrantedAuthority>(){{ add(new SimpleGrantedAuthority("USER")); }};
+
+        if (permissions.client()) authorities.add(new SimpleGrantedAuthority("CLIENT"));
+
+        if (permissions.employee()) authorities.add(new SimpleGrantedAuthority("EMPLOYEE"));
+
+        if (permissions.admin()) authorities.add(new SimpleGrantedAuthority("ADMIN"));
+
+        return authorities;
     }
 
     @Override

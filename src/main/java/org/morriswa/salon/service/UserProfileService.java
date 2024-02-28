@@ -1,5 +1,6 @@
 package org.morriswa.salon.service;
 
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.*;
 
 /**
@@ -24,6 +25,5 @@ public interface UserProfileService {
 
     void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception;
 
-    void promoteUser(UserAccount principal, AccountRequest request) throws Exception;
-
+    void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException;
 }

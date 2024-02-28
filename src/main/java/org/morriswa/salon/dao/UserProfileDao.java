@@ -1,7 +1,6 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.model.UserAccount;
-import org.morriswa.salon.enumerated.AccountType;
 import org.morriswa.salon.model.ContactInfo;
 
 
@@ -39,9 +38,7 @@ public interface UserProfileDao {
 
     void updateUserContactInfo(Long userId, ContactInfo request) throws Exception;
 
-    void promoteUser(Long promoterId, Long userId, AccountType role);
-
-    void promoteUser(Long promoterId, String username, AccountType role);
-
     void unlockClientPermissions(Long userId);
+
+    void unlockEmployeePermissions(Long userId);
 }

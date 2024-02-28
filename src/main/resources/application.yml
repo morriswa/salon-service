@@ -15,6 +15,7 @@ salon:
   hours:
     open: '9:00 AM'
     close: '7:00 pm'
+  employee-code: 'IAMEMPLOYEE'
 
 
 # Vital server configuration

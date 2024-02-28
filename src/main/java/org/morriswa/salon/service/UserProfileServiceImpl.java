@@ -1,10 +1,12 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.UserProfileDao;
-import org.morriswa.salon.enumerated.AccountType;
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.*;
+import org.morriswa.salon.validation.StrTools;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,12 @@ import java.util.stream.Collectors;
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileDao userProfileDao;
+    private final String employeeAccessCode;
 
     @Autowired
-    public UserProfileServiceImpl(UserProfileDao userProfileDao) {
+    public UserProfileServiceImpl(Environment e, UserProfileDao userProfileDao) {
         this.userProfileDao = userProfileDao;
+        this.employeeAccessCode = e.getRequiredProperty("salon.employee-code");
     }
 
 
@@ -106,13 +110,11 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void promoteUser(UserAccount principal, AccountRequest request) throws Exception {
+    public void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException {
+        if (!StrTools.hasValue(code) || !code.equals(employeeAccessCode))
+            throw new BadRequestException("Bad access code!");
 
-        UserProfileValidator.validatePromoteRequestOrThrow(request);
-
-        if (request.userId()!=null)
-            userProfileDao.promoteUser(principal.getUserId(), request.userId(), AccountType.getEnum(request.role()));
-        else userProfileDao.promoteUser(principal.getUserId(), request.username(), AccountType.getEnum(request.role()));
+        userProfileDao.unlockEmployeePermissions(principal.getUserId());
     }
 
 }
