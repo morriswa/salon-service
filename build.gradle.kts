@@ -1,7 +1,9 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     java
+    idea
     id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
 }
@@ -31,18 +33,9 @@ springBoot  {
     buildInfo ()
 }
 
-tasks.withType<JavaCompile>() {
-    options.encoding = "UTF-8"
-}
-
-tasks.withType<Javadoc>() {
-    options.encoding = "UTF-8"
-}
-
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-
 
 springBoot {
     mainClass.set("org.morriswa.salon.SalonService")
@@ -52,5 +45,14 @@ tasks.getByName<BootJar>("bootJar") {
     this.archiveFileName.set("${archiveBaseName.get()}.${archiveExtension.get()}")
     this.manifest.attributes["Implementation-Title"] = project.description
     this.manifest.attributes["Implementation-Version"] = project.version
+}
+
+tasks.getByName<BootRun>("bootRun") {
+    doFirst {
+        environment(mapOf(
+                "APPLICATION_TITLE" to project.description,
+                "application.version" to project.version
+        ))
+    }
 }
 
