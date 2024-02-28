@@ -160,11 +160,13 @@ public class UserProfileController {
     }
 
     /**
-     * HTTP Patch endpoint for users to enter an access code to gain access to the employee portal
+     * HTTP Patch endpoint for legacy users
+     * and users experiencing registration errors
+     * to access the client portal
      *
      * @param principal of the authenticated user
      * @return blank response
-     * @throws Exception return error response if access code is incorrect
+     * @throws Exception return error response if client access cannot be granted
      */
     @PatchMapping("/user/access/client")
     public ResponseEntity<?> unlockClientPortal(
