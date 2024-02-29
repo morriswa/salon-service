@@ -165,7 +165,7 @@ public class EmployeeController {
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
             @RequestBody AppointmentRequest request
-            ) throws Exception {
+    ) throws Exception {
         employeeService.updateAppointmentDetails(principal, appointmentId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -11,7 +11,7 @@ public interface EmployeeService {
     
     void createProvidedService(UserAccount principal, ProvidedService createProvidedServiceRequest) throws Exception;
 
-    ServiceDetailsResponse getProvidedServiceDetails(UserAccount principal, Long serviceId) throws BadRequestException, Exception;
+    ServiceDetailsResponse getProvidedServiceDetails(UserAccount principal, Long serviceId) throws Exception;
 
     List<ProvidedService> retrieveAllProvidedServices(UserAccount principal);
 

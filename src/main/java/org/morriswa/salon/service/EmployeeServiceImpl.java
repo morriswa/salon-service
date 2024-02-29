@@ -92,9 +92,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public ServiceDetailsResponse getProvidedServiceDetails(UserAccount principal, Long serviceId) throws Exception {
 
-        var contentIds = employeeDao.retrieveProvidedServiceContent(principal.getUserId(), serviceId);
-
         var providedService = employeeDao.retrieveProvidedServiceDetails(serviceId);
+
+        var contentIds = employeeDao.retrieveProvidedServiceContent(principal.getUserId(), serviceId);
 
         List<URL> contentUrls = new ArrayList<>();
 
