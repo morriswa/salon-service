@@ -9,10 +9,10 @@ public class ProvidedServiceValidator {
         ValidationException ve = new ValidationException();
 
         // cost rules
-        if (createProvidedServiceRequest.defaultCost().scale() != 2) ve.addValidationError(
+        if (createProvidedServiceRequest.defaultCost().scale() > 2) ve.addValidationError(
             "defaultCost",true, createProvidedServiceRequest.defaultCost().toString(),
             "Please enter a valid monetary value (two decimal places).");
-        if (createProvidedServiceRequest.defaultCost().precision() > 5) ve.addValidationError(
+        if ((createProvidedServiceRequest.defaultCost().precision()-createProvidedServiceRequest.defaultCost().scale()) > 3) ve.addValidationError(
             "defaultCost",true, createProvidedServiceRequest.defaultCost().toString(),
             "Service charges over $999.99 are not permitted.");
         if (createProvidedServiceRequest.defaultCost().doubleValue() <= 0.00
