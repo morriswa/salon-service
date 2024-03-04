@@ -1,6 +1,6 @@
 
 # Salon MySQL Instance 
-## Current DB Version: 1.7
+## Current DB Version: 1.8
 #### Upgrade to V1 from New Schema (when run from project directory)
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1__CreateUserAccountTable.sql
 #### V1 -> V1.1
@@ -17,6 +17,8 @@
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.6__CreateProvidedServiceContentTable.sql
 #### V1.6 -> V1.7
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.7__MigrateUserAccountPermissions.sql
+#### V1.7 -> V1.8
+    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.8__CreateEmployeeClientTables.sql
 
 If you run into DAO errors, please ensure your database schema matches the current version.
 

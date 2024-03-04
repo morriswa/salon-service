@@ -43,7 +43,7 @@ public class ClientDaoImpl implements ClientDao {
                 appt.actual_amount,
                 appt.tip_amount,
                 appt.status,
-                appt.employee_id,
+                service.employee_id,
                 emply_info.first_name,
                 emply_info.last_name,
                 emply_info.phone_num,
@@ -52,8 +52,8 @@ public class ClientDaoImpl implements ClientDao {
                 service.service_id,
                 service.provided_service_name
             from appointment appt
-            left join contact_info emply_info on appt.employee_id = emply_info.user_id
             left join provided_service service on appt.service_id = service.service_id
+            left join contact_info emply_info on service.employee_id = emply_info.user_id
             where appt.client_id = :clientId
             and appt.appointment_time > NOW()
             order by appt.appointment_time""";

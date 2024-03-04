@@ -433,7 +433,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             from appointment appt
             LEFT JOIN contact_info ci ON appt.client_id = ci.user_id
             LEFT JOIN provided_service ps ON appt.service_id = ps.service_id
-            where appt.employee_id = :employeeId
+            where ps.employee_id = :employeeId
             and
                 appt.appointment_time between :startSearch and :endSearch
 

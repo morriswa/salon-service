@@ -3,20 +3,21 @@ package org.morriswa.salon.dao;
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.AccountPermissions;
+import org.morriswa.salon.model.ContactInfo;
 import org.morriswa.salon.model.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.morriswa.salon.model.ContactInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -44,17 +45,32 @@ public class UserProfileDaoImpl implements UserProfileDao {
     @Override
     public UserAccount findUser(String username) {
         // defn query, inject params, query database and return the result
-        final var query = "select * from user_account where username=:username";
+        final var query = """
+            select
+                uac.user_id,
+                uac.username,
+                uac.password,
+                uac.date_created,
+                IFNULL((select 1 from employee where employee_id=uac.user_id), 0)
+                    as isEmployee,
+                IFNULL((select 1 from client where client_id=uac.user_id), 0)
+                    as isClient
+                from user_account uac where username=:username""";
+
+
+
         final var params = Map.of("username",username);
         return database.query(query, params, rs->{
             // check that a database record exists
             if (rs.next()) {
-                final AccountPermissions perms = new AccountPermissions(
-                    true,
-                    rs.getString("access_client").equals("Y"),
-                    rs.getString("access_employee").equals("Y"),
-                    rs.getString("access_admin").equals("Y")
-                );
+
+                var perms = new HashSet<SimpleGrantedAuthority>();
+
+                perms.add(new SimpleGrantedAuthority("USER"));
+
+                if (rs.getLong("isClient")==1) perms.add(new SimpleGrantedAuthority("CLIENT"));
+
+                if (rs.getLong("isEmployee")==1) perms.add(new SimpleGrantedAuthority("EMPLOYEE"));
 
                 // and return the requested user, formatted for compatibility with Spring Security Filter
                 return new UserAccount(
@@ -281,14 +297,14 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
     @Override
     public void unlockClientPermissions(Long userId) {
-        final var query = "update user_account set access_client = 'Y' where user_id = :userId";
+        final var query = "insert into client (client_id) values (:userId)";
         final var params = Map.of("userId", userId);
         database.update(query, params);
     }
 
     @Override
     public void unlockEmployeePermissions(Long userId) {
-        final var query = "update user_account set access_employee = 'Y' where user_id = :userId";
+        final var query = "insert into employee (employee_id) values (:userId)";
         final var params = Map.of("userId", userId);
         database.update(query, params);
     }

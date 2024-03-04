@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Custom implementation of Spring Security's User Details interface
@@ -22,9 +22,9 @@ public class UserAccount implements UserDetails {
     private final String username;
     private final String encodedPassword;
     private final ZonedDateTime dateCreated;
-    private final AccountPermissions permissions;
+    private final Set<SimpleGrantedAuthority> permissions;
 
-    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated, AccountPermissions permissions) {
+    public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated, Set<SimpleGrantedAuthority> permissions) {
         this.userId = userId;
         this.username = username;
         this.encodedPassword = encodedPassword;
@@ -42,15 +42,7 @@ public class UserAccount implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        var authorities = new HashSet<GrantedAuthority>(){{ add(new SimpleGrantedAuthority("USER")); }};
-
-        if (permissions.client()) authorities.add(new SimpleGrantedAuthority("CLIENT"));
-
-        if (permissions.employee()) authorities.add(new SimpleGrantedAuthority("EMPLOYEE"));
-
-        if (permissions.admin()) authorities.add(new SimpleGrantedAuthority("ADMIN"));
-
-        return authorities;
+        return this.permissions;
     }
 
     @Override
