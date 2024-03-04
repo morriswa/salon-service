@@ -1,22 +1,8 @@
 
 # Salon MySQL Instance 
-## Current DB Version: 1.7
-#### Upgrade to V1 from New Schema (when run from project directory)
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1__CreateUserAccountTable.sql
-#### V1 -> V1.1
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.1__CreateContactInfoTable.sql
-#### V1.1 -> V1.2
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.2__AddRoleOnUserAccount.sql
-#### V1.2 -> V1.3
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.3__CreateProvidedServiceTable.sql
-#### V1.3 -> V1.4
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.4__CreateAppointmentTable.sql
-#### V1.4 -> V1.5
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.5__AddFulltextSearchProvidedServiceName.sql
-#### V1.5 -> V1.6
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.6__CreateProvidedServiceContentTable.sql
-#### V1.6 -> V1.7
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V1.7__MigrateUserAccountPermissions.sql
+## Current DB Version: 2.0
+#### Upgrade to V2.0 from New Schema (when run from project directory)
+    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V2__CreateTables.sql
 
 If you run into DAO errors, please ensure your database schema matches the current version.
 

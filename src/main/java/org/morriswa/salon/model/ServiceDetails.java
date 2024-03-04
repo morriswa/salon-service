@@ -13,6 +13,7 @@ public record ServiceDetails(
         Long employeeId,
         String firstName,
         String lastName,
+        String pronouns,
         String phoneNumber,
         String email,
         String contactPreference

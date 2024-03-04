@@ -1,6 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.enumerated.ContactPreference;
+import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.ServiceDetails;
@@ -117,6 +118,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
                          rs.getLong("employee_id"),
                          rs.getString("first_name"),
                          rs.getString("last_name"),
+                         Pronouns.getPronounStr(rs.getString("pronouns")),
                          rs.getString("phone_num"),
                          rs.getString("email"),
                          ContactPreference.getEnum(rs.getString("contact_pref")).description

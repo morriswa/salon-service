@@ -112,10 +112,11 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         // defn search query
         final var query = """
             select
-                appointment_time,
-                length
-            from appointment
-            where employee_id=:employeeId
+                apt.appointment_time,
+                apt.length
+            from appointment apt
+            left join provided_service ps on apt.service_id = ps.service_id
+            where ps.employee_id=:employeeId
             and
                 appointment_time between :startSearch and :endSearch
             order by appointment_time
@@ -433,7 +434,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             from appointment appt
             LEFT JOIN contact_info ci ON appt.client_id = ci.user_id
             LEFT JOIN provided_service ps ON appt.service_id = ps.service_id
-            where appt.employee_id = :employeeId
+            where ps.employee_id = :employeeId
             and
                 appt.appointment_time between :startSearch and :endSearch
 
