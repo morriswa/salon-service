@@ -1,6 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.enumerated.ContactPreference;
+import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.ContactInfo;
@@ -129,7 +130,8 @@ public class UserProfileDaoImpl implements UserProfileDao {
                 return Optional.of(new ContactInfo(
                     //Grabbing cols as a string
                     resultSet.getString("first_name"), 
-                    resultSet.getString("last_name"), 
+                    resultSet.getString("last_name"),
+                    Pronouns.getPronounStr(resultSet.getString("pronouns")),
                     resultSet.getString("phone_num"), 
                     resultSet.getString("email"), 
                     resultSet.getString("addr_one"), 
@@ -191,15 +193,16 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
         final var query = """
             INSERT INTO contact_info
-            (user_id, first_name, last_name, phone_num, email, addr_one, addr_two, city, state_code, zip_code, contact_pref)
+            (user_id, first_name, last_name, pronouns, phone_num, email, addr_one, addr_two, city, state_code, zip_code, contact_pref)
             VALUES 
-            (:UserId, :FirstName, :LastName, :PhoneNum, :Email, :AddrOne, :AddrTwo, :City, :StateCode, :ZipCode, :ContactPref) 
+            (:UserId, :FirstName, :LastName, :Pronouns, :PhoneNum, :Email, :AddrOne, :AddrTwo, :City, :StateCode, :ZipCode, :ContactPref) 
             """;
 
         final var params = new HashMap<String,Object>(){{
             put("UserId", userId);
             put("FirstName", request.firstName());
             put("LastName", request.lastName());
+            put("Pronouns", request.pronouns());
             put("PhoneNum", request.phoneNumber());
             put("Email", request.email());
             put("AddrOne", request.addressLineOne());
@@ -246,6 +249,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
             UPDATE contact_info SET
                 first_name = IFNULL(:firstName, first_name),
                 last_name = IFNULL(:lastName, last_name),
+                pronouns = IFNULL(:pronouns, pronouns),
                 phone_num = IFNULL(:phoneNumber, phone_num),
                 email = IFNULL(:email, email),
                 addr_one = IFNULL(:addressLnOne, addr_one),
@@ -261,6 +265,7 @@ public class UserProfileDaoImpl implements UserProfileDao {
             put("userId", userId);
             put("firstName", request.firstName());
             put("lastName", request.lastName());
+            put("pronouns", request.pronouns());
             put("phoneNumber", request.phoneNumber());
             put("email", request.email());
             put("addressLnOne", request.addressLineOne());

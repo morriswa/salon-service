@@ -132,6 +132,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "1234567890",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -158,6 +159,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "1234567890",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -192,8 +194,9 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         hit(HttpMethod.POST, "/user", request)
             .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("firstName")))
-            .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("lastName")));
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
+            .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("firstName")))
+            .andExpect(jsonPath("$.additionalInfo[2].field", Matchers.is("lastName")));
 
         verify(userProfileDao, never()).createUserContactInfo(any(), any());
     }
@@ -205,6 +208,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "123456789",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -230,6 +234,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "12345678901",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -255,6 +260,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "123456789$",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -280,6 +286,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "1234567890",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -305,6 +312,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             {
                 "firstName": "testing",
                 "lastName": "test",
+                "pronouns": "T",
                 "phoneNumber": "1234567890",
                 "email": "test@email.com",
                 "addressLineOne": "12345 Easy St.",
@@ -406,7 +414,7 @@ public class UserProfileEndpointTest extends ServiceTest {
     void getUserProfile() throws Exception {
 
         when(userProfileDao.getContactInfo(testingUserId))
-            .thenReturn(new ContactInfo("First", "Last",
+            .thenReturn(new ContactInfo("First", "Last", "He/Him/His",
                 "1234567890", "test@email.com", 
                 "1234 Test Ave.", null, "City", "ST", "12345-6789", "Email"));
 
@@ -415,7 +423,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
             .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
             .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. City, ST 12345-6789")))
-            .andExpect(jsonPath("$.phoneNumber", Matchers.is("+1 (123) 456-7890")))
+            .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
         ;
     }
 
@@ -424,7 +432,7 @@ public class UserProfileEndpointTest extends ServiceTest {
     void getUserProfileIncludingAddressLineTwo() throws Exception {
 
         when(userProfileDao.getContactInfo(testingUserId))
-            .thenReturn(new ContactInfo("First", "Last",
+            .thenReturn(new ContactInfo("First", "Last", "He/Him/His",
                 "1234567890", "test@email.com", 
                 "1234 Test Ave.", "Apt 567", "City", "ST", "12345-6789", "Email"));
 
@@ -433,7 +441,7 @@ public class UserProfileEndpointTest extends ServiceTest {
             .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
             .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
             .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. Apt 567 City, ST 12345-6789")))
-            .andExpect(jsonPath("$.phoneNumber", Matchers.is("+1 (123) 456-7890")))
+            .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
         ;
     }
 

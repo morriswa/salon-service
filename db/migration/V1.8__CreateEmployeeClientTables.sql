@@ -6,9 +6,14 @@ ALTER TABLE user_account
     DROP COLUMN access_admin,
     DROP CONSTRAINT access_control_values;
 
+ALTER TABLE contact_info
+    ADD COLUMN pronouns char(1) not null default 'T',
+    ADD CONSTRAINT pronoun_values CHECK ( pronouns IN ('H', 'S', 'T') );
+
 create table employee(
     employee_id bigint primary key,
     FOREIGN KEY (employee_id) references user_account (user_id),
+    start_date timestamp not null default CURRENT_TIMESTAMP,
     bio varchar(256)
 );
 
