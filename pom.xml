@@ -12,7 +12,7 @@
     </parent>
     <groupId>org.morriswa</groupId>
     <artifactId>salon-service</artifactId>
-    <version>0.0.6-SNAPSHOT</version>
+    <version>0.0.6</version>
     <name>Salon Web Service</name>
     <description>
         Dev Dynasty's EECS 447 Group Term Project Web Service.
