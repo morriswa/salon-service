@@ -9,17 +9,17 @@ import org.morriswa.salon.model.*;
  * PURPOSE: <br>
  * &emsp; provides an interface for performing essential User actions
  */
-public interface UserProfileService {
+public interface ProfileService {
 
     UserAccountResponse login(UserAccount principal);
 
     String registerUser(AccountRequest request) throws Exception;
 
-    UserProfileResponse getUserProfile(UserAccount principal) throws Exception;
+    UserProfileResponse getClientProfile(UserAccount principal) throws Exception;
 
     void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception;
 
-    void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception;
+    void updateClientProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception;
 
     void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception;
 
@@ -28,4 +28,8 @@ public interface UserProfileService {
     void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException;
 
     void unlockClientPortal(UserAccount principal) throws Exception;
+
+    EmployeeProfileResponse getEmployeeProfile(UserAccount principal) throws Exception;
+
+    PublicEmployeeProfileResponse getPublicEmployeeProfile(Long employeeId) throws BadRequestException;
 }

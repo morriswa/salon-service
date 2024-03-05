@@ -1,23 +1,30 @@
 package org.morriswa.salon.service;
 
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AppointmentOpening;
 import org.morriswa.salon.model.AppointmentRequest;
+import org.morriswa.salon.model.UserAccount;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface SchedulingService {
 
+    // CREATE
+    void bookAppointment(UserAccount principal, AppointmentRequest request) throws Exception;
+
+    // RETRIEVE
     List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception;
+    List<Appointment> retrieveScheduledAppointments(UserAccount principal);
+    List<Appointment> retrieveEmployeeSchedule(UserAccount principal, LocalDate untilDate);
 
-    void bookAppointment(Long clientId, AppointmentRequest request) throws Exception;
+    // UPDATE
+    void employeeReschedulesAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception;
+    void updateAppointmentDetails(UserAccount principal, Long appointmentId, AppointmentRequest request) throws BadRequestException;
 
+    // DELETE
     void employeeCancelsAppointment(Long employeeId, Long appointmentId);
-
     void clientCancelsAppointment(Long clientId, Long appointmentId);
 
-    void employeeReschedulesAppointment(Long userId, Long appointmentId, AppointmentRequest request) throws Exception;
-
-    List<Appointment> retrieveEmployeeSchedule(Long userId, LocalDate untilDate);
 }

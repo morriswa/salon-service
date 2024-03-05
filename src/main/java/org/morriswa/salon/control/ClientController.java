@@ -1,8 +1,10 @@
 package org.morriswa.salon.control;
 
 import org.morriswa.salon.model.AppointmentRequest;
+import org.morriswa.salon.model.ContactInfo;
 import org.morriswa.salon.model.UserAccount;
-import org.morriswa.salon.service.ClientService;
+import org.morriswa.salon.service.ProfileService;
+import org.morriswa.salon.service.SchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,27 +21,28 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ClientController {
 
-    private final ClientService clientService;
+    private final ProfileService profileService;
+    private final SchedulingService schedule;
 
     @Autowired
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
+    public ClientController(ProfileService profileService, SchedulingService schedule) {
+        this.profileService = profileService;
+        this.schedule = schedule;
     }
 
 
     /**
      * HTTP Get endpoint to see available appointment times for a given day
      *
-     * @param principal currently authenticated client
      * @param request search parameters
      * @return all appointment openings
      * @throws Exception return error response if appointment openings could not be retrieved
      */
-    @PostMapping("/client/booking")
+    @PostMapping("/schedule")
     public ResponseEntity<?> retrieveAppointmentOpenings(
-            @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
+            @RequestBody AppointmentRequest request
     ) throws Exception {
-        var book = clientService.retrieveAppointmentOpenings(principal, request);
+        var book = schedule.retrieveAppointmentOpenings(request);
         return ResponseEntity.ok(book);
     }
 
@@ -51,49 +54,53 @@ public class ClientController {
      * @return no content
      * @throws Exception return error response if appointment was not booked
      */
-    @PostMapping("/client/book")
+    @PostMapping("/schedule/confirm")
     public ResponseEntity<?> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {
-        clientService.bookAppointment(principal, request);
+        schedule.bookAppointment(principal, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping("/client/booked/{appointmentId}")
-    public ResponseEntity<?> cancelAppointment(
-            @AuthenticationPrincipal UserAccount principal, @PathVariable Long appointmentId
-    ) {
-//        clientService.cancelAppointment(principal, appointmentId);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
-    }
 
-    @GetMapping("/client/booked")
+    @GetMapping("/schedule")
     public ResponseEntity<?> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
-        final var appointments = clientService.retrieveScheduledAppointments(principal);
+        final var appointments = schedule.retrieveScheduledAppointments(principal);
         return ResponseEntity.ok(appointments);
     }
 
-    @GetMapping("/client/billing")
-    public ResponseEntity<?> retrieveUnpaidAppointments(@AuthenticationPrincipal UserAccount principal) {
-//        final var appointments = clientService.retrieveUnpaidAppointments(principal);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+    /**
+     * Http GET endpoint used to retrieve all stored information about the currently authenticated user
+     *
+     * @param principal currently authenticated User Account
+     * @return profile and contact information about the user if operation was successful, else error response
+     */
+    @GetMapping("/user")
+    public ResponseEntity<?> getClientProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
+        // using the user profile service, retrieve the current users profile
+        var profile = profileService.getClientProfile(principal);
+        // and return it to them in JSON format
+        return ResponseEntity.ok(profile);
     }
 
-    @GetMapping("/client/services")
-    public ResponseEntity<?> searchAvailableService(
+
+
+    /**
+     * HTTP Patch endpoint to update an existing user's contact info
+     *
+     * @param principal authenticated user
+     * @param updateProfileRequest containing contact info to be updated
+     * @return blank response
+     * @throws Exception return error response if user's profile cannot be updated
+     */
+    @PatchMapping("/user")
+    public ResponseEntity<?> updateClientProfile(
             @AuthenticationPrincipal UserAccount principal,
-            @RequestParam String searchText
+            @RequestBody ContactInfo updateProfileRequest
     ) throws Exception {
-        final var services = clientService.searchAvailableService(principal, searchText);
-        return ResponseEntity.ok(services);
+        profileService.updateClientProfile(principal, updateProfileRequest);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/client/service/{serviceId}")
-    public ResponseEntity<?> retrieveServiceDetails(
-            @AuthenticationPrincipal UserAccount principal,
-            @PathVariable Long serviceId
-    ) throws Exception {
-        final var service = clientService.retrieveServiceDetails(principal, serviceId);
-        return ResponseEntity.ok(service);
-    }
+
 }

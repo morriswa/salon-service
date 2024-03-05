@@ -37,9 +37,7 @@ public class ServiceTest {
 
     @MockBean protected UserProfileDao userProfileDao;
 
-    @MockBean protected EmployeeDao employeeDao;
-
-    @MockBean protected ClientDao clientDao;
+    @MockBean protected ProvidedServiceDao providedServiceDao;
 
     @MockBean protected ScheduleDao scheduleDao;
 

@@ -1,5 +1,7 @@
 package org.morriswa.salon.dao;
 
+import org.morriswa.salon.exception.BadRequestException;
+import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.model.ContactInfo;
 
@@ -41,4 +43,6 @@ public interface UserProfileDao {
     void unlockClientPermissions(Long userId);
 
     void unlockEmployeePermissions(Long userId);
+
+    EmployeeInfo getEmployeeInfo(Long employeeId) throws BadRequestException;
 }

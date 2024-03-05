@@ -5,6 +5,7 @@ import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.ContactInfo;
+import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.model.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,6 @@ public class UserProfileDaoImpl implements UserProfileDao {
                     as isClient
                 from user_account uac where username=:username""";
 
-
-
         final var params = Map.of("username",username);
         return database.query(query, params, rs->{
             // check that a database record exists
@@ -69,9 +68,11 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
                 perms.add(new SimpleGrantedAuthority("USER"));
 
-                if (rs.getLong("isClient")==1) perms.add(new SimpleGrantedAuthority("CLIENT"));
+                if (rs.getLong("isEmployee")==1)
+                    perms.add(new SimpleGrantedAuthority("EMPLOYEE"));
+                else if (rs.getLong("isClient")==1)
+                    perms.add(new SimpleGrantedAuthority("CLIENT"));
 
-                if (rs.getLong("isEmployee")==1) perms.add(new SimpleGrantedAuthority("EMPLOYEE"));
 
                 // and return the requested user, formatted for compatibility with Spring Security Filter
                 return new UserAccount(
@@ -312,5 +313,46 @@ public class UserProfileDaoImpl implements UserProfileDao {
         final var query = "insert into employee (employee_id) values (:userId)";
         final var params = Map.of("userId", userId);
         database.update(query, params);
+    }
+
+    @Override
+    public EmployeeInfo getEmployeeInfo(Long employeeId) throws BadRequestException {
+
+        //Retrieving all columns from the contact_info table where user_id col is = to the param userId
+        final var query = """
+            select *
+            from employee emp
+            left join contact_info ci on emp.employee_id = ci.user_id
+            where emp.employee_id=:employeeId""";
+        //Mapping the named param to the Java var
+        final var params = Map.of("employeeId",employeeId);
+
+        Optional<EmployeeInfo> retrievedRecord = database.query(query, params, resultSet ->{
+            //Checking if the record exists
+            if(resultSet.next()) {
+                final var contactInfo = new ContactInfo(
+                        //Grabbing cols as a string
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        Pronouns.getPronounStr(resultSet.getString("pronouns")),
+                        resultSet.getString("phone_num"),
+                        resultSet.getString("email"),
+                        resultSet.getString("addr_one"),
+                        resultSet.getString("addr_two"),
+                        resultSet.getString("city"),
+                        resultSet.getString("state_code"),
+                        resultSet.getString("zip_code"),
+                        ContactPreference.getEnum(resultSet.getString("contact_pref")).description);
+
+                //If it does, return the Contact Info
+                return Optional.of(new EmployeeInfo(
+                        contactInfo,
+                        resultSet.getString("bio")));
+            }
+
+            return Optional.empty(); //If it doesn't exist, return empty object
+        });
+        //If the retrievedRecord exists, return it, otherwise throw error
+        return retrievedRecord.orElseThrow(()->new BadRequestException("Could not find an employee profile!"));
     }
 }

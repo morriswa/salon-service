@@ -3,7 +3,7 @@ package org.morriswa.salon.control;
 import org.morriswa.salon.model.AccountRequest;
 import org.morriswa.salon.model.ContactInfo;
 import org.morriswa.salon.model.UserAccount;
-import org.morriswa.salon.service.UserProfileService;
+import org.morriswa.salon.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
  */
 
 @RestController
-public class UserProfileController {
+public class AccountController {
 
-    private final UserProfileService userService;
+    private final ProfileService userService;
 
     @Autowired
-    public UserProfileController(UserProfileService userService) {
+    public AccountController(ProfileService userService) {
         this.userService = userService;
     }
 
@@ -60,20 +60,6 @@ public class UserProfileController {
     }
 
     /**
-     * Http GET endpoint used to retrieve all stored information about the currently authenticated user
-     *
-     * @param principal currently authenticated User Account
-     * @return profile and contact information about the user if operation was successful, else error response
-     */
-    @GetMapping("/user")
-    public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
-        // using the user profile service, retrieve the current users profile
-        var profile = userService.getUserProfile(principal);
-        // and return it to them in JSON format
-        return ResponseEntity.ok(profile);
-    }
-
-    /**
      * HTTP Post used to finish account creation
      * after successful account creation, the user will be able to access the client portal
      *
@@ -91,22 +77,6 @@ public class UserProfileController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * HTTP Patch endpoint to update an existing user's contact info
-     *
-     * @param principal authenticated user
-     * @param updateProfileRequest containing contact info to be updated
-     * @return blank response
-     * @throws Exception return error response if user's profile cannot be updated
-     */
-    @PatchMapping("/user")
-    public ResponseEntity<?> updateUserProfile(
-        @AuthenticationPrincipal UserAccount principal, 
-        @RequestBody ContactInfo updateProfileRequest
-    ) throws Exception {
-        userService.updateUserProfile(principal, updateProfileRequest);
-        return ResponseEntity.noContent().build();
-    }
 
     /**
      * HTTP Patch endpoint to change an existing user's account username

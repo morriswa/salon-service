@@ -3,7 +3,9 @@ package org.morriswa.salon.control;
 import org.morriswa.salon.model.AppointmentRequest;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
-import org.morriswa.salon.service.EmployeeService;
+import org.morriswa.salon.service.ProfileService;
+import org.morriswa.salon.service.ProvidedServiceService;
+import org.morriswa.salon.service.SchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,16 +23,49 @@ import java.util.Optional;
  * &emsp; provides a REST API for performing employee/business functions that can be consumed by other applications
  */
 
-@RestController
+@RestController @RequestMapping("/management")
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
+    private final SchedulingService schedule;
+    private final ProvidedServiceService providedServices;
+    private final ProfileService profileService;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService) {
-        this.employeeService = employeeService;
+    public EmployeeController(SchedulingService schedule, ProvidedServiceService providedServices, ProfileService profileService) {
+        this.schedule = schedule;
+        this.providedServices = providedServices;
+        this.profileService = profileService;
     }
 
+    /**
+     * Http GET endpoint used to retrieve all stored information about the currently authenticated user
+     *
+     * @param principal currently authenticated User Account
+     * @return profile and contact information about the user if operation was successful, else error response
+     */
+    @GetMapping("/employee")
+    public ResponseEntity<?> getEmployeeProfile(
+            @AuthenticationPrincipal UserAccount principal
+    ) throws Exception{
+        // using the user profile service, retrieve the current users profile
+        var profile = profileService.getEmployeeProfile(principal);
+        // and return it to them in JSON format
+        return ResponseEntity.ok(profile);
+    }
+
+
+    /**
+     * HTTP Get endpoint for employees to view all the services they are providing to users
+     *
+     * @param principal currently authenticated employee
+     * @return an array of provided services
+     * @throws Exception return error response if employee's services could not be retrieved
+     */
+    @GetMapping("/services")
+    public ResponseEntity<?> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
+        var services = providedServices.retrieveEmployeesServices(principal.getUserId());
+        return ResponseEntity.ok(services);
+    }
 
     /**
      * HTTP Post endpoint for employees to add their services to the client portal for booking
@@ -40,43 +75,15 @@ public class EmployeeController {
      * @return no content
      * @throws Exception return error response if the service could not be registered
      */
-    @PostMapping("/employee/service")
+    @PostMapping("/service")
     public ResponseEntity<?> createProvidedService(
         @AuthenticationPrincipal UserAccount principal,
         @RequestBody ProvidedService createProvidedServiceRequest
     ) throws Exception {
-        employeeService.createProvidedService(principal, createProvidedServiceRequest);
+        providedServices.createProvidedService(principal, createProvidedServiceRequest);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * HTTP Get endpoint for employees to view all the services they are providing to users
-     *
-     * @param principal currently authenticated employee
-     * @return an array of provided services
-     * @throws Exception return error response if employee's services could not be retrieved
-     */
-    @GetMapping("/employee/service")
-    public ResponseEntity<?> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
-        var services = employeeService.retrieveAllProvidedServices(principal);
-        return ResponseEntity.ok(services);
-    }
-
-    /**
-     * Http GET endpoint for employees to retrieve all stored information about a provided service
-     *
-     * @param principal currently authenticated employee
-     * @param serviceId associated with the service
-     * @return all information about requested service
-     */
-    @GetMapping("/employee/service/{serviceId}")
-    public ResponseEntity<?> getProvidedServiceDetails(
-        @AuthenticationPrincipal UserAccount principal,
-        @PathVariable Long serviceId
-    ) throws Exception {
-        var urls = employeeService.getProvidedServiceDetails(principal, serviceId);
-        return ResponseEntity.ok(urls);
-    }
 
     /**
      * HTTP Post endpoint to add new content to a provided service's page
@@ -87,13 +94,13 @@ public class EmployeeController {
      * @return no content
      * @throws Exception return error response if the image could not be stored
      */
-    @PostMapping("/employee/service/{serviceId}")
+    @PostMapping("/service/{serviceId}")
     public ResponseEntity<?> uploadProvidedServiceImage(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId,
         @RequestPart MultipartFile image
     ) throws Exception {
-        employeeService.uploadProvidedServiceImage(principal, serviceId, image);
+        providedServices.uploadProvidedServiceImage(principal, serviceId, image);
         return ResponseEntity.noContent().build();
     }
 
@@ -105,7 +112,7 @@ public class EmployeeController {
      * @param serviceId associated with the service to modify
      * @return no content
      */
-    @DeleteMapping("/employee/service/{serviceId}")
+    @DeleteMapping("/service/{serviceId}")
     public ResponseEntity<?> deleteProvidedService(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
@@ -121,15 +128,15 @@ public class EmployeeController {
      * @param untilDate last date to retrieve appointments for
      * @return all scheduled appointments if successful, else error response
      */
-    @GetMapping("/employee/schedule")
+    @GetMapping("/schedule")
     public ResponseEntity<?> retrieveSchedule(
             @AuthenticationPrincipal UserAccount principal,
             @RequestParam Optional<LocalDate> untilDate
     ) {
-        final var schedule = employeeService.retrieveSchedule(principal,
+        final var retrieved = schedule.retrieveEmployeeSchedule(principal,
             // if the user doesn't provide a date, only get the schedule for the next 2 weeks
             untilDate.orElse(LocalDate.now().plusWeeks(2L)));
-        return ResponseEntity.ok(schedule);
+        return ResponseEntity.ok(retrieved);
     }
 
     /**
@@ -141,13 +148,13 @@ public class EmployeeController {
      * @return no content
      * @throws Exception return error response if the appointment could not be rescheduled
      */
-    @PatchMapping("/employee/schedule/{appointmentId}")
+    @PatchMapping("/schedule/{appointmentId}")
     public ResponseEntity<?> rescheduleAppointment(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
             @RequestBody AppointmentRequest request
     ) throws Exception {
-        employeeService.rescheduleAppointment(principal, appointmentId, request);
+        schedule.employeeReschedulesAppointment(principal, appointmentId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -160,13 +167,13 @@ public class EmployeeController {
      * @return no content
      * @throws Exception return error response if the appointment could not be modified
      */
-    @PatchMapping("/employee/appointment/{appointmentId}")
+    @PatchMapping("/appointment/{appointmentId}")
     public ResponseEntity<?> updateAppointmentDetails(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
             @RequestBody AppointmentRequest request
     ) throws Exception {
-        employeeService.updateAppointmentDetails(principal, appointmentId, request);
+        schedule.updateAppointmentDetails(principal, appointmentId, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -179,7 +186,7 @@ public class EmployeeController {
      * @return no content
      * @throws Exception return error response if the appointment could not be canceled
      */
-    @DeleteMapping("/employee/appointment/{appointmentId}")
+    @DeleteMapping("/schedule/{appointmentId}")
     public ResponseEntity<?> cancelAppointment(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId

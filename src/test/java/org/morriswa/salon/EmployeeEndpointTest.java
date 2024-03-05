@@ -29,10 +29,10 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
             .andExpect(status().is(204));
 
-        verify(employeeDao).createProvidedService(any(), any());
+        verify(providedServiceDao).createProvidedService(any(), any());
     }
 
     @Test
@@ -45,13 +45,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_INVALID_MONEY_VALUE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -64,13 +64,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_BIG_MONEY_VALUE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -83,13 +83,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_OUT_OF_RANGE_MONEY_VALUE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
 
@@ -103,13 +103,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_OUT_OF_RANGE_MONEY_VALUE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -121,13 +121,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_MISSING_MONEY_VALUE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -139,13 +139,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_MISSING_LENGTH)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -158,13 +158,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_OUT_OF_RANGE_LENGTH)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -177,13 +177,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_OUT_OF_RANGE_LENGTH)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -196,13 +196,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_OUT_OF_RANGE_LENGTH)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -214,13 +214,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "defaultLength": 32
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_NO_NAME_SERVICE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -233,13 +233,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "     "
         }""";
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_NO_NAME_SERVICE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -257,13 +257,13 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "%s"
         }""", longName);
 
-        hit(HttpMethod.POST, "/employee/service", request)
+        hit(HttpMethod.POST, "/management/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
                         Matchers.is(ProvidedServiceValidator.ERROR_LONG_NAME_SERVICE)));
 
-        verify(employeeDao, never()).createProvidedService(any(), any());
+        verify(providedServiceDao, never()).createProvidedService(any(), any());
     }
 
     @Test
@@ -274,13 +274,13 @@ public class EmployeeEndpointTest extends ServiceTest {
 
         final var testService = new ServiceDetails(serviceId, "My Service", new BigDecimal("12.34"), 30, null);
 
-        when(employeeDao.retrieveProvidedServiceContent(1L, serviceId))
+        when(providedServiceDao.retrieveServiceContent(serviceId))
                 .thenReturn(List.of());
 
-        when(employeeDao.retrieveProvidedServiceDetails(serviceId))
+        when(providedServiceDao.retrieveServiceDetails(serviceId))
                 .thenReturn(testService);
 
-        hit(HttpMethod.GET, String.format("/employee/service/%d",serviceId))
+        hit(HttpMethod.GET, String.format("/service/%d",serviceId))
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.serviceId",
                         Matchers.hasToString(serviceId.toString())))
@@ -290,9 +290,9 @@ public class EmployeeEndpointTest extends ServiceTest {
                 .andExpect(jsonPath("$.length", Matchers.is(testService.length())))
         ;
 
-        verify(employeeDao).retrieveProvidedServiceDetails(any());
+        verify(providedServiceDao).retrieveServiceDetails(any());
 
-        verify(employeeDao).retrieveProvidedServiceContent(any(), any());
+        verify(providedServiceDao).retrieveServiceContent(any());
     }
 
     @Test
@@ -303,14 +303,14 @@ public class EmployeeEndpointTest extends ServiceTest {
 
         final var testService = new ServiceDetails(serviceId, "My Service", new BigDecimal("12.34"), 30, null);
 
-        when(employeeDao.retrieveProvidedServiceDetails(serviceId))
+        when(providedServiceDao.retrieveServiceDetails(serviceId))
                 .thenThrow(BadRequestException.class);
 
-        hit(HttpMethod.GET, String.format("/employee/service/%d",serviceId))
+        hit(HttpMethod.GET, String.format("/service/%d",serviceId))
                 .andExpect(status().is(400))
         ;
 
-        verify(employeeDao).retrieveProvidedServiceDetails(any());
-        verify(employeeDao, never()).retrieveProvidedServiceContent(any(), any());
+        verify(providedServiceDao).retrieveServiceDetails(any());
+        verify(providedServiceDao, never()).retrieveServiceContent(any());
     }
 }

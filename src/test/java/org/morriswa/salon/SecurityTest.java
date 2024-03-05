@@ -44,7 +44,7 @@ public class SecurityTest extends ServiceTest {
     @Test
     @WithUserDetails
     void accessDeniedRequest() throws Exception {
-        hit(HttpMethod.GET, "/employee/schedule")
+        hit(HttpMethod.GET, "/management/schedule")
             .andExpect(status().is(403))
         ;
     }

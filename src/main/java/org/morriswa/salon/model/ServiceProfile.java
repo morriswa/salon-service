@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import java.net.URL;
 import java.util.List;
 
-public record ServiceDetailsResponse(
+public record ServiceProfile(
         @JsonUnwrapped ServiceDetails service,
         List<URL> content
 ) { }

@@ -3,6 +3,7 @@ package org.morriswa.salon.service;
 import org.morriswa.salon.dao.UserProfileDao;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.*;
+import org.morriswa.salon.utility.AmazonS3Client;
 import org.morriswa.salon.validation.StrTools;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,17 @@ import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
 @Service
-public class UserProfileServiceImpl implements UserProfileService {
+public class ProfileServiceImpl implements ProfileService {
 
     private final UserProfileDao userProfileDao;
     private final String employeeAccessCode;
+    private final AmazonS3Client s3;
 
     @Autowired
-    public UserProfileServiceImpl(Environment e, UserProfileDao userProfileDao) {
+    public ProfileServiceImpl(Environment e, UserProfileDao userProfileDao, AmazonS3Client s3) {
         this.userProfileDao = userProfileDao;
         this.employeeAccessCode = e.getRequiredProperty("salon.employee-code");
+        this.s3 = s3;
     }
 
 
@@ -52,7 +55,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserProfileResponse getUserProfile(UserAccount principal) throws Exception {
+    public UserProfileResponse getClientProfile(UserAccount principal) throws Exception {
 
         // get user contact info
         var contactInfo = userProfileDao.getContactInfo(principal.getUserId());
@@ -79,7 +82,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public void updateUserProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception {
+    public void updateClientProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception {
         // add Contact Info validation rules here
         UserProfileValidator.validateUpdateUserProfileRequestOrThrow(updateProfileRequest);
 
@@ -122,6 +125,28 @@ public class UserProfileServiceImpl implements UserProfileService {
         userProfileDao.getContactInfo(principal.getUserId());
 
         userProfileDao.unlockClientPermissions(principal.getUserId());
+    }
+
+    @Override
+    public EmployeeProfileResponse getEmployeeProfile(UserAccount principal) throws Exception {
+        // get user contact info
+        var employeeInfo = userProfileDao.getEmployeeInfo(principal.getUserId());
+
+        var employeeProfileImage = s3.getSignedObjectUrl(String.format("employee/%d", principal.getUserId()), 30);
+
+        // return complete profile
+        return new EmployeeProfileResponse(employeeInfo, employeeProfileImage);
+    }
+
+    @Override
+    public PublicEmployeeProfileResponse getPublicEmployeeProfile(Long employeeId) throws BadRequestException {
+        // get user contact info
+        var employeeInfo = userProfileDao.getEmployeeInfo(employeeId);
+
+        var employeeProfileImage = s3.getSignedObjectUrl(String.format("employee/%d", employeeId), 30);
+
+        // return complete profile
+        return new PublicEmployeeProfileResponse(employeeInfo, employeeProfileImage);
     }
 
 }

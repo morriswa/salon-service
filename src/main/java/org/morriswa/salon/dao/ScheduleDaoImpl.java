@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * AUTHOR: William A. Morris, Makenna Loewenherz
@@ -299,10 +301,11 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         final var query = """
             select
-                appointment_time,
-                length
-            from appointment
-            where employee_id=:employeeId
+                apt.appointment_time,
+                apt.length
+            from appointment apt
+            left join provided_service ps on apt.service_id=ps.service_id
+            where ps.employee_id=:employeeId
             and
                 appointment_time between :startSearch and :endSearch
             """;
@@ -322,16 +325,15 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         final var addQuery = """
             insert into appointment
-                (client_id, employee_id, appointment_time,
+                (client_id, appointment_time,
                     service_id, actual_amount, date_due, length)
             values
-                (:clientId, :employeeId, :appointmentTime,
+                (:clientId, :appointmentTime,
                     :serviceId, :actualAmount, :due, :length)
             """;
 
         final var addParams = new HashMap<String, Object>(){{
             put("clientId", clientId);
-            put("employeeId", request.employeeId());
             put("appointmentTime", request.time().truncatedTo(ChronoUnit.MINUTES));
             put("serviceId", request.serviceId());
             put("actualAmount", serviceToSchedule.defaultCost());
@@ -369,13 +371,14 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         final var query = """
             select
-                appointment_time,
-                length
-            from appointment
-            where employee_id = :employeeId
-            and   appointment_id != :appointmentId
+                apt.appointment_time,
+                apt.length
+            from appointment apt
+            left join provided_service ps on apt.service_id = ps.service_id
+            where ps.employee_id = :employeeId
+            and   apt.appointment_id != :appointmentId
             and
-                appointment_time between :startSearch and :endSearch
+                apt.appointment_time between :startSearch and :endSearch
             """;
 
         final var stopSearch = newAppointmentTime.plusMinutes(newAppointmentLength * 15L).minusMinutes(1);
@@ -481,4 +484,105 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             return result;
         });
     }
+
+    @Override
+    public List<Appointment> retrieveScheduledAppointments(Long userId) {
+        final var query = """
+            select
+                appt.appointment_id,
+                appt.appointment_time,
+                appt.length,
+                appt.date_created,
+                appt.date_due,
+                appt.actual_amount,
+                appt.tip_amount,
+                appt.status,
+                service.employee_id,
+                emply_info.first_name,
+                emply_info.last_name,
+                emply_info.phone_num,
+                emply_info.email,
+                emply_info.contact_pref,
+                service.service_id,
+                service.provided_service_name
+            from appointment appt
+            left join provided_service service on appt.service_id = service.service_id
+            left join contact_info emply_info on service.employee_id = emply_info.user_id
+            where appt.client_id = :clientId
+            and appt.appointment_time > NOW()
+            order by appt.appointment_time""";
+
+        final var param = Map.of("clientId", userId);
+
+        return database.query(query, param, resultSet->{
+            List<Appointment> schedule = new ArrayList<>();
+            while(resultSet.next()){
+                final var emply_info = new Appointment.EmployeeInfo(
+                        resultSet.getLong("employee_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("phone_num"),
+                        resultSet.getString("email"),
+                        ContactPreference.getEnum(resultSet.getString("contact_pref")).description);
+
+                final var serviceInfo = new Appointment.ServiceInfo(
+                        resultSet.getLong("service_id"),
+                        resultSet.getString("provided_service_name")
+                );
+
+                schedule.add(new Appointment(
+                        resultSet.getLong("appointment_id"),
+                        resultSet.getTimestamp("appointment_time").toInstant().atZone(SALON_TIME_ZONE),
+                        resultSet.getInt("length")*15,
+                        resultSet.getTimestamp("date_created").toInstant().atZone(SALON_TIME_ZONE),
+                        resultSet.getTimestamp("date_due").toInstant().atZone(SALON_TIME_ZONE),
+                        resultSet.getBigDecimal("actual_amount"),
+                        resultSet.getBigDecimal("tip_amount"),
+                        AppointmentStatus.getEnum(resultSet.getString("status")).toString(),
+                        serviceInfo,
+                        emply_info,
+                        null
+                ));
+            }
+
+            return schedule;
+        });
+    }
+
+    @Override
+    public void checkEditAccessOrThrow(Long employeeId, Long appointmentId) throws BadRequestException {
+        final var checkIfExists = """
+            select 1
+            from appointment apt
+            left join provided_service ps on apt.service_id = ps.service_id
+            where ps.employee_id = :employeeId
+            and apt.appointment_id = :appointmentId""";
+
+
+        final var params = new HashMap<String, Object>(){{
+            put("employeeId", employeeId);
+            put("appointmentId", appointmentId);
+        }};
+
+        if (Boolean.FALSE.equals(database.query(checkIfExists, params, ResultSet::next)))
+            throw new BadRequestException("You are not allowed to edit this service!");
+    }
+
+    @Override
+    public void updateAppointmentDetails(Long appointmentId, AppointmentRequest request) {
+
+        final var query = """
+            update appointment
+            set actual_amount = IFNULL(:newAmount, actual_amount)
+            where appointment_id = :appointmentId
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("newAmount", request.cost());
+            put("appointmentId", appointmentId);
+        }};
+
+        database.update(query, params);
+    }
+
 }

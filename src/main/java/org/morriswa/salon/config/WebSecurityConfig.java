@@ -131,9 +131,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/register", "/health").permitAll()
                         // all other requests must be authenticated
                         .requestMatchers("/login", "/user", "/user/**").hasAuthority("USER")
-                        .requestMatchers("/client/**").hasAuthority("CLIENT")
-                        .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
-                        .anyRequest().hasAuthority("ADMIN")
+                        .requestMatchers("/management/**").hasAuthority("EMPLOYEE")
+                        .anyRequest().hasAnyAuthority("USER","EMPLOYEE")
                 )
                 // use custom cors config
                 .csrf(csrf->csrf.disable())
