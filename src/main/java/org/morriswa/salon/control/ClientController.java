@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ClientController {
 
-    private final ProfileService profileService;
+    private final ProfileService profiles;
     private final SchedulingService schedule;
 
     @Autowired
-    public ClientController(ProfileService profileService, SchedulingService schedule) {
-        this.profileService = profileService;
+    public ClientController(ProfileService profiles, SchedulingService schedule) {
+        this.profiles = profiles;
         this.schedule = schedule;
     }
 
@@ -75,15 +75,13 @@ public class ClientController {
      * @param principal currently authenticated User Account
      * @return profile and contact information about the user if operation was successful, else error response
      */
-    @GetMapping("/user")
+    @GetMapping("/client")
     public ResponseEntity<?> getClientProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
         // using the user profile service, retrieve the current users profile
-        var profile = profileService.getClientProfile(principal);
+        var profile = profiles.getClientProfile(principal);
         // and return it to them in JSON format
         return ResponseEntity.ok(profile);
     }
-
-
 
     /**
      * HTTP Patch endpoint to update an existing user's contact info
@@ -93,12 +91,12 @@ public class ClientController {
      * @return blank response
      * @throws Exception return error response if user's profile cannot be updated
      */
-    @PatchMapping("/user")
+    @PatchMapping("/client")
     public ResponseEntity<?> updateClientProfile(
             @AuthenticationPrincipal UserAccount principal,
             @RequestBody ContactInfo updateProfileRequest
     ) throws Exception {
-        profileService.updateClientProfile(principal, updateProfileRequest);
+        profiles.updateClientProfile(principal, updateProfileRequest);
         return ResponseEntity.noContent().build();
     }
 

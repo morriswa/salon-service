@@ -1,5 +1,6 @@
 package org.morriswa.salon.utility;
 
+import org.morriswa.salon.dao.AccountDao;
 import org.morriswa.salon.dao.UserProfileDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -19,15 +20,15 @@ import org.springframework.stereotype.Service;
 @Service @Profile("!test")
 public class JdbcAuthenticationService implements UserDetailsService {
 
-    private final UserProfileDao userProfileDao;
+    private final AccountDao accounts;
 
     @Autowired
-    public JdbcAuthenticationService(UserProfileDao userProfileDao){
-        this.userProfileDao = userProfileDao;
+    public JdbcAuthenticationService(AccountDao accounts){
+        this.accounts = accounts;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       return userProfileDao.findUser(username);
+       return accounts.findUser(username);
     }
 }

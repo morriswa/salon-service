@@ -13,11 +13,11 @@ public record EmployeeProfileResponse(
 ) {
     public EmployeeProfileResponse(EmployeeInfo info, URL profileImage) {
         this(
-                info.contactInfo().firstName(), info.contactInfo().lastName(), info.contactInfo().pronouns(),
-                String.format("%s %s%s, %s %s", info.contactInfo().addressLineOne(),
-                        StrTools.hasValue(info.contactInfo().addressLineTwo())?info.contactInfo().addressLineTwo()+" ":"",
-                        info.contactInfo().city(), info.contactInfo().stateCode(), info.contactInfo().zipCode()),
-                info.contactInfo().phoneNumber(), info.contactInfo().email(), info.contactInfo().contactPreference(),
+                info.firstName(), info.lastName(), info.pronouns(),
+                String.format("%s %s%s, %s %s", info.addressLineOne(),
+                        StrTools.hasValue(info.addressLineTwo())?info.addressLineTwo()+" ":"",
+                        info.city(), info.stateCode(), info.zipCode()),
+                info.phoneNumber(), info.email(), info.contactPreference(),
                 info.bio(), profileImage
         );
     };

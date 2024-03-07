@@ -2,16 +2,16 @@ package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.UserProfileDao;
 import org.morriswa.salon.exception.BadRequestException;
+import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.*;
 import org.morriswa.salon.utility.AmazonS3Client;
-import org.morriswa.salon.validation.StrTools;
+import org.morriswa.salon.utility.ImageScaleUtil;
+import org.morriswa.salon.validation.ImageValidator;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
@@ -19,39 +19,14 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserProfileDao userProfileDao;
     private final String employeeAccessCode;
     private final AmazonS3Client s3;
+    private final ImageScaleUtil imageScale;
 
     @Autowired
-    public ProfileServiceImpl(Environment e, UserProfileDao userProfileDao, AmazonS3Client s3) {
+    public ProfileServiceImpl(Environment e, UserProfileDao userProfileDao, AmazonS3Client s3, ImageScaleUtil imageScale) {
         this.userProfileDao = userProfileDao;
         this.employeeAccessCode = e.getRequiredProperty("salon.employee-code");
         this.s3 = s3;
-    }
-
-
-    @Override
-    public UserAccountResponse login(UserAccount principal) {
-        return new UserAccountResponse(
-                principal.getUserId(),
-                principal.getUsername(),
-                principal.getDateCreated(),
-                principal.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toSet()));
-    }
-
-    @Override
-    public String registerUser(AccountRequest request) throws Exception {
-        // add user registration rules here...
-
-        // validate username and password fields
-        UserProfileValidator.validateUsernameOrThrow(request.username());
-        UserProfileValidator.validatePasswordOrThrow(request.password());
-
-        // if all validations were passed, the user may be registered in the database
-        userProfileDao.register(request.username(), request.password());
-
-        // if the user was successfully registered, return the username they were registered with
-        return request.username();
+        this.imageScale = imageScale;
     }
 
     @Override
@@ -68,20 +43,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception {
-
-        // add Contact Info validation rules here
-        UserProfileValidator.validateCreateProfileRequestOrThrow(createProfileRequest);
-
-        // attempt to store provided contact information
-        userProfileDao.createUserContactInfo(principal.getUserId(), createProfileRequest);
-
-        // if the user successfully added the required contact info
-        // allow them to access client portal
-        userProfileDao.unlockClientPermissions(principal.getUserId());
-    }
-
-    @Override
     public void updateClientProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception {
         // add Contact Info validation rules here
         UserProfileValidator.validateUpdateUserProfileRequestOrThrow(updateProfileRequest);
@@ -90,49 +51,11 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception {
-        // validate requested username
-        UserProfileValidator.validateUsernameOrThrow(updateUsernameRequest.username());
-
-        // initiate change
-        userProfileDao.changeUsername(principal.getUserId(), updateUsernameRequest.username());
-    }
-
-    @Override
-    public void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception {
-        // validate requested password
-        UserProfileValidator.validatePasswordChangeOrThrow(
-                updatePasswordRequest.password(),
-                updatePasswordRequest.confirmPassword());
-
-        userProfileDao.updateUserPassword(
-                principal.getUserId(),
-                principal.getPassword(),
-                updatePasswordRequest.currentPassword(),
-                updatePasswordRequest.password());
-    }
-
-    @Override
-    public void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException {
-        if (!StrTools.hasValue(code) || !code.equals(employeeAccessCode))
-            throw new BadRequestException("Bad access code!");
-
-        userProfileDao.unlockEmployeePermissions(principal.getUserId());
-    }
-
-    @Override
-    public void unlockClientPortal(UserAccount principal) throws Exception {
-        userProfileDao.getContactInfo(principal.getUserId());
-
-        userProfileDao.unlockClientPermissions(principal.getUserId());
-    }
-
-    @Override
     public EmployeeProfileResponse getEmployeeProfile(UserAccount principal) throws Exception {
         // get user contact info
         var employeeInfo = userProfileDao.getEmployeeInfo(principal.getUserId());
 
-        var employeeProfileImage = s3.getSignedObjectUrl(String.format("employee/%d", principal.getUserId()), 30);
+        var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", principal.getUserId()), 30);
 
         // return complete profile
         return new EmployeeProfileResponse(employeeInfo, employeeProfileImage);
@@ -143,10 +66,26 @@ public class ProfileServiceImpl implements ProfileService {
         // get user contact info
         var employeeInfo = userProfileDao.getEmployeeInfo(employeeId);
 
-        var employeeProfileImage = s3.getSignedObjectUrl(String.format("employee/%d", employeeId), 30);
+        var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", employeeId), 30);
 
         // return complete profile
         return new PublicEmployeeProfileResponse(employeeInfo, employeeProfileImage);
+    }
+
+    @Override
+    public void updateEmployeeProfile(UserAccount principal, EmployeeInfo request) throws ValidationException {
+        userProfileDao.updateEmployeeProfile(principal.getUserId(), request);
+    }
+
+    @Override
+    public void changeEmployeeProfileImage(UserAccount principal, MultipartFile image) throws Exception{
+        ImageValidator.validateImageFormat(image);
+
+        // scale image by 80%
+        final byte[] scaledImage = imageScale.getScaledImage(image, 0.8F);
+
+        // upload content to S3
+        s3.uploadToS3(scaledImage, image.getContentType(), String.format("employeeProfile/%d", principal.getUserId()));
     }
 
 }

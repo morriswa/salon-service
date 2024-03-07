@@ -2,6 +2,7 @@ package org.morriswa.salon;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.morriswa.salon.annotations.WithNewUserAccount;
 import org.morriswa.salon.annotations.WithUserAccount;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.ContactInfo;
@@ -9,12 +10,12 @@ import org.springframework.http.HttpMethod;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SuppressWarnings("null")
-public class UserProfileEndpointTest extends ServiceTest {
+public class AccountEndpointTest extends ServiceTest{
 
     @Test
     void registerUserEndpoint() throws Exception {
@@ -26,10 +27,10 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", testingUsername, testingPassword);
 
         hit(HttpMethod.POST, "/register", request)
-            .andExpect(status().is(204))
+                .andExpect(status().is(204))
         ;
 
-        verify(userProfileDao).register(testingUsername, testingPassword);
+        verify(accountDao).register(testingUsername, testingPassword);
     }
 
     @Test
@@ -41,14 +42,14 @@ public class UserProfileEndpointTest extends ServiceTest {
             "password":"%s"
         }""", testingUsername, testingPassword);
 
-        doThrow(BadRequestException.class).when(userProfileDao)
+        doThrow(BadRequestException.class).when(accountDao)
                 .register(testingUsername, testingPassword);
 
         hit(HttpMethod.POST, "/register", request)
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao).register(testingUsername, testingPassword);
+        verify(accountDao).register(testingUsername, testingPassword);
     }
 
     @Test
@@ -66,7 +67,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
 
     @Test
@@ -86,7 +87,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
 
     @Test
@@ -104,7 +105,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
 
     @Test
@@ -122,11 +123,11 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfile() throws Exception {
         String request = """
             {
@@ -143,17 +144,14 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(204));
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(204));
 
-        verify(userProfileDao).createUserContactInfo(any(), any());
-
-        verify(userProfileDao).unlockClientPermissions(any());
-
+        verify(accountDao).createUserContactInfo(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileBadContactPreference() throws Exception {
         String request = """
             {
@@ -170,15 +168,15 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("contactPreference")));
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("contactPreference")));
 
-        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).createUserContactInfo(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileMissingNameFields() throws Exception {
         String request = """
             {
@@ -192,17 +190,17 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
-            .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("firstName")))
-            .andExpect(jsonPath("$.additionalInfo[2].field", Matchers.is("lastName")));
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
+                .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("firstName")))
+                .andExpect(jsonPath("$.additionalInfo[2].field", Matchers.is("lastName")));
 
-        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).createUserContactInfo(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileShortPhoneNumber() throws Exception {
         String request = """
             {
@@ -219,16 +217,16 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
-        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).createUserContactInfo(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileLongPhoneNumber() throws Exception {
         String request = """
             {
@@ -245,16 +243,16 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
-        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).createUserContactInfo(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileBadPhoneNumber() throws Exception {
         String request = """
             {
@@ -271,16 +269,16 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
-        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).createUserContactInfo(any(), any());
     }
 
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileBadStateCode() throws Exception {
         String request = """
             {
@@ -297,16 +295,16 @@ public class UserProfileEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("stateCode")))
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("stateCode")))
         ;
 
-        verify(userProfileDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).createUserContactInfo(any(), any());
     }
-    
+
     @Test
-    @WithUserAccount
+    @WithNewUserAccount
     void createUserProfileDaoFailure() throws Exception {
         String request = """
             {
@@ -325,125 +323,15 @@ public class UserProfileEndpointTest extends ServiceTest {
 
         ContactInfo info = mapper.readValue(request, ContactInfo.class);
 
-        doThrow(BadRequestException.class).when(userProfileDao)
-            .createUserContactInfo(testingUserId, info);
+        doThrow(BadRequestException.class).when(accountDao)
+                .createUserContactInfo(testingUserId, info);
 
-        hit(HttpMethod.POST, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.error", Matchers.is("BadRequestException")))
+        hit(HttpMethod.POST, "/r2/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("BadRequestException")))
         ;
     }
 
-    @Test
-    @WithUserAccount
-    void updateUserProfile() throws Exception {
-        String request = """
-            {
-                "firstName": "testing"
-            }
-            """;
-
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
-
-        hit(HttpMethod.PATCH, "/user", request)
-            .andExpect(status().is(204))
-        ;
-
-        verify(userProfileDao).updateUserContactInfo(testingUserId, info);
-    }
-
-    @Test
-    @WithUserAccount
-    void updateUserProfileBadContactPreference() throws Exception {
-        String request = """
-            {
-                "contactPreference": "Phonecall"
-            }
-            """;
-
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
-
-        hit(HttpMethod.PATCH, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
-        ;
-
-        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
-    }
-
-    @Test
-    @WithUserAccount
-    void updateUserProfileShortPhoneNumber() throws Exception {
-        String request = """
-            {
-                "phoneNumber": "1234567"
-            }
-            """;
-
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
-
-        hit(HttpMethod.PATCH, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
-        ;
-
-        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
-    }
-
-    @Test
-    @WithUserAccount
-    void updateUserProfileLongPhoneNumber() throws Exception {
-        String request = """
-            {
-                "phoneNumber": "11234567890"
-            }
-            """;
-
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
-
-        hit(HttpMethod.PATCH, "/user", request)
-            .andExpect(status().is(400))
-            .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
-        ;
-
-        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
-    }
-
-    @Test
-    @WithUserAccount
-    void getUserProfile() throws Exception {
-
-        when(userProfileDao.getContactInfo(testingUserId))
-            .thenReturn(new ContactInfo("First", "Last", "He/Him/His",
-                "1234567890", "test@email.com", 
-                "1234 Test Ave.", null, "City", "ST", "12345-6789", "Email"));
-
-        hit(HttpMethod.GET, "/user")
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
-            .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
-            .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. City, ST 12345-6789")))
-            .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
-        ;
-    }
-
-    @Test
-    @WithUserAccount
-    void getUserProfileIncludingAddressLineTwo() throws Exception {
-
-        when(userProfileDao.getContactInfo(testingUserId))
-            .thenReturn(new ContactInfo("First", "Last", "He/Him/His",
-                "1234567890", "test@email.com", 
-                "1234 Test Ave.", "Apt 567", "City", "ST", "12345-6789", "Email"));
-
-        hit(HttpMethod.GET, "/user")
-            .andExpect(status().is(200))
-            .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
-            .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
-            .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. Apt 567 City, ST 12345-6789")))
-            .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
-        ;
-    }
 
     @Test
     @WithUserAccount
@@ -459,10 +347,10 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", testingPassword, newPassword, newPassword);
 
         hit(HttpMethod.PATCH, "/user/password", request)
-            .andExpect(status().is(204))
+                .andExpect(status().is(204))
         ;
 
-        verify(userProfileDao).updateUserPassword(any(), any(), any(), any());
+        verify(accountDao).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test
@@ -479,14 +367,14 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", testingPassword, newPassword, newPassword);
 
 
-        doThrow(BadRequestException.class).when(userProfileDao)
-            .updateUserPassword(any(), any(), any(), any());
+        doThrow(BadRequestException.class).when(accountDao)
+                .updateUserPassword(any(), any(), any(), any());
 
         hit(HttpMethod.PATCH, "/user/password", request)
-            .andExpect(status().is(400))
+                .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao).updateUserPassword(any(), any(), any(), any());
+        verify(accountDao).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test
@@ -503,10 +391,10 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", testingPassword, newPassword, newPassword.toUpperCase());
 
         hit(HttpMethod.PATCH, "/user/password")
-            .andExpect(status().is(400))
+                .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).updateUserPassword(any(), any(), any(), any());
+        verify(accountDao, never()).updateUserPassword(any(), any(), any(), any());
     }
 
     @Test
@@ -523,13 +411,13 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", testingPassword, newPassword, newPassword);
 
         hit(HttpMethod.PATCH, "/user/password")
-            .andExpect(status().is(400))
+                .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).updateUserPassword(any(), any(), any(), any());
+        verify(accountDao, never()).updateUserPassword(any(), any(), any(), any());
     }
 
-    @Test    
+    @Test
     @WithUserAccount
     void updateUsername() throws Exception {
 
@@ -541,10 +429,10 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", newUsername);
 
         hit(HttpMethod.PATCH, "/user/name", request)
-            .andExpect(status().is(204))
+                .andExpect(status().is(204))
         ;
 
-        verify(userProfileDao).changeUsername(testingUserId, newUsername);
+        verify(accountDao).changeUsername(testingUserId, newUsername);
     }
 
     @Test
@@ -558,14 +446,14 @@ public class UserProfileEndpointTest extends ServiceTest {
             "username":"%s"
         }""", duplicateUsername);
 
-        doThrow(BadRequestException.class).when(userProfileDao)
-               .changeUsername(testingUserId, duplicateUsername);
+        doThrow(BadRequestException.class).when(accountDao)
+                .changeUsername(testingUserId, duplicateUsername);
 
         hit(HttpMethod.PATCH, "/user/name", request)
-            .andExpect(status().is(400))
+                .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao).changeUsername(testingUserId, duplicateUsername);
+        verify(accountDao).changeUsername(testingUserId, duplicateUsername);
     }
 
     @Test
@@ -580,10 +468,10 @@ public class UserProfileEndpointTest extends ServiceTest {
         }""", username);
 
         hit(HttpMethod.PATCH, "/user/name", request)
-            .andExpect(status().is(400))
+                .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
 
     @Test
@@ -603,7 +491,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
 
     @Test
@@ -621,6 +509,7 @@ public class UserProfileEndpointTest extends ServiceTest {
                 .andExpect(status().is(400))
         ;
 
-        verify(userProfileDao, never()).register(any(), any());
+        verify(accountDao, never()).register(any(), any());
     }
+
 }

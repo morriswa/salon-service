@@ -1,6 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.exception.BadRequestException;
+import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.model.ContactInfo;
@@ -15,34 +16,11 @@ import org.morriswa.salon.model.ContactInfo;
 
 public interface UserProfileDao {
 
-    /**
-     * FOR USE WITH SPRING AUTHORIZATION MANAGER
-     *
-     * @param username of the user who is authenticating
-     * @return the requested user, formatted for compatibility with Spring Security Filter
-     */
-    UserAccount findUser(String username);
-
-    /**
-     * registerUser takes a username and password string, puts them in the database
-     * @param username
-     * @param password
-     */
-    void register(String username, String password) throws Exception;
-
     ContactInfo getContactInfo(Long userId) throws Exception;
-
-    void updateUserPassword(Long userId, String currentEncodedPassword, String currentPassword, String newPassword) throws Exception;
-
-    void changeUsername(Long userId, String newUsername) throws Exception;
-
-    void createUserContactInfo(Long userId, ContactInfo request) throws Exception;
 
     void updateUserContactInfo(Long userId, ContactInfo request) throws Exception;
 
-    void unlockClientPermissions(Long userId);
-
-    void unlockEmployeePermissions(Long userId);
-
     EmployeeInfo getEmployeeInfo(Long employeeId) throws BadRequestException;
+
+    void updateEmployeeProfile(Long userId, EmployeeInfo request) throws ValidationException;
 }

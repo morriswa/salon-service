@@ -45,6 +45,17 @@ public class TestJdbcAuthenticationConfig {
         ));
     }
 
+    @Bean("testNewUserAccount")
+    public UserDetailsService getTestNewUserAccount() {
+        return username -> new UserAccount(
+                testingUserId,
+                testingUsername,
+                testingPassword,
+                ZonedDateTime.now().minusDays(3),
+                Set.of(new SimpleGrantedAuthority("NUSER")
+                ));
+    }
+
     @Bean("testClientAccount")
     public UserDetailsService getTestClientAccount() {
         return username -> new UserAccount(

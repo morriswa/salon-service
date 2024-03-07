@@ -40,7 +40,7 @@ public class DatasourceConfig {  //will provide all mysql config for the applica
 
         final var dbUsername = e.getRequiredProperty("mysql.username");
         final var dbPassword = e.getRequiredProperty("mysql.password");
-        final var jdbcUrl = String.format("%s://%s:%s/%s",
+        final var jdbcUrl = String.format("%s://%s:%s/%s?allowMultiQueries=true",
                 e.getRequiredProperty("mysql.protocol"),
                 e.getRequiredProperty("mysql.hostname"),
                 e.getRequiredProperty("mysql.port"),

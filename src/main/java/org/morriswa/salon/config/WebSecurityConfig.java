@@ -129,10 +129,16 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // requests to user registration endpoint shall be allowed
                         .requestMatchers("/register", "/health").permitAll()
-                        // all other requests must be authenticated
-                        .requestMatchers("/login", "/user", "/user/**").hasAuthority("USER")
+                        // only new user accounts should have access to account registration endpoints
+                        .requestMatchers("/r2/**").hasAuthority("NUSER")
+                        // only authenticated accounts can access login endpoint
+                        .requestMatchers("/login").hasAnyAuthority("NUSER", "USER")
+                        // only complete user accounts can access user management endpoints
+                        .requestMatchers("/user/**").hasAuthority("USER")
+                        // only employees can access biz management endpoints
                         .requestMatchers("/management/**").hasAuthority("EMPLOYEE")
-                        .anyRequest().hasAnyAuthority("USER","EMPLOYEE")
+                        // employees and clients may have access to remaining endpoints
+                        .anyRequest().hasAnyAuthority("CLIENT","EMPLOYEE")
                 )
                 // use custom cors config
                 .csrf(csrf->csrf.disable())

@@ -1,8 +1,10 @@
 package org.morriswa.salon.control;
 
 import org.morriswa.salon.model.AppointmentRequest;
+import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.service.AccountService;
 import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.ProvidedServiceService;
 import org.morriswa.salon.service.SchedulingService;
@@ -51,6 +53,40 @@ public class EmployeeController {
         var profile = profileService.getEmployeeProfile(principal);
         // and return it to them in JSON format
         return ResponseEntity.ok(profile);
+    }
+
+    /**
+     * Http GET endpoint used to retrieve all stored information about the currently authenticated user
+     *
+     * @param principal currently authenticated User Account
+     * @return profile and contact information about the user if operation was successful, else error response
+     */
+    @PostMapping("/employee/image")
+    public ResponseEntity<?> updateProfileImage(
+            @AuthenticationPrincipal UserAccount principal,
+            @RequestPart MultipartFile image
+    ) throws Exception{
+        // using the user profile service, retrieve the current users profile
+        profileService.changeEmployeeProfileImage(principal, image);
+        // and return it to them in JSON format
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Http GET endpoint used to retrieve all stored information about the currently authenticated user
+     *
+     * @param principal currently authenticated User Account
+     * @return profile and contact information about the user if operation was successful, else error response
+     */
+    @PatchMapping("/employee")
+    public ResponseEntity<?> updateEmployeeProfile(
+            @AuthenticationPrincipal UserAccount principal,
+            @RequestBody EmployeeInfo request
+    ) throws Exception{
+        // using the user profile service, retrieve the current users profile
+        profileService.updateEmployeeProfile(principal, request);
+        // and return it to them in JSON format
+        return ResponseEntity.noContent().build();
     }
 
 
