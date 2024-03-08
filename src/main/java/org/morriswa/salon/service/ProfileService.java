@@ -1,14 +1,13 @@
 package org.morriswa.salon.service;
 
-import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-22 <br>
- * PURPOSE: <br>
- * &emsp; provides an interface for performing essential Client/Employee Profile actions
+ * provides an interface for performing essential Client/Employee Profile actions
+ *
+ * @author William A. Morris
+ * @since 2024-01-22
  */
 public interface ProfileService {
 

@@ -5,9 +5,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 /**
- * AUTHOR: William A. Morris
- * DATE CREATED: 2024-02-26
- * PURPOSE: Provides an easy Interface to scale images
+ * Provides an easy Interface to scale images
+ *
+ * @author William A. Morris
+ * @since 2024-02-26
  */
 public interface ImageScaleUtil {
 

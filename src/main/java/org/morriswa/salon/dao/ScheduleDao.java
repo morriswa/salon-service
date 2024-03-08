@@ -9,9 +9,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * AUTHOR: William A. Morris
- * DATE CREATED: 2024-02-12
- * PURPOSE: Provides an interface to maintain the salon's schedule in the database
+ * Provides an interface to maintain the salon's schedule in the database
+ *
+ * @author William A. Morris
+ * @since 2024-02-12
  */
 public interface ScheduleDao {
 
@@ -20,7 +21,24 @@ public interface ScheduleDao {
 
     // RETRIEVE
     List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws BadRequestException;
-    List<Appointment> retrieveScheduledAppointments(Long userId);
+
+    /**
+     * @param clientId to retrieve schedule for
+     * @return all scheduled appointments
+     *
+     * @author Kevin Rivers
+     */
+    List<Appointment> retrieveScheduledAppointments(Long clientId);
+
+    /**
+     * retrieves an employees schedule from current time until specified date at end of day
+     *
+     * @param employeeId to retrieve schedule for
+     * @param untilDate last date to retrieve appointments for
+     * @return all requested appointments, ordered by time
+     *
+     * @author Makenna Loewenherz
+     */
     List<Appointment> retrieveEmployeeSchedule(Long employeeId, LocalDate untilDate);
     void checkEditAccessOrThrow(Long employeeId, Long appointmentId) throws BadRequestException;
 

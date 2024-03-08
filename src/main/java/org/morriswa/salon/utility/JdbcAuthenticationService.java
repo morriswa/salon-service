@@ -9,11 +9,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-22 <br>
- * PURPOSE: <br>
- * &emsp; responsible for locating appropriate user object
- * for authentication with spring security filter
+ * responsible for locating appropriate user object for authentication with spring security filter
+ *
+ * @author William A. Morris
+ * @since 2024-01-22
  */
 
 @Service @Profile("!test")

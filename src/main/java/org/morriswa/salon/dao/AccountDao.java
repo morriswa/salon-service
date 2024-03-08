@@ -5,10 +5,10 @@ import org.morriswa.salon.model.UserInfo;
 
 
 /**
- * AUTHOR: William A. Morris, Kevin Rivers <br>
- * CREATION_DATE: 2024-01-21 <br>
- * PURPOSE: <br>
- * &emsp; provides an interface for interacting with the database to perform essential User Account actions
+ * provides an interface for interacting with the database to perform essential User Account actions
+ *
+ * @author William A. Morris, Kevin Rivers
+ * @since 2024-01-21
  */
 public interface AccountDao {
 
@@ -36,6 +36,8 @@ public interface AccountDao {
      * @param currentPassword provided by the user in request
      * @param newPassword new password to encrypt and store
      * @throws Exception if the user's password could not be updated in the database
+     *
+     * @author Kevin Rivers
      */
     void updateUserPassword(Long userId,
                             String currentEncodedPassword,
@@ -48,6 +50,8 @@ public interface AccountDao {
      * @param userId of the authenticated user
      * @param newUsername for future authentication
      * @throws Exception if the username could not be updated
+     *
+     * @author Makenna Loewenherz
      */
     void changeUsername(Long userId, String newUsername) throws Exception;
 
@@ -57,6 +61,8 @@ public interface AccountDao {
      * @param userId of the new user
      * @param request valid User Info request to store
      * @throws Exception if the contact information is rejected
+     *
+     * @author Makenna Loewenherz
      */
     void enterContactInfo(Long userId, UserInfo request) throws Exception;
 

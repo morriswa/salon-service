@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-25 <br>
- * PURPOSE: <br>
- * &emsp; provides a REST API for performing employee/business functions that can be consumed by other applications
+ * provides a REST API for performing client and employee tasks
+ *
+ * @author William A. Morris
+ * @since 2024-01-25
  */
 
 @RestController

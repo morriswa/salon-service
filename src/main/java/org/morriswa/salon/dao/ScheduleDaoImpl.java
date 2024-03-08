@@ -483,7 +483,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public List<Appointment> retrieveScheduledAppointments(Long userId) {
+    public List<Appointment> retrieveScheduledAppointments(Long clientId) {
         final var query = """
             select
                 appt.appointment_id,
@@ -509,7 +509,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             and appt.appointment_time > NOW()
             order by appt.appointment_time""";
 
-        final var param = Map.of("clientId", userId);
+        final var param = Map.of("clientId", clientId);
 
         return database.query(query, param, resultSet->{
             List<Appointment> schedule = new ArrayList<>();

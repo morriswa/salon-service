@@ -16,10 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-25 <br>
- * PURPOSE: <br>
- * &emsp; provides a REST API for performing employee/business functions that can be consumed by other applications
+ * provides a REST API for performing employee/business functions that can be consumed by other applications
+ * @author William A. Morris
+ * @since 2024-01-25
  */
 
 @RestController @RequestMapping("/management")

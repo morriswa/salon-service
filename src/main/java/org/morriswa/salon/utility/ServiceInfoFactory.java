@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import java.time.ZonedDateTime;
 
 /**
- *  AUTHOR: William A. Morris <br>
- *  CREATION_DATE: 2024-01-19 <br>
- *  PURPOSE: <br>
- *  &emsp; Generates HTTP Responses with all requested info and default fields for API
+ * Generates HTTP Responses with all requested info and default fields for API
+ *
+ * @author William A. Morris
+ * @since 2024-01-19
  */
 public interface ServiceInfoFactory {
 

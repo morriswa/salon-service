@@ -11,10 +11,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * AUTHOR: William A. Morris, Kevin Rivers <br>
- * CREATION_DATE: 2024-01-22 <br>
- * PURPOSE: <br>
- * &emsp; provides a REST API for performing essential user functions that can be consumed by other applications
+ * provides a REST API for performing essential user functions that can be consumed by other applications
+ *
+ * @author William A. Morris, Kevin Rivers
+ * @since 2024-01-22
  */
 
 @RestController

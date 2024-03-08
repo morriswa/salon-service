@@ -7,9 +7,10 @@ import org.morriswa.salon.model.UserAccountResponse;
 import org.morriswa.salon.model.UserInfo;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-22 <br>
  * responsible for validating and maintaining all accounts
+ *
+ * @author William A. Morris
+ * @since 2024-01-22
  */
 public interface AccountService {
 

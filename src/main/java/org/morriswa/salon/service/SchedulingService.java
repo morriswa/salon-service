@@ -10,9 +10,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * AUTHOR: William A. Morris
- * DATE CREATED: 2024-02-12
  * responsible for validating and maintaining the salon's schedule for employees and clients
+ *
+ * @author William A. Morris
+ * @since 2024-02-12
  */
 public interface SchedulingService {
 

@@ -8,12 +8,11 @@ import org.morriswa.salon.model.UserInfo;
 import java.util.Set;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-23 <br>
- * PURPOSE: <br>
- * &emsp; provides important methods to validate various request fields throughout the application
+ * provides important methods to validate various request fields throughout the application
+ *
+ * @author William A. Morris
+ * @since 2024-01-23
  */
-
 public class UserProfileValidator {
 
     public static final Set<String> validPronouns = Set.of("H", "S", "T");

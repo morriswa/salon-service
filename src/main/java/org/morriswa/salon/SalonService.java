@@ -8,15 +8,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import java.util.TimeZone;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-19 <br>
- * PURPOSE: <br>
- * &emsp; will bootstrap and run the eecs447 project salon service
+ * will bootstrap and run the eecs447 project salon service
+ *
+ * @author William A. Morris
+ * @since 2024-01-19
  */
 
+
+// Enable configuration files annotated with @ConfigurationProperties
+@EnableConfigurationProperties
 // Do NOT use Spring Data Source Configuration,
 // Data Source will be manually configured in org.morriswa.salon.config.DatasourceConfig
-@EnableConfigurationProperties
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class SalonService {
     public static void main(String[] args) {

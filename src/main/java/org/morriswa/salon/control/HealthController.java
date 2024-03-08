@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-19 <br>
- * PURPOSE: <br>
- * &emsp; provides RESTful endpoints to ensure application is running
+ * provides RESTful endpoints to ensure application is running
+ *
+ * @author William A. Morris
+ * @since 2024-01-19
  */
 
 @RestController

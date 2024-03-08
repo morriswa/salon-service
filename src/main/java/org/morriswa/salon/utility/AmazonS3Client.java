@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * AUTHOR: William A. Morris
- * DATE CREATED: 2024-01-26
  * interacts with Amazon S3 bucket to store and retrieve application content
+ *
+ * @author William A. Morris
+ * @since 2024-01-26
  */
 public interface AmazonS3Client {
 
