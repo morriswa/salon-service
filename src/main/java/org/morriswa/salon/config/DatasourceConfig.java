@@ -8,12 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-19 <br>
- * PURPOSE: <br>
- * &emsp; will provide all mysql config for the application
+ * will provide a Hikari Datasource to be used by JDBC
+ *
+ * @author William A. Morris
+ * @since 2024-01-19
  */
-
 @Configuration //Indicates to the scanner that this class describes the application config
 @Profile("!test") //Indicates to the scanner that this class should be ignored during unit testing
 public class DatasourceConfig {  //will provide all mysql config for the application

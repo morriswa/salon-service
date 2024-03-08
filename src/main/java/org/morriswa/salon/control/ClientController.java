@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2024-01-25
  */
 
-@RestController
+@RestController @RequestMapping("/client")
 public class ClientController {
 
     private final ProfileService profiles;
@@ -75,7 +75,7 @@ public class ClientController {
      * @param principal currently authenticated User Account
      * @return profile and contact information about the user if operation was successful, else error response
      */
-    @GetMapping("/client")
+    @GetMapping("/profile")
     public ResponseEntity<ClientInfo> getClientProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
         // using the user profile service, retrieve the current users profile
         var profile = profiles.getClientProfile(principal);
@@ -91,7 +91,7 @@ public class ClientController {
      * @return blank response
      * @throws Exception return error response if user's profile cannot be updated
      */
-    @PatchMapping("/client")
+    @PatchMapping("/profile")
     public ResponseEntity<Void> updateClientProfile(
             @AuthenticationPrincipal UserAccount principal,
             @RequestBody ClientInfo updateProfileRequest

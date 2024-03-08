@@ -21,7 +21,7 @@ import java.util.Optional;
  * @since 2024-01-25
  */
 
-@RestController @RequestMapping("/management")
+@RestController @RequestMapping("/employee")
 public class EmployeeController {
 
     private final SchedulingService schedule;
@@ -41,7 +41,7 @@ public class EmployeeController {
      * @param principal currently authenticated User Account
      * @return profile and contact information about the user if operation was successful, else error response
      */
-    @GetMapping("/employee")
+    @GetMapping("/profile")
     public ResponseEntity<EmployeeInfo> getEmployeeProfile(
             @AuthenticationPrincipal UserAccount principal
     ) throws Exception{
@@ -57,7 +57,7 @@ public class EmployeeController {
      * @param principal currently authenticated User Account
      * @return profile and contact information about the user if operation was successful, else error response
      */
-    @PostMapping("/employee/image")
+    @PostMapping("/profile/image")
     public ResponseEntity<Void> updateProfileImage(
             @AuthenticationPrincipal UserAccount principal,
             @RequestPart MultipartFile image
@@ -74,7 +74,7 @@ public class EmployeeController {
      * @param principal currently authenticated User Account
      * @return profile and contact information about the user if operation was successful, else error response
      */
-    @PatchMapping("/employee")
+    @PatchMapping("/profile")
     public ResponseEntity<Void> updateEmployeeProfile(
             @AuthenticationPrincipal UserAccount principal,
             @RequestBody EmployeeInfo request

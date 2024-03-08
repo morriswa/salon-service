@@ -7,10 +7,7 @@ import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.ProvidedServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ import java.util.List;
  * @since 2024-01-25
  */
 
-@RestController
+@RestController @RequestMapping("/shared")
 public class SharedController {
 
     private final ProvidedServiceService providedServices;

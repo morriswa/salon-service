@@ -69,7 +69,7 @@ public class AccountController {
      * @return blank response
      * @throws Exception return error response if the user's profile cannot be created
      */
-    @PostMapping("/r2/profile")
+    @PostMapping("/newUser/profile")
     public ResponseEntity<Void> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
         @RequestBody UserInfo createProfileRequest
@@ -86,7 +86,7 @@ public class AccountController {
      * @return blank response
      * @throws Exception return error response if access code is incorrect
      */
-    @PatchMapping("/r2/access/employee")
+    @PatchMapping("/newUser/access/employee")
     public ResponseEntity<Void> unlockEmployeePortal(
             @AuthenticationPrincipal UserAccount principal,
             @RequestParam String accessCode
@@ -104,7 +104,7 @@ public class AccountController {
      * @return blank response
      * @throws Exception return error response if client access cannot be granted
      */
-    @PatchMapping("/r2/access/client")
+    @PatchMapping("/newUser/access/client")
     public ResponseEntity<Void> unlockClientPortal(
             @AuthenticationPrincipal UserAccount principal
     ) throws Exception {

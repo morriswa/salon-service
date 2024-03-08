@@ -25,10 +25,10 @@ import java.util.List;
 
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-19 <br>
- * PURPOSE: <br>
- * &emsp; will provide all security config for the application
+ * will provide all security config for the application
+ *
+ * @author William A. Morris
+ * @since 2024-01-19
  */
 
 @Configuration
@@ -110,7 +110,6 @@ public class WebSecurityConfig {
 
     /**
      * Register a Security Filter Chain bean to secure all web requests
-     * <p>
      * REQUIRED AUTOWIRED DEPENDENCIES:
      * @param http Spring's Http Security object, used for security configuration
      * @param responseFactory Used to generate formatted error responses for HTTP consumption
@@ -130,15 +129,19 @@ public class WebSecurityConfig {
                         // requests to user registration endpoint shall be allowed
                         .requestMatchers("/register", "/health").permitAll()
                         // only new user accounts should have access to account registration endpoints
-                        .requestMatchers("/r2/**").hasAuthority("NUSER")
+                        .requestMatchers("/newUser/**").hasAuthority("NUSER")
                         // only authenticated accounts can access login endpoint
                         .requestMatchers("/login").hasAnyAuthority("NUSER", "USER")
                         // only complete user accounts can access user management endpoints
                         .requestMatchers("/user/**").hasAuthority("USER")
                         // only employees can access biz management endpoints
-                        .requestMatchers("/management/**").hasAuthority("EMPLOYEE")
+                        .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
+                        // only clients can access client portal info
+                        .requestMatchers("/client/**").hasAuthority("CLIENT")
+                        // clients and employees have accessed to shared endpoints
+                        .requestMatchers("/shared/**").hasAnyAuthority("CLIENT","EMPLOYEE")
                         // employees and clients may have access to remaining endpoints
-                        .anyRequest().hasAnyAuthority("CLIENT","EMPLOYEE")
+                        .anyRequest().denyAll()
                 )
                 // use custom cors config
                 .csrf(csrf->csrf.disable())
