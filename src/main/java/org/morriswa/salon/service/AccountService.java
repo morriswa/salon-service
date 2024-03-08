@@ -1,21 +1,21 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.morriswa.salon.model.AccountRequest;
+import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.UserAccountResponse;
+import org.morriswa.salon.model.UserInfo;
 
 /**
  * AUTHOR: William A. Morris <br>
  * CREATION_DATE: 2024-01-22 <br>
- * PURPOSE: <br>
- * &emsp; provides an interface for performing essential account actions
+ * responsible for validating and maintaining all accounts
  */
 public interface AccountService {
 
     UserAccountResponse login(UserAccount principal);
 
-    String registerUser(AccountRequest request) throws Exception;
+    void registerUser(AccountRequest request) throws Exception;
 
     void createUserProfile(UserAccount principal, UserInfo createProfileRequest) throws Exception;
 

@@ -9,6 +9,11 @@ import org.morriswa.salon.model.UserAccount;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * AUTHOR: William A. Morris
+ * DATE CREATED: 2024-02-12
+ * responsible for validating and maintaining the salon's schedule for employees and clients
+ */
 public interface SchedulingService {
 
     // CREATE

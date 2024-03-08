@@ -8,6 +8,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+/**
+ * AUTHOR: William A. Morris
+ * DATE CREATED: 2024-03-05
+ * responsible for validating and maintaining all provided services
+ */
 public interface ProvidedServiceService {
 
     // CREATE

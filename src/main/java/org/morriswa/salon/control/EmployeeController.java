@@ -64,7 +64,7 @@ public class EmployeeController {
             @RequestPart MultipartFile image
     ) throws Exception{
         // using the user profile service, retrieve the current users profile
-        profileService.changeEmployeeProfileImage(principal, image);
+        profileService.updateEmployeeProfileImage(principal, image);
         // and return it to them in JSON format
         return ResponseEntity.noContent().build();
     }

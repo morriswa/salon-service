@@ -2,7 +2,7 @@ package org.morriswa.salon.control;
 
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.ProvidedServiceDetails;
-import org.morriswa.salon.model.PublicEmployeeProfileResponse;
+import org.morriswa.salon.model.PublicEmployeeProfile;
 import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.ProvidedServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class SharedController {
      * @return profile and contact information about the user if operation was successful, else error response
      */
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<PublicEmployeeProfileResponse> getPublicEmployeeProfile(
+    public ResponseEntity<PublicEmployeeProfile> getPublicEmployeeProfile(
             @PathVariable Long employeeId
     ) throws Exception{
         // using the user profile service, retrieve the current users profile

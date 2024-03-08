@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String registerUser(AccountRequest request) throws Exception {
+    public void registerUser(AccountRequest request) throws Exception {
         // add user registration rules here...
 
         // validate username and password fields
@@ -52,9 +52,6 @@ public class AccountServiceImpl implements AccountService {
 
         // if all validations were passed, the user may be registered in the database
         accountDao.register(request.username(), request.password());
-
-        // if the user was successfully registered, return the username they were registered with
-        return request.username();
     }
 
     @Override

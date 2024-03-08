@@ -46,25 +46,25 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public EmployeeProfileResponse getEmployeeProfile(UserAccount principal) throws Exception {
+    public EmployeeProfile getEmployeeProfile(UserAccount principal) throws Exception {
         // get user contact info
         var employeeInfo = profileDao.getEmployeeInfo(principal.getUserId());
 
         var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", principal.getUserId()), 30);
 
         // return complete profile
-        return new EmployeeProfileResponse(employeeInfo, employeeProfileImage);
+        return new EmployeeProfile(employeeInfo, employeeProfileImage);
     }
 
     @Override
-    public PublicEmployeeProfileResponse getPublicEmployeeProfile(Long employeeId) throws BadRequestException {
+    public PublicEmployeeProfile getPublicEmployeeProfile(Long employeeId) throws BadRequestException {
         // get user contact info
         var employeeInfo = profileDao.getEmployeeInfo(employeeId);
 
         var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", employeeId), 30);
 
         // return complete profile
-        return new PublicEmployeeProfileResponse(employeeInfo, employeeProfileImage);
+        return new PublicEmployeeProfile(employeeInfo, employeeProfileImage);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void changeEmployeeProfileImage(UserAccount principal, MultipartFile image) throws Exception{
+    public void updateEmployeeProfileImage(UserAccount principal, MultipartFile image) throws Exception{
         ImageValidator.validateImageFormat(image);
 
         // scale image by 80%

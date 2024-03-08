@@ -5,11 +5,11 @@ import lombok.Getter;
 import java.net.URL;
 
 @Getter
-public class EmployeeProfileResponse extends EmployeeInfo {
+public class EmployeeProfile extends EmployeeInfo {
     private final URL profileImage;
 
 
-    public EmployeeProfileResponse(EmployeeInfo info, URL profileImage) {
+    public EmployeeProfile(EmployeeInfo info, URL profileImage) {
 
         super(  info.getFirstName(), info.getLastName(), info.getPronouns(),
                 info.getPhoneNumber(), info.getEmail(),
