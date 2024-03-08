@@ -2,7 +2,7 @@ package org.morriswa.salon.dao;
 
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.ProvidedService;
-import org.morriswa.salon.model.ServiceDetails;
+import org.morriswa.salon.model.ProvidedServiceDetails;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ public interface ProvidedServiceDao {
     void createProvidedService(Long employeeId, ProvidedService createProvidedServiceRequest);
 
     // RETRIEVE
-    List<ServiceDetails> searchAvailableServices(String searchText);
+    List<ProvidedServiceDetails> searchAvailableServices(String searchText);
     List<ProvidedService> retrieveEmployeesServices(Long employeeId);
-    ServiceDetails retrieveServiceDetails(Long serviceId) throws BadRequestException;
+    ProvidedServiceDetails retrieveServiceDetails(Long serviceId) throws BadRequestException;
     List<String> retrieveServiceContent(Long serviceId);
     boolean serviceBelongsTo(Long serviceId, Long employeeId);
 

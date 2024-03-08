@@ -4,7 +4,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.salon.annotations.WithEmployeeAccount;
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.ServiceDetails;
+import org.morriswa.salon.model.ProvidedServiceDetails;
 import org.morriswa.salon.validation.ProvidedServiceValidator;
 import org.springframework.http.HttpMethod;
 
@@ -24,8 +24,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedService() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
-            "defaultLength": 2,
+            "cost": 19.99,
+            "length": 2,
             "name": "My Test Service"
         }""";
 
@@ -40,8 +40,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceBadCost() throws Exception {
         final var request = """
         {
-            "defaultCost": 3.1415,
-            "defaultLength": 2,
+            "cost": 3.1415,
+            "length": 2,
             "name": "My Test Service"
         }""";
 
@@ -59,8 +59,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceBigCost() throws Exception {
         final var request = """
         {
-            "defaultCost": 1000.99,
-            "defaultLength": 2,
+            "cost": 1000.99,
+            "length": 2,
             "name": "My Test Service"
         }""";
 
@@ -78,8 +78,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceNoCost() throws Exception {
         final var request = """
         {
-            "defaultCost": 0.00,
-            "defaultLength": 2,
+            "cost": 0.00,
+            "length": 2,
             "name": "My Test Service"
         }""";
 
@@ -98,8 +98,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceNegativeCost() throws Exception {
         final var request = """
         {
-            "defaultCost": -0.01,
-            "defaultLength": 2,
+            "cost": -0.01,
+            "length": 2,
             "name": "My Test Service"
         }""";
 
@@ -117,7 +117,7 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceMissingCost() throws Exception {
         final var request = """
         {
-            "defaultLength": 2,
+            "length": 2,
             "name": "My Test Service"
         }""";
 
@@ -135,7 +135,7 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceMissingLength() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
+            "cost": 19.99,
             "name": "My Test Service"
         }""";
 
@@ -153,8 +153,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceShortLength() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
-            "defaultLength": 0,
+            "cost": 19.99,
+            "length": 0,
             "name": "My Test Service"
         }""";
 
@@ -172,8 +172,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceNegativeLength() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
-            "defaultLength": -1,
+            "cost": 19.99,
+            "length": -1,
             "name": "My Test Service"
         }""";
 
@@ -191,8 +191,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceLongLength() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
-            "defaultLength": 33,
+            "cost": 19.99,
+            "length": 33,
             "name": "My Test Service"
         }""";
 
@@ -210,8 +210,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceMissingName() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
-            "defaultLength": 32
+            "cost": 19.99,
+            "length": 32
         }""";
 
         hit(HttpMethod.POST, "/management/service", request)
@@ -228,8 +228,8 @@ public class EmployeeEndpointTest extends ServiceTest {
     void createProvidedServiceBlankName() throws Exception {
         final var request = """
         {
-            "defaultCost": 19.99,
-            "defaultLength": 32,
+            "cost": 19.99,
+            "length": 32,
             "name": "     "
         }""";
 
@@ -252,8 +252,8 @@ public class EmployeeEndpointTest extends ServiceTest {
 
         final var request = String.format("""
         {
-            "defaultCost": 19.99,
-            "defaultLength": 32,
+            "cost": 19.99,
+            "length": 32,
             "name": "%s"
         }""", longName);
 
@@ -272,7 +272,7 @@ public class EmployeeEndpointTest extends ServiceTest {
 
         Long serviceId = 111L;
 
-        final var testService = new ServiceDetails(serviceId, "My Service", new BigDecimal("12.34"), 30, null);
+        final var testService = new ProvidedServiceDetails(serviceId, new BigDecimal("12.34"), 30, "My Service", null);
 
         when(providedServiceDao.retrieveServiceContent(serviceId))
                 .thenReturn(List.of());
@@ -284,10 +284,10 @@ public class EmployeeEndpointTest extends ServiceTest {
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.serviceId",
                         Matchers.hasToString(serviceId.toString())))
-                .andExpect(jsonPath("$.name", Matchers.is(testService.name())))
+                .andExpect(jsonPath("$.name", Matchers.is(testService.getName())))
                 .andExpect(jsonPath("$.cost",
-                        Matchers.hasToString(testService.cost().toString())))
-                .andExpect(jsonPath("$.length", Matchers.is(testService.length())))
+                        Matchers.hasToString(testService.getCost().toString())))
+                .andExpect(jsonPath("$.length", Matchers.is(testService.getLength())))
         ;
 
         verify(providedServiceDao).retrieveServiceDetails(any());
@@ -301,7 +301,7 @@ public class EmployeeEndpointTest extends ServiceTest {
 
         Long serviceId = 111L;
 
-        final var testService = new ServiceDetails(serviceId, "My Service", new BigDecimal("12.34"), 30, null);
+        final var testService = new ProvidedServiceDetails(serviceId, new BigDecimal("12.34"), 30, "My Service",null);
 
         when(providedServiceDao.retrieveServiceDetails(serviceId))
                 .thenThrow(BadRequestException.class);

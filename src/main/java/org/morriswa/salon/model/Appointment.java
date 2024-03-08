@@ -12,30 +12,17 @@ public record Appointment(
     BigDecimal cost,
     BigDecimal tipAmount,
     String status,
-    ServiceInfo service,
-    EmployeeInfo employee,
-    ClientInfo client
+    Long serviceId,
+    String serviceName,
+    UserInfo employee,
+    UserInfo client
 ) {
-    public record ClientInfo (
-        Long clientId,
+    public record UserInfo(
+        Long userId,
         String firstName,
         String lastName,
         String phoneNumber,
         String email,
         String contactPreference
-    ) {  }
-
-    public record EmployeeInfo (
-        Long employeeId,
-        String firstName,
-        String lastName,
-        String phoneNumber,
-        String email,
-        String contactPreference
-    ) {  }
-
-    public record ServiceInfo (
-        Long serviceId,
-        String name
     ) {  }
 }

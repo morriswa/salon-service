@@ -4,22 +4,17 @@ import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.ContactInfo;
+import org.morriswa.salon.model.ClientInfo;
 import org.morriswa.salon.model.EmployeeInfo;
-import org.morriswa.salon.model.UserAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.ZoneId;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,14 +26,14 @@ import java.util.Optional;
  */
 
 @Component @SuppressWarnings("null")
-public class UserProfileDaoImpl implements UserProfileDao {
+public class ProfileDaoImpl implements ProfileDao {
 
     private final Logger log;
     private final NamedParameterJdbcTemplate database;
     private final PasswordEncoder encoder;
 
     @Autowired
-    public UserProfileDaoImpl(NamedParameterJdbcTemplate database, PasswordEncoder encoder) {
+    public ProfileDaoImpl(NamedParameterJdbcTemplate database, PasswordEncoder encoder) {
         this.log = LoggerFactory.getLogger(getClass());
         this.database = database;
         this.encoder = encoder;
@@ -46,17 +41,21 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
 
     @Override
-    public ContactInfo getContactInfo(Long userId) throws Exception {
+    public ClientInfo getClientInfo(Long userId) throws Exception {
         //Retrieving all columns from the contact_info table where user_id col is = to the param userId
-        final var query = "select * from contact_info where user_id=:userId";
+        final var query = """
+            select *
+            from contact_info contact
+            left join client on contact.user_id = client.client_id
+            where contact.user_id=:userId""";
         //Mapping the named param to the Java var
         final var params = Map.of("userId",userId);
 
-        Optional<ContactInfo> retrievedRecord = database.query(query, params, resultSet ->{
+        Optional<ClientInfo> retrievedRecord = database.query(query, params, resultSet ->{
             //Checking if the record exists
             if(resultSet.next()) {
                 //If it does, return the Contact Info
-                return Optional.of(new ContactInfo(
+                return Optional.of(new ClientInfo(
                     //Grabbing cols as a string
                     resultSet.getString("first_name"), 
                     resultSet.getString("last_name"),
@@ -68,7 +67,8 @@ public class UserProfileDaoImpl implements UserProfileDao {
                     resultSet.getString("city"), 
                     resultSet.getString("state_code"), 
                     resultSet.getString("zip_code"), 
-                    ContactPreference.getEnum(resultSet.getString("contact_pref")).description));
+                    ContactPreference.getEnum(resultSet.getString("contact_pref")).description,
+                    resultSet.getDate("birthday")));
             }
 
             return Optional.empty(); //If it doesn't exist, return empty object
@@ -78,37 +78,46 @@ public class UserProfileDaoImpl implements UserProfileDao {
     }
 
     @Override
-    public void updateUserContactInfo(Long userId, ContactInfo request) throws Exception {
+    public void updateClientInfo(Long userId, ClientInfo request) throws Exception {
 
         final var query = """
-            UPDATE contact_info SET
-                first_name = IFNULL(:firstName, first_name),
-                last_name = IFNULL(:lastName, last_name),
-                pronouns = IFNULL(:pronouns, pronouns),
-                phone_num = IFNULL(:phoneNumber, phone_num),
-                email = IFNULL(:email, email),
-                addr_one = IFNULL(:addressLnOne, addr_one),
-                addr_two = IFNULL(:addressLnTwo, addr_two),
-                city = IFNULL(:city, city),
-                state_code = IFNULL(:stateCode, state_code),
-                zip_code = IFNULL(:zipCode, zip_code),
-                contact_pref = IFNULL(:contactPreference, contact_pref)
-            WHERE user_id = :userId
+            UPDATE contact_info
+                SET
+                    first_name = IFNULL(:firstName, first_name),
+                    last_name = IFNULL(:lastName, last_name),
+                    pronouns = IFNULL(:pronouns, pronouns),
+                    phone_num = IFNULL(:phoneNumber, phone_num),
+                    email = IFNULL(:email, email),
+                    addr_one = IFNULL(:addressLnOne, addr_one),
+                    addr_two = IFNULL(:addressLnTwo, addr_two),
+                    city = IFNULL(:city, city),
+                    state_code = IFNULL(:stateCode, state_code),
+                    zip_code = IFNULL(:zipCode, zip_code),
+                    contact_pref = IFNULL(:contactPreference, contact_pref)
+                WHERE user_id = :userId;
+                
+            UPDATE client
+                SET
+                    birthday = IFNULL(:birthday, birthday)
+                WHERE client_id = :userId;
             """;
 
         final var params = new HashMap<String, Object>(){{
             put("userId", userId);
-            put("firstName", request.firstName());
-            put("lastName", request.lastName());
-            put("pronouns", request.pronouns());
-            put("phoneNumber", request.phoneNumber());
-            put("email", request.email());
-            put("addressLnOne", request.addressLineOne());
-            put("addressLnTwo", request.addressLineTwo());
-            put("city", request.city());
-            put("stateCode", request.stateCode());
-            put("zipCode", request.zipCode());
-            put("contactPreference", request.contactPreference()==null?null:ContactPreference.valueOf(request.contactPreference()).code);
+            put("firstName", request.getFirstName());
+            put("lastName", request.getLastName());
+            put("pronouns", request.getPronouns());
+            put("phoneNumber", request.getPhoneNumber());
+            put("email", request.getEmail());
+            put("addressLnOne", request.getAddressLineOne());
+            put("addressLnTwo", request.getAddressLineTwo());
+            put("city", request.getCity());
+            put("stateCode", request.getStateCode());
+            put("zipCode", request.getZipCode());
+            put("contactPreference",
+                    request.getContactPreference()==
+                            null?null:ContactPreference.valueOf(request.getContactPreference()).code);
+            put("birthday", request.getBirthday());
         }};
 
         try {
@@ -121,14 +130,14 @@ public class UserProfileDaoImpl implements UserProfileDao {
             if (error.endsWith("for key 'contact_info.phone_num'"))
             // throw a user-friendly error
                 throw new ValidationException(
-                        "phoneNumber", true, request.phoneNumber(),
+                        "phoneNumber", true, request.getPhoneNumber(),
                         "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
             if (error.endsWith("for key 'contact_info.email'"))
                 // throw a user-friendly error
                 throw new ValidationException(
-                        "email", true, request.email(),
+                        "email", true, request.getEmail(),
                         "There is already a user registered with requested email address!");
             // if error was not expected, throw as is
             throw dpke;
@@ -203,20 +212,20 @@ public class UserProfileDaoImpl implements UserProfileDao {
 
         final var params = new HashMap<String, Object>(){{
             put("userId", userId);
-            put("firstName", request.firstName());
-            put("lastName", request.lastName());
-            put("pronouns", request.pronouns());
-            put("phoneNumber", request.phoneNumber());
-            put("email", request.email());
-            put("addressLnOne", request.addressLineOne());
-            put("addressLnTwo", request.addressLineTwo());
-            put("city", request.city());
-            put("stateCode", request.stateCode());
-            put("zipCode", request.zipCode());
+            put("firstName", request.getFirstName());
+            put("lastName", request.getLastName());
+            put("pronouns", request.getPronouns());
+            put("phoneNumber", request.getPhoneNumber());
+            put("email", request.getEmail());
+            put("addressLnOne", request.getAddressLineOne());
+            put("addressLnTwo", request.getAddressLineTwo());
+            put("city", request.getCity());
+            put("stateCode", request.getStateCode());
+            put("zipCode", request.getZipCode());
             put("contactPreference",
-                    request.contactPreference()
-                            ==null?null:ContactPreference.valueOf(request.contactPreference()).code);
-            put("bio", request.bio());
+                    request.getContactPreference()
+                            ==null?null:ContactPreference.valueOf(request.getContactPreference()).code);
+            put("bio", request.getBio());
         }};
 
         try {
@@ -229,19 +238,18 @@ public class UserProfileDaoImpl implements UserProfileDao {
             if (error.endsWith("for key 'contact_info.phone_num'"))
                 // throw a user-friendly error
                 throw new ValidationException(
-                        "phoneNumber", true, request.phoneNumber(),
+                        "phoneNumber", true, request.getPhoneNumber(),
                         "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
             if (error.endsWith("for key 'contact_info.email'"))
                 // throw a user-friendly error
                 throw new ValidationException(
-                        "email", true, request.email(),
+                        "email", true, request.getEmail(),
                         "There is already a user registered with requested email address!");
             // if error was not expected, throw as is
             throw dpke;
         }
-
 
     }
 }

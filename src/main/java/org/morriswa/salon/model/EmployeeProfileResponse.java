@@ -1,24 +1,22 @@
 package org.morriswa.salon.model;
 
-import org.morriswa.salon.validation.StrTools;
+import lombok.Getter;
 
 import java.net.URL;
 
-public record EmployeeProfileResponse(
-        String firstName, String lastName, String pronouns,
-        String address,
-        String phoneNumber, String email, String contactPreference,
-        String bio,
-        URL profileImage
-) {
+@Getter
+public class EmployeeProfileResponse extends EmployeeInfo {
+    private final URL profileImage;
+
+
     public EmployeeProfileResponse(EmployeeInfo info, URL profileImage) {
-        this(
-                info.firstName(), info.lastName(), info.pronouns(),
-                String.format("%s %s%s, %s %s", info.addressLineOne(),
-                        StrTools.hasValue(info.addressLineTwo())?info.addressLineTwo()+" ":"",
-                        info.city(), info.stateCode(), info.zipCode()),
-                info.phoneNumber(), info.email(), info.contactPreference(),
-                info.bio(), profileImage
-        );
-    };
+
+        super(  info.getFirstName(), info.getLastName(), info.getPronouns(),
+                info.getPhoneNumber(), info.getEmail(),
+                info.getAddressLineOne(), info.getAddressLineTwo(), info.getCity(),
+                info.getStateCode(), info.getZipCode(),
+                info.getContactPreference(), info.getBio());
+
+        this.profileImage = profileImage;
+    }
 }

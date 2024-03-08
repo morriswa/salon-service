@@ -1,7 +1,7 @@
 package org.morriswa.salon.control;
 
 import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.ContactInfo;
+import org.morriswa.salon.model.ClientInfo;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.SchedulingService;
@@ -94,7 +94,7 @@ public class ClientController {
     @PatchMapping("/client")
     public ResponseEntity<?> updateClientProfile(
             @AuthenticationPrincipal UserAccount principal,
-            @RequestBody ContactInfo updateProfileRequest
+            @RequestBody ClientInfo updateProfileRequest
     ) throws Exception {
         profiles.updateClientProfile(principal, updateProfileRequest);
         return ResponseEntity.noContent().build();

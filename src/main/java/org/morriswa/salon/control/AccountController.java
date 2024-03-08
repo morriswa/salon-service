@@ -1,8 +1,8 @@
 package org.morriswa.salon.control;
 
 import org.morriswa.salon.model.AccountRequest;
-import org.morriswa.salon.model.ContactInfo;
 import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.UserInfo;
 import org.morriswa.salon.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -71,7 +71,7 @@ public class AccountController {
     @PostMapping("/r2/profile")
     public ResponseEntity<?> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
-        @RequestBody ContactInfo createProfileRequest
+        @RequestBody UserInfo createProfileRequest
     ) throws Exception {
         accounts.createUserProfile(principal, createProfileRequest);
         return ResponseEntity.noContent().build();

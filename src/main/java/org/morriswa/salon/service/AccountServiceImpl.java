@@ -1,7 +1,6 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.AccountDao;
-import org.morriswa.salon.dao.UserProfileDao;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.*;
 import org.morriswa.salon.utility.AmazonS3Client;
@@ -59,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception {
+    public void createUserProfile(UserAccount principal, UserInfo createProfileRequest) throws Exception {
 
         // add Contact Info validation rules here
         UserProfileValidator.validateCreateProfileRequestOrThrow(createProfileRequest);

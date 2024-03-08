@@ -17,7 +17,7 @@ public interface AccountService {
 
     String registerUser(AccountRequest request) throws Exception;
 
-    void createUserProfile(UserAccount principal, ContactInfo createProfileRequest) throws Exception;
+    void createUserProfile(UserAccount principal, UserInfo createProfileRequest) throws Exception;
 
     void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception;
 

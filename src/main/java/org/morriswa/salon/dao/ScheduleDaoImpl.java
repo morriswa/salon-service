@@ -149,7 +149,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         assert preexistingAppointments != null;
 
         // retrieve the length of requested service type
-        int appointmentLength = retrieveProvidedService(request.serviceId()).defaultLength();
+        int appointmentLength = retrieveProvidedService(request.serviceId()).getLength();
 
         // create list to store available appointment times
         var availableTimes = new ArrayList<AppointmentOpening>();
@@ -293,7 +293,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 .toInstant().atZone(UTC);
 
         if (request.time().plusMinutes(
-                serviceToSchedule.defaultLength() * 15L
+                serviceToSchedule.getLength() * 15L
         ).isAfter(salonClose))
             throw new BadRequestException("Appointments should not end after salon close!");
         else if (request.time().isBefore(salonOpen))
@@ -312,7 +312,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
 
         final var startSearch = request.time().truncatedTo(ChronoUnit.MINUTES);
         final var stopSearch = request.time().truncatedTo(ChronoUnit.MINUTES)
-                .plusMinutes(serviceToSchedule.defaultLength() * 15L).minusMinutes(1);
+                .plusMinutes(serviceToSchedule.getLength() * 15L).minusMinutes(1);
         final var params2 = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
             put("startSearch", startSearch);
@@ -336,9 +336,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             put("clientId", clientId);
             put("appointmentTime", request.time().truncatedTo(ChronoUnit.MINUTES));
             put("serviceId", request.serviceId());
-            put("actualAmount", serviceToSchedule.defaultCost());
+            put("actualAmount", serviceToSchedule.getCost());
             put("due", request.time().plusWeeks(2).truncatedTo(ChronoUnit.MINUTES));
-            put("length", serviceToSchedule.defaultLength());
+            put("length", serviceToSchedule.getLength());
         }};
 
         database.update(addQuery, addParams);
@@ -455,17 +455,13 @@ public class ScheduleDaoImpl  implements ScheduleDao{
             List<Appointment> result = new ArrayList<>();
 
             while (rs.next()) {
-                final var client = new Appointment.ClientInfo(
+                final var client = new Appointment.UserInfo(
                     rs.getLong("client_id"),
                     rs.getString("first_name"), 
                     rs.getString("last_name"),  
                     rs.getString("phone_num"),
                     rs.getString("email"), 
                     ContactPreference.getEnum(rs.getString("contact_pref")).description);
-
-                final var service_info = new Appointment.ServiceInfo(
-                    rs.getLong("service_id"),
-                    rs.getString("provided_service_name"));  
 
                 result.add(new Appointment(
                     rs.getLong("appointment_id"),
@@ -476,7 +472,8 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                     rs.getBigDecimal("actual_amount"),
                     rs.getBigDecimal("tip_amount"),
                     AppointmentStatus.getEnum(rs.getString("status")).toString(),
-                    service_info,
+                    rs.getLong("service_id"),
+                    rs.getString("provided_service_name"),
                     null,
                     client 
                 ));
@@ -517,18 +514,13 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         return database.query(query, param, resultSet->{
             List<Appointment> schedule = new ArrayList<>();
             while(resultSet.next()){
-                final var emply_info = new Appointment.EmployeeInfo(
+                final var emply_info = new Appointment.UserInfo(
                         resultSet.getLong("employee_id"),
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("phone_num"),
                         resultSet.getString("email"),
                         ContactPreference.getEnum(resultSet.getString("contact_pref")).description);
-
-                final var serviceInfo = new Appointment.ServiceInfo(
-                        resultSet.getLong("service_id"),
-                        resultSet.getString("provided_service_name")
-                );
 
                 schedule.add(new Appointment(
                         resultSet.getLong("appointment_id"),
@@ -539,7 +531,8 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                         resultSet.getBigDecimal("actual_amount"),
                         resultSet.getBigDecimal("tip_amount"),
                         AppointmentStatus.getEnum(resultSet.getString("status")).toString(),
-                        serviceInfo,
+                        resultSet.getLong("service_id"),
+                        resultSet.getString("provided_service_name"),
                         emply_info,
                         null
                 ));

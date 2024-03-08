@@ -1,7 +1,6 @@
 package org.morriswa.salon.utility;
 
 import org.morriswa.salon.dao.AccountDao;
-import org.morriswa.salon.dao.UserProfileDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.UserDetails;

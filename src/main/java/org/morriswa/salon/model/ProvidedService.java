@@ -1,10 +1,14 @@
 package org.morriswa.salon.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.math.BigDecimal;
 
-public record ProvidedService(
-    Long serviceId,
-    BigDecimal defaultCost,
-    Integer defaultLength,
-    String name
-) { } 
+@AllArgsConstructor @Getter
+public class ProvidedService {
+    private final Long serviceId;
+    private final BigDecimal cost;
+    private final Integer length;
+    private final String name;
+}

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.morriswa.salon.annotations.WithNewUserAccount;
 import org.morriswa.salon.annotations.WithUserAccount;
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.ContactInfo;
+import org.morriswa.salon.model.UserInfo;
 import org.springframework.http.HttpMethod;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -321,10 +321,8 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
-
         doThrow(BadRequestException.class).when(accountDao)
-                .createUserContactInfo(testingUserId, info);
+                .createUserContactInfo(eq(testingUserId), any(UserInfo.class));
 
         hit(HttpMethod.POST, "/r2/profile", request)
                 .andExpect(status().is(400))

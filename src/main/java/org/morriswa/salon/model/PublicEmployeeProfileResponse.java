@@ -9,9 +9,9 @@ public record PublicEmployeeProfileResponse(
 ) {
     public PublicEmployeeProfileResponse(EmployeeInfo info, URL employeeProfileImage) {
         this(
-                info.firstName(), info.lastName(), info.pronouns(),
-                info.phoneNumber(), info.email(), info.contactPreference(),
-                info.bio(), employeeProfileImage
+                info.getFirstName(), info.getLastName(), info.getPronouns(),
+                info.getPhoneNumber(), info.getEmail(), info.getContactPreference(),
+                info.getBio(), employeeProfileImage
         );
     }
 }

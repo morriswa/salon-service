@@ -3,8 +3,8 @@ package org.morriswa.salon.service;
 import org.morriswa.salon.dao.ProvidedServiceDao;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.ProvidedService;
-import org.morriswa.salon.model.ServiceDetails;
-import org.morriswa.salon.model.ServiceProfile;
+import org.morriswa.salon.model.ProvidedServiceDetails;
+import org.morriswa.salon.model.ProvidedServiceProfile;
 import org.morriswa.salon.model.UserAccount;
 import org.morriswa.salon.utility.AmazonS3Client;
 import org.morriswa.salon.utility.ImageScaleUtil;
@@ -58,7 +58,7 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
     }
 
     @Override
-    public ServiceProfile retrieveServiceProfile(Long serviceId) throws Exception {
+    public ProvidedServiceProfile retrieveServiceProfile(Long serviceId) throws Exception {
         var providedService = providedServiceDao.retrieveServiceDetails(serviceId);
 
         var contentIds = providedServiceDao.retrieveServiceContent(serviceId);
@@ -70,7 +70,7 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
             contentUrls.add(url);
         }
 
-        return new ServiceProfile(providedService, contentUrls);
+        return new ProvidedServiceProfile(providedService, contentUrls);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
 
 
     @Override
-    public List<ServiceDetails> searchAvailableService(String searchText) {
+    public List<ProvidedServiceDetails> searchAvailableService(String searchText) {
 
         if (StrTools.hasValue(searchText)) return providedServiceDao.searchAvailableServices(searchText);
 

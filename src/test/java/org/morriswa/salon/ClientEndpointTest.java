@@ -2,8 +2,9 @@ package org.morriswa.salon;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.morriswa.salon.annotations.WithClientAccount;
-import org.morriswa.salon.model.ContactInfo;
+import org.morriswa.salon.model.ClientInfo;
 import org.springframework.http.HttpMethod;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -16,20 +17,18 @@ public class ClientEndpointTest extends ServiceTest {
 
     @Test
     @WithClientAccount
-    void updateUserProfile() throws Exception {
+    void updateClientProfile() throws Exception {
         String request = """
             {
                 "firstName": "testing"
             }
             """;
 
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
-
         hit(HttpMethod.PATCH, "/client", request)
             .andExpect(status().is(204))
         ;
 
-        verify(userProfileDao).updateUserContactInfo(testingUserId, info);
+        verify(profileDao).updateClientInfo(eq(testingUserId), any(ClientInfo.class));
     }
 
     @Test
@@ -41,14 +40,14 @@ public class ClientEndpointTest extends ServiceTest {
             }
             """;
 
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+        ClientInfo info = mapper.readValue(request, ClientInfo.class);
 
         hit(HttpMethod.PATCH, "/client", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
 
-        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
+        verify(profileDao, never()).updateClientInfo(testingUserId, info);
     }
 
     @Test
@@ -60,14 +59,14 @@ public class ClientEndpointTest extends ServiceTest {
             }
             """;
 
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+        ClientInfo info = mapper.readValue(request, ClientInfo.class);
 
         hit(HttpMethod.PATCH, "/client", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
 
-        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
+        verify(profileDao, never()).updateClientInfo(testingUserId, info);
     }
 
     @Test
@@ -79,30 +78,29 @@ public class ClientEndpointTest extends ServiceTest {
             }
             """;
 
-        ContactInfo info = mapper.readValue(request, ContactInfo.class);
+        ClientInfo info = mapper.readValue(request, ClientInfo.class);
 
         hit(HttpMethod.PATCH, "/client", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
 
-        verify(userProfileDao, never()).updateUserContactInfo(testingUserId, info);
+        verify(profileDao, never()).updateClientInfo(testingUserId, info);
     }
 
     @Test
     @WithClientAccount
-    void getUserProfile() throws Exception {
+    void getClientProfile() throws Exception {
 
-        when(userProfileDao.getContactInfo(testingUserId))
-            .thenReturn(new ContactInfo("First", "Last", "He/Him/His",
+        when(profileDao.getClientInfo(testingUserId))
+            .thenReturn(new ClientInfo("First", "Last", "He/Him/His",
                 "1234567890", "test@email.com", 
-                "1234 Test Ave.", null, "City", "ST", "12345-6789", "Email"));
+                "1234 Test Ave.", null, "City", "ST", "12345",
+                "Email", null));
 
         hit(HttpMethod.GET, "/client")
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
-            .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
-            .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. City, ST 12345-6789")))
+            .andExpect(jsonPath("$.addressLineOne", Matchers.is("1234 Test Ave.")))
             .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
         ;
     }
@@ -111,16 +109,15 @@ public class ClientEndpointTest extends ServiceTest {
     @WithClientAccount
     void getUserProfileIncludingAddressLineTwo() throws Exception {
 
-        when(userProfileDao.getContactInfo(testingUserId))
-            .thenReturn(new ContactInfo("First", "Last", "He/Him/His",
+        when(profileDao.getClientInfo(testingUserId))
+            .thenReturn(new ClientInfo("First", "Last", "He/Him/His",
                 "1234567890", "test@email.com", 
-                "1234 Test Ave.", "Apt 567", "City", "ST", "12345-6789", "Email"));
+                "1234 Test Ave.", "Apt 567", "City", "ST", "12345",
+                "Email", null));
 
         hit(HttpMethod.GET, "/client")
             .andExpect(status().is(200))
-            .andExpect(jsonPath("$.userId", Matchers.is(Math.toIntExact(testingUserId))))
-            .andExpect(jsonPath("$.username", Matchers.is(testingUsername)))
-            .andExpect(jsonPath("$.address", Matchers.is("1234 Test Ave. Apt 567 City, ST 12345-6789")))
+            .andExpect(jsonPath("$.addressLineOne", Matchers.is("1234 Test Ave.")))
             .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
         ;
     }

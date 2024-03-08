@@ -4,7 +4,7 @@ import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.ProvidedService;
-import org.morriswa.salon.model.ServiceDetails;
+import org.morriswa.salon.model.ProvidedServiceDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
     }
 
     @Override
-    public List<ServiceDetails> searchAvailableServices(String searchText) {
+    public List<ProvidedServiceDetails> searchAvailableServices(String searchText) {
 
         var tokens = searchText.split(" ");
         var sqlTokens = String.join(" ", Arrays.stream(tokens).map(token->String.format(
@@ -48,10 +48,10 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
         }};
 
         return database.query(query, params, rs -> {
-            var services = new ArrayList<ServiceDetails>();
+            var services = new ArrayList<ProvidedServiceDetails>();
 
             while (rs.next()) {
-                final var employeeInfo = new ServiceDetails.EmployeeInfo(
+                final var employeeInfo = new ProvidedServiceDetails.EmployeeInfo(
                         rs.getLong("employee_id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
@@ -61,11 +61,11 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
                         ContactPreference.getEnum(rs.getString("contact_pref")).description
                 );
 
-                services.add(new ServiceDetails(
+                services.add(new ProvidedServiceDetails(
                         rs.getLong("service_id"),
-                        rs.getString("provided_service_name"),
                         rs.getBigDecimal("default_cost"),
                         rs.getInt("default_length")*15,
+                        rs.getString("provided_service_name"),
                         employeeInfo
                 ));
             }
@@ -75,7 +75,7 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
     }
 
     @Override
-    public ServiceDetails retrieveServiceDetails(Long serviceId) throws BadRequestException {
+    public ProvidedServiceDetails retrieveServiceDetails(Long serviceId) throws BadRequestException {
 
         final var query = """
                 SELECT *
@@ -90,10 +90,10 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
             put("serviceId", serviceId);
         }};
 
-        Optional<ServiceDetails> service = database.query(query, params, rs -> {
+        Optional<ProvidedServiceDetails> service = database.query(query, params, rs -> {
 
             if (rs.next()) {
-                final var employeeInfo = new ServiceDetails.EmployeeInfo(
+                final var employeeInfo = new ProvidedServiceDetails.EmployeeInfo(
                         rs.getLong("employee_id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
@@ -103,11 +103,11 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
                         ContactPreference.getEnum(rs.getString("contact_pref")).description
                 );
 
-                return Optional.of(new ServiceDetails(
+                return Optional.of(new ProvidedServiceDetails(
                         rs.getLong("service_id"),
-                        rs.getString("provided_service_name"),
                         rs.getBigDecimal("default_cost"),
                         rs.getInt("default_length")*15,
+                        rs.getString("provided_service_name"),
                         employeeInfo
                 ));
             }
@@ -128,9 +128,9 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
 
         final var params = new HashMap<String, Object>() {{
             put("employeeId", employeeId);
-            put("serviceName", createProvidedServiceRequest.name());
-            put("cost", createProvidedServiceRequest.defaultCost());
-            put("length", createProvidedServiceRequest.defaultLength());
+            put("serviceName", createProvidedServiceRequest.getName());
+            put("cost", createProvidedServiceRequest.getCost());
+            put("length", createProvidedServiceRequest.getLength());
         }};
 
         database.update(query, params);

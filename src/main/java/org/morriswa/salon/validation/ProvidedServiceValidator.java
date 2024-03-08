@@ -20,39 +20,39 @@ public class ProvidedServiceValidator {
         ValidationException ve = new ValidationException();
 
         // cost rules
-        if (createProvidedServiceRequest.defaultCost()==null) ve.addValidationError(
+        if (createProvidedServiceRequest.getCost()==null) ve.addValidationError(
             "defaultCost", true, null, ERROR_MISSING_MONEY_VALUE);
         else {
-            if (createProvidedServiceRequest.defaultCost().scale() > 2) ve.addValidationError(
-                    "defaultCost", true, createProvidedServiceRequest.defaultCost().toString(),
+            if (createProvidedServiceRequest.getCost().scale() > 2) ve.addValidationError(
+                    "defaultCost", true, createProvidedServiceRequest.getCost().toString(),
                     ERROR_INVALID_MONEY_VALUE);
             if (
-                    (createProvidedServiceRequest.defaultCost().precision()
+                    (createProvidedServiceRequest.getCost().precision()
                         -
-                    createProvidedServiceRequest.defaultCost().scale())
+                    createProvidedServiceRequest.getCost().scale())
                 > 3) ve.addValidationError(
-                    "defaultCost", true, createProvidedServiceRequest.defaultCost().toString(),
+                    "defaultCost", true, createProvidedServiceRequest.getCost().toString(),
                     ERROR_BIG_MONEY_VALUE);
-            if (createProvidedServiceRequest.defaultCost().doubleValue() <= 0.00
-                    || createProvidedServiceRequest.defaultCost().doubleValue() >= 1000) ve.addValidationError(
-                    "defaultCost", true, createProvidedServiceRequest.defaultCost().toString(),
+            if (createProvidedServiceRequest.getCost().doubleValue() <= 0.00
+                    || createProvidedServiceRequest.getCost().doubleValue() >= 1000) ve.addValidationError(
+                    "defaultCost", true, createProvidedServiceRequest.getCost().toString(),
                     ERROR_OUT_OF_RANGE_MONEY_VALUE);
         }
 
         // length rules
-        if (createProvidedServiceRequest.defaultLength()==null) ve.addValidationError(
+        if (createProvidedServiceRequest.getLength()==null) ve.addValidationError(
                 "defaultLength", true, null, ERROR_MISSING_LENGTH);
-        else if (   createProvidedServiceRequest.defaultLength() < 1
-                 || createProvidedServiceRequest.defaultLength() > 32) ve.addValidationError(
-                    "defaultLength", true, createProvidedServiceRequest.defaultLength().toString(),
+        else if (   createProvidedServiceRequest.getLength() < 1
+                 || createProvidedServiceRequest.getLength() > 32) ve.addValidationError(
+                    "defaultLength", true, createProvidedServiceRequest.getLength().toString(),
                     ERROR_OUT_OF_RANGE_LENGTH);
 
         // service name rules
-        if (!StrTools.hasValue(createProvidedServiceRequest.name())) ve.addValidationError(
-            "name", true, createProvidedServiceRequest.name(),
+        if (!StrTools.hasValue(createProvidedServiceRequest.getName())) ve.addValidationError(
+            "name", true, createProvidedServiceRequest.getName(),
                 ERROR_NO_NAME_SERVICE);
-        else if (createProvidedServiceRequest.name().length() > 128) ve.addValidationError(
-            "name", true, createProvidedServiceRequest.name(),
+        else if (createProvidedServiceRequest.getName().length() > 128) ve.addValidationError(
+            "name", true, createProvidedServiceRequest.getName(),
                 ERROR_LONG_NAME_SERVICE);
 
         if (ve.containsErrors()) throw ve;

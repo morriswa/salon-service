@@ -1,10 +1,7 @@
 package org.morriswa.salon.dao;
 
-import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.ContactInfo;
-import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.UserInfo;
 
 
 /**
@@ -35,7 +32,7 @@ public interface AccountDao {
 
     void changeUsername(Long userId, String newUsername) throws Exception;
 
-    void createUserContactInfo(Long userId, ContactInfo request) throws Exception;
+    void createUserContactInfo(Long userId, UserInfo request) throws Exception;
 
     void unlockClientPermissions(Long userId);
 

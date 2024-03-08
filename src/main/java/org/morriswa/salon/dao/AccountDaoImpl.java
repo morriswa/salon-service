@@ -1,18 +1,17 @@
 package org.morriswa.salon.dao;
 
 import org.morriswa.salon.enumerated.ContactPreference;
-import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.ContactInfo;
-import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * AUTHOR: William A. Morris, Kevin Rivers, Makenna Loewenherz <br>
@@ -167,7 +165,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public void createUserContactInfo(Long userId, ContactInfo request) throws Exception {
+    public void createUserContactInfo(Long userId, UserInfo request) throws Exception {
 
         final var query = """
             INSERT INTO contact_info
@@ -178,17 +176,17 @@ public class AccountDaoImpl implements AccountDao {
 
         final var params = new HashMap<String,Object>(){{
             put("UserId", userId);
-            put("FirstName", request.firstName());
-            put("LastName", request.lastName());
-            put("Pronouns", request.pronouns());
-            put("PhoneNum", request.phoneNumber());
-            put("Email", request.email());
-            put("AddrOne", request.addressLineOne());
-            put("AddrTwo", request.addressLineTwo());
-            put("City", request.city());
-            put("StateCode", request.stateCode());
-            put("ZipCode", request.zipCode());
-            put("ContactPref", ContactPreference.valueOf(request.contactPreference()).code);
+            put("FirstName", request.getFirstName());
+            put("LastName", request.getLastName());
+            put("Pronouns", request.getPronouns());
+            put("PhoneNum", request.getPhoneNumber());
+            put("Email", request.getEmail());
+            put("AddrOne", request.getAddressLineOne());
+            put("AddrTwo", request.getAddressLineTwo());
+            put("City", request.getCity());
+            put("StateCode", request.getStateCode());
+            put("ZipCode", request.getZipCode());
+            put("ContactPref", ContactPreference.valueOf(request.getContactPreference()).code);
         }};
         
         try {
@@ -205,14 +203,14 @@ public class AccountDaoImpl implements AccountDao {
             if (error.endsWith("for key 'contact_info.phone_num'"))
                 // throw a user-friendly error
                 throw new ValidationException(
-                        "phoneNumber", true, request.phoneNumber(),
+                        "phoneNumber", true, request.getPhoneNumber(),
                         "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
             if (error.endsWith("for key 'contact_info.email'"))
                 // throw a user-friendly error
                 throw new ValidationException(
-                        "email", true, request.email(),
+                        "email", true, request.getEmail(),
                         "There is already a user registered with requested email address!");
 
             // if error was not expected, throw as is

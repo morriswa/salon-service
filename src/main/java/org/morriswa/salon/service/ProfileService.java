@@ -13,9 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface ProfileService {
 
-    UserProfileResponse getClientProfile(UserAccount principal) throws Exception;
+    ClientInfo getClientProfile(UserAccount principal) throws Exception;
 
-    void updateClientProfile(UserAccount principal, ContactInfo updateProfileRequest) throws Exception;
+    void updateClientProfile(UserAccount principal, ClientInfo updateProfileRequest) throws Exception;
 
     EmployeeProfileResponse getEmployeeProfile(UserAccount principal) throws Exception;
 
