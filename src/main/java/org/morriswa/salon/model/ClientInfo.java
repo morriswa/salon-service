@@ -2,20 +2,20 @@ package org.morriswa.salon.model;
 
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 public class ClientInfo extends UserInfo {
 
-    private final Date birthday;
+    private final LocalDate birthday;
 
     public ClientInfo(
             String firstName, String lastName, String pronouns,
             String phoneNumber, String email,
             String addressLineOne, String addressLineTwo, String city, String stateCode, String zipCode,
             String contactPreference,
-            Date birthday)
-    {
+            LocalDate birthday
+    ) {
 
         super(  firstName, lastName, pronouns,
                 phoneNumber, email,

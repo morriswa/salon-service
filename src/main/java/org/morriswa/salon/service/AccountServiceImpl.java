@@ -64,7 +64,7 @@ public class AccountServiceImpl implements AccountService {
         UserProfileValidator.validateCreateProfileRequestOrThrow(createProfileRequest);
 
         // attempt to store provided contact information
-        accountDao.createUserContactInfo(principal.getUserId(), createProfileRequest);
+        accountDao.enterContactInfo(principal.getUserId(), createProfileRequest);
     }
 
     @Override
@@ -97,14 +97,14 @@ public class AccountServiceImpl implements AccountService {
         // todo verify employee criteria before promoting
 
 
-        accountDao.unlockEmployeePermissions(principal.getUserId());
+        accountDao.completeEmployeeRegistration(principal.getUserId());
     }
 
     @Override
     public void unlockClientPortal(UserAccount principal) throws Exception {
         // todo verify client criteria before promoting
 
-        accountDao.unlockClientPermissions(principal.getUserId());
+        accountDao.completeClientRegistration(principal.getUserId());
     }
 
 }

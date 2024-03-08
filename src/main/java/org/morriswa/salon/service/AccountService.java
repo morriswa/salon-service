@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
  * AUTHOR: William A. Morris <br>
  * CREATION_DATE: 2024-01-22 <br>
  * PURPOSE: <br>
- * &emsp; provides an interface for performing essential User actions
+ * &emsp; provides an interface for performing essential account actions
  */
 public interface AccountService {
 
@@ -26,4 +26,5 @@ public interface AccountService {
     void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException;
 
     void unlockClientPortal(UserAccount principal) throws Exception;
+
 }

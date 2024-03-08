@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * AUTHOR: William A. Morris
  * DATE CREATED: 2024-02-12
- * PURPOSE: Provides a Java interface to maintain the salon's schedule in the database
+ * PURPOSE: Provides an interface to maintain the salon's schedule in the database
  */
 public interface ScheduleDao {
 

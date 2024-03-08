@@ -10,7 +10,7 @@ import org.morriswa.salon.model.EmployeeInfo;
  * AUTHOR: William A. Morris, Kevin Rivers <br>
  * CREATION_DATE: 2024-01-21 <br>
  * PURPOSE: <br>
- * &emsp; provides an interface for interacting with the database to perform essential User actions
+ * &emsp; provides an interface for interacting with the database to perform essential Client/Employee Profile actions
  */
 
 public interface ProfileDao {

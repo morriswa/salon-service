@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
  * AUTHOR: William A. Morris <br>
  * CREATION_DATE: 2024-01-22 <br>
  * PURPOSE: <br>
- * &emsp; provides an interface for performing essential User actions
+ * &emsp; provides an interface for performing essential Client/Employee Profile actions
  */
 public interface ProfileService {
 
@@ -24,4 +24,5 @@ public interface ProfileService {
     void updateEmployeeProfile(UserAccount principal, EmployeeInfo request) throws ValidationException;
 
     void changeEmployeeProfileImage(UserAccount principal, MultipartFile image) throws Exception;
+
 }

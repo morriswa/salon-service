@@ -48,12 +48,16 @@ public class ProfileDaoImpl implements ProfileDao {
             from contact_info contact
             left join client on contact.user_id = client.client_id
             where contact.user_id=:userId""";
+
         //Mapping the named param to the Java var
         final var params = Map.of("userId",userId);
 
         Optional<ClientInfo> retrievedRecord = database.query(query, params, resultSet ->{
             //Checking if the record exists
             if(resultSet.next()) {
+
+                var birthday = resultSet.getDate("birthday");
+
                 //If it does, return the Contact Info
                 return Optional.of(new ClientInfo(
                     //Grabbing cols as a string
@@ -68,11 +72,12 @@ public class ProfileDaoImpl implements ProfileDao {
                     resultSet.getString("state_code"), 
                     resultSet.getString("zip_code"), 
                     ContactPreference.getEnum(resultSet.getString("contact_pref")).description,
-                    resultSet.getDate("birthday")));
+                    birthday==null? null : birthday.toLocalDate()));
             }
 
             return Optional.empty(); //If it doesn't exist, return empty object
         });
+
         //If the retrievedRecord exists, return it, otherwise throw error
         return retrievedRecord.orElseThrow(()->new BadRequestException("You have not entered your contact information. Please update your information."));
     }
@@ -144,7 +149,6 @@ public class ProfileDaoImpl implements ProfileDao {
         }
     }
 
-
     @Override
     public EmployeeInfo getEmployeeInfo(Long employeeId) throws BadRequestException {
 
@@ -188,27 +192,26 @@ public class ProfileDaoImpl implements ProfileDao {
     @Override
     public void updateEmployeeProfile(Long userId, EmployeeInfo request) throws ValidationException {
         final var query = """
-            
-            UPDATE contact_info SET
-                first_name = IFNULL(:firstName, first_name),
-                last_name = IFNULL(:lastName, last_name),
-                pronouns = IFNULL(:pronouns, pronouns),
-                phone_num = IFNULL(:phoneNumber, phone_num),
-                email = IFNULL(:email, email),
-                addr_one = IFNULL(:addressLnOne, addr_one),
-                addr_two = IFNULL(:addressLnTwo, addr_two),
-                city = IFNULL(:city, city),
-                state_code = IFNULL(:stateCode, state_code),
-                zip_code = IFNULL(:zipCode, zip_code),
-                contact_pref = IFNULL(:contactPreference, contact_pref)
+            UPDATE contact_info
+                SET
+                    first_name = IFNULL(:firstName, first_name),
+                    last_name = IFNULL(:lastName, last_name),
+                    pronouns = IFNULL(:pronouns, pronouns),
+                    phone_num = IFNULL(:phoneNumber, phone_num),
+                    email = IFNULL(:email, email),
+                    addr_one = IFNULL(:addressLnOne, addr_one),
+                    addr_two = IFNULL(:addressLnTwo, addr_two),
+                    city = IFNULL(:city, city),
+                    state_code = IFNULL(:stateCode, state_code),
+                    zip_code = IFNULL(:zipCode, zip_code),
+                    contact_pref = IFNULL(:contactPreference, contact_pref)
                 WHERE user_id = :userId;
             
-            UPDATE employee SET
-                bio = IFNULL(:bio, bio)
+            UPDATE employee
+                SET
+                    bio = IFNULL(:bio, bio)
                 WHERE employee_id = :userId;
-            
-     
-        """;
+            """;
 
         final var params = new HashMap<String, Object>(){{
             put("userId", userId);

@@ -25,7 +25,7 @@ import java.util.Map;
  * AUTHOR: William A. Morris, Kevin Rivers, Makenna Loewenherz <br>
  * CREATION_DATE: 2024-01-22 <br>
  * PURPOSE: <br>
- * &emsp; provides an interface for interacting with the database to perform essential User actions
+ * &emsp; provides an interface for interacting with the database to perform essential User Account actions
  */
 
 @Component @SuppressWarnings("null")
@@ -165,7 +165,7 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public void createUserContactInfo(Long userId, UserInfo request) throws Exception {
+    public void enterContactInfo(Long userId, UserInfo request) throws Exception {
 
         final var query = """
             INSERT INTO contact_info
@@ -219,14 +219,14 @@ public class AccountDaoImpl implements AccountDao {
     }
 
     @Override
-    public void unlockClientPermissions(Long userId) {
+    public void completeClientRegistration(Long userId) {
         final var query = "insert into client (client_id) values (:userId)";
         final var params = Map.of("userId", userId);
         database.update(query, params);
     }
 
     @Override
-    public void unlockEmployeePermissions(Long userId) {
+    public void completeEmployeeRegistration(Long userId) {
         final var query = "insert into employee (employee_id) values (:userId)";
         final var params = Map.of("userId", userId);
         database.update(query, params);

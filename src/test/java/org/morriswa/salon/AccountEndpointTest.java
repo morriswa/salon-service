@@ -147,7 +147,7 @@ public class AccountEndpointTest extends ServiceTest{
         hit(HttpMethod.POST, "/r2/profile", request)
                 .andExpect(status().is(204));
 
-        verify(accountDao).createUserContactInfo(any(), any());
+        verify(accountDao).enterContactInfo(any(), any());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class AccountEndpointTest extends ServiceTest{
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("contactPreference")));
 
-        verify(accountDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).enterContactInfo(any(), any());
     }
 
     @Test
@@ -196,7 +196,7 @@ public class AccountEndpointTest extends ServiceTest{
                 .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("firstName")))
                 .andExpect(jsonPath("$.additionalInfo[2].field", Matchers.is("lastName")));
 
-        verify(accountDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).enterContactInfo(any(), any());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class AccountEndpointTest extends ServiceTest{
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
-        verify(accountDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).enterContactInfo(any(), any());
     }
 
     @Test
@@ -248,7 +248,7 @@ public class AccountEndpointTest extends ServiceTest{
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
-        verify(accountDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).enterContactInfo(any(), any());
     }
 
     @Test
@@ -274,7 +274,7 @@ public class AccountEndpointTest extends ServiceTest{
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
 
-        verify(accountDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).enterContactInfo(any(), any());
     }
 
     @Test
@@ -300,7 +300,7 @@ public class AccountEndpointTest extends ServiceTest{
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("stateCode")))
         ;
 
-        verify(accountDao, never()).createUserContactInfo(any(), any());
+        verify(accountDao, never()).enterContactInfo(any(), any());
     }
 
     @Test
@@ -322,7 +322,7 @@ public class AccountEndpointTest extends ServiceTest{
             """;
 
         doThrow(BadRequestException.class).when(accountDao)
-                .createUserContactInfo(eq(testingUserId), any(UserInfo.class));
+                .enterContactInfo(eq(testingUserId), any(UserInfo.class));
 
         hit(HttpMethod.POST, "/r2/profile", request)
                 .andExpect(status().is(400))
