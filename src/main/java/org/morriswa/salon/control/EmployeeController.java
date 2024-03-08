@@ -1,9 +1,6 @@
 package org.morriswa.salon.control;
 
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.EmployeeInfo;
-import org.morriswa.salon.model.ProvidedService;
-import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.*;
 import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.ProvidedServiceService;
 import org.morriswa.salon.service.SchedulingService;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,7 +43,7 @@ public class EmployeeController {
      * @return profile and contact information about the user if operation was successful, else error response
      */
     @GetMapping("/employee")
-    public ResponseEntity<?> getEmployeeProfile(
+    public ResponseEntity<EmployeeInfo> getEmployeeProfile(
             @AuthenticationPrincipal UserAccount principal
     ) throws Exception{
         // using the user profile service, retrieve the current users profile
@@ -61,7 +59,7 @@ public class EmployeeController {
      * @return profile and contact information about the user if operation was successful, else error response
      */
     @PostMapping("/employee/image")
-    public ResponseEntity<?> updateProfileImage(
+    public ResponseEntity<Void> updateProfileImage(
             @AuthenticationPrincipal UserAccount principal,
             @RequestPart MultipartFile image
     ) throws Exception{
@@ -78,7 +76,7 @@ public class EmployeeController {
      * @return profile and contact information about the user if operation was successful, else error response
      */
     @PatchMapping("/employee")
-    public ResponseEntity<?> updateEmployeeProfile(
+    public ResponseEntity<Void> updateEmployeeProfile(
             @AuthenticationPrincipal UserAccount principal,
             @RequestBody EmployeeInfo request
     ) throws Exception{
@@ -97,7 +95,7 @@ public class EmployeeController {
      * @throws Exception return error response if employee's services could not be retrieved
      */
     @GetMapping("/services")
-    public ResponseEntity<?> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
+    public ResponseEntity<List<ProvidedService>> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
         var services = providedServices.retrieveEmployeesServices(principal.getUserId());
         return ResponseEntity.ok(services);
     }
@@ -111,7 +109,7 @@ public class EmployeeController {
      * @throws Exception return error response if the service could not be registered
      */
     @PostMapping("/service")
-    public ResponseEntity<?> createProvidedService(
+    public ResponseEntity<Void> createProvidedService(
         @AuthenticationPrincipal UserAccount principal,
         @RequestBody ProvidedService createProvidedServiceRequest
     ) throws Exception {
@@ -130,7 +128,7 @@ public class EmployeeController {
      * @throws Exception return error response if the image could not be stored
      */
     @PostMapping("/service/{serviceId}")
-    public ResponseEntity<?> uploadProvidedServiceImage(
+    public ResponseEntity<Void> uploadProvidedServiceImage(
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId,
         @RequestPart MultipartFile image
@@ -164,7 +162,7 @@ public class EmployeeController {
      * @return all scheduled appointments if successful, else error response
      */
     @GetMapping("/schedule")
-    public ResponseEntity<?> retrieveSchedule(
+    public ResponseEntity<List<Appointment>> retrieveSchedule(
             @AuthenticationPrincipal UserAccount principal,
             @RequestParam Optional<LocalDate> untilDate
     ) {
@@ -184,13 +182,13 @@ public class EmployeeController {
      * @throws Exception return error response if the appointment could not be rescheduled
      */
     @PatchMapping("/schedule/{appointmentId}")
-    public ResponseEntity<?> rescheduleAppointment(
+    public ResponseEntity<Void> rescheduleAppointment(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
             @RequestBody AppointmentRequest request
     ) throws Exception {
         schedule.employeeReschedulesAppointment(principal, appointmentId, request);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -203,13 +201,13 @@ public class EmployeeController {
      * @throws Exception return error response if the appointment could not be modified
      */
     @PatchMapping("/appointment/{appointmentId}")
-    public ResponseEntity<?> updateAppointmentDetails(
+    public ResponseEntity<Void> updateAppointmentDetails(
             @AuthenticationPrincipal UserAccount principal,
             @PathVariable Long appointmentId,
             @RequestBody AppointmentRequest request
     ) throws Exception {
         schedule.updateAppointmentDetails(principal, appointmentId, request);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 
     /**

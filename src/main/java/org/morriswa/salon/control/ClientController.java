@@ -1,8 +1,6 @@
 package org.morriswa.salon.control;
 
-import org.morriswa.salon.model.AppointmentRequest;
-import org.morriswa.salon.model.ClientInfo;
-import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.*;
 import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.SchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -39,7 +39,7 @@ public class ClientController {
      * @throws Exception return error response if appointment openings could not be retrieved
      */
     @PostMapping("/schedule")
-    public ResponseEntity<?> retrieveAppointmentOpenings(
+    public ResponseEntity<List<AppointmentOpening>> retrieveAppointmentOpenings(
             @RequestBody AppointmentRequest request
     ) throws Exception {
         var book = schedule.retrieveAppointmentOpenings(request);
@@ -55,16 +55,16 @@ public class ClientController {
      * @throws Exception return error response if appointment was not booked
      */
     @PostMapping("/schedule/confirm")
-    public ResponseEntity<?> bookAppointment(
+    public ResponseEntity<Void> bookAppointment(
             @AuthenticationPrincipal UserAccount principal, @RequestBody AppointmentRequest request
     ) throws Exception {
         schedule.bookAppointment(principal, request);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.noContent().build();
     }
 
 
     @GetMapping("/schedule")
-    public ResponseEntity<?> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
+    public ResponseEntity<List<Appointment>> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
         final var appointments = schedule.retrieveScheduledAppointments(principal);
         return ResponseEntity.ok(appointments);
     }
@@ -76,7 +76,7 @@ public class ClientController {
      * @return profile and contact information about the user if operation was successful, else error response
      */
     @GetMapping("/client")
-    public ResponseEntity<?> getClientProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
+    public ResponseEntity<ClientInfo> getClientProfile(@AuthenticationPrincipal UserAccount principal) throws Exception{
         // using the user profile service, retrieve the current users profile
         var profile = profiles.getClientProfile(principal);
         // and return it to them in JSON format
@@ -92,7 +92,7 @@ public class ClientController {
      * @throws Exception return error response if user's profile cannot be updated
      */
     @PatchMapping("/client")
-    public ResponseEntity<?> updateClientProfile(
+    public ResponseEntity<Void> updateClientProfile(
             @AuthenticationPrincipal UserAccount principal,
             @RequestBody ClientInfo updateProfileRequest
     ) throws Exception {

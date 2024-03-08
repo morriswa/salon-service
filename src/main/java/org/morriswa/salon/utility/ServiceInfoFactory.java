@@ -3,6 +3,8 @@ package org.morriswa.salon.utility;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.ZonedDateTime;
+
 /**
  *  AUTHOR: William A. Morris <br>
  *  CREATION_DATE: 2024-01-19 <br>
@@ -11,9 +13,31 @@ import org.springframework.http.ResponseEntity;
  */
 public interface ServiceInfoFactory {
 
-    ResponseEntity<?> getHttpResponseWithServiceInfo(HttpStatus status, String message);
+    /**
+     * Default Service Response
+     */
+    record ServiceInfoResponse(
+            String message,
+            ZonedDateTime timestamp,
+            String applicationName,
+            String version
+    ) { }
 
-    ResponseEntity<?> getHttpErrorResponse(HttpStatus status, String exceptionName, String description);
+    /**
+     * Default Service Response when an error needs to be reported
+     */
+    record ServiceErrorResponse(
+            String error,
+            String description,
+            ZonedDateTime timestamp,
+            String applicationName,
+            String version,
+            Object additionalInfo
+    ) { }
 
-    ResponseEntity<?> getHttpErrorResponse(HttpStatus status, String exceptionName, String description, Object additionalInfo);
+    ResponseEntity<ServiceInfoResponse> getHttpResponseWithServiceInfo(HttpStatus status, String message);
+
+    ResponseEntity<ServiceErrorResponse> getHttpErrorResponse(HttpStatus status, String exceptionName, String description);
+
+    ResponseEntity<ServiceErrorResponse> getHttpErrorResponse(HttpStatus status, String exceptionName, String description, Object additionalInfo);
 }

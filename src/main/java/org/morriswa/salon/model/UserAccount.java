@@ -1,5 +1,6 @@
 package org.morriswa.salon.model;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +19,10 @@ import java.util.Set;
  */
 public class UserAccount implements UserDetails {
 
-    private final Long userId;
+    @Getter private final Long userId;
     private final String username;
     private final String encodedPassword;
-    private final ZonedDateTime dateCreated;
+    @Getter private final ZonedDateTime dateCreated;
     private final Set<SimpleGrantedAuthority> permissions;
 
     public UserAccount(Long userId, String username, String encodedPassword, ZonedDateTime dateCreated, Set<SimpleGrantedAuthority> permissions) {
@@ -30,14 +31,6 @@ public class UserAccount implements UserDetails {
         this.encodedPassword = encodedPassword;
         this.dateCreated = dateCreated;
         this.permissions = permissions;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public ZonedDateTime getDateCreated() {
-        return dateCreated;
     }
 
     @Override

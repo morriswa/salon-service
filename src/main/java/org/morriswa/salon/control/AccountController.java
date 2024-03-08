@@ -2,6 +2,7 @@ package org.morriswa.salon.control;
 
 import org.morriswa.salon.model.AccountRequest;
 import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.UserAccountResponse;
 import org.morriswa.salon.model.UserInfo;
 import org.morriswa.salon.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class AccountController {
      * @return JSON response with account information, notably user's granted authorities
      */
     @GetMapping("/login")
-    public ResponseEntity<?> login(@AuthenticationPrincipal UserAccount principal) {
+    public ResponseEntity<UserAccountResponse> login(@AuthenticationPrincipal UserAccount principal) {
         // use the user profile service to register a new user, and retrieve the username they were registered with
         var userInfo = accounts.login(principal);
         // return confirmation in JSON format
@@ -52,7 +53,7 @@ public class AccountController {
      * @throws Exception if the user could not be registered
      */
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody AccountRequest request) throws Exception {
+    public ResponseEntity<Void> registerUser(@RequestBody AccountRequest request) throws Exception {
         // use the user profile service to register a new user, and retrieve the username they were registered with
         accounts.registerUser(request);
         // return confirmation in JSON format
@@ -69,7 +70,7 @@ public class AccountController {
      * @throws Exception return error response if the user's profile cannot be created
      */
     @PostMapping("/r2/profile")
-    public ResponseEntity<?> createUserProfile(
+    public ResponseEntity<Void> createUserProfile(
         @AuthenticationPrincipal UserAccount principal,
         @RequestBody UserInfo createProfileRequest
     ) throws Exception {
@@ -86,7 +87,7 @@ public class AccountController {
      * @throws Exception return error response if access code is incorrect
      */
     @PatchMapping("/r2/access/employee")
-    public ResponseEntity<?> unlockEmployeePortal(
+    public ResponseEntity<Void> unlockEmployeePortal(
             @AuthenticationPrincipal UserAccount principal,
             @RequestParam String accessCode
     ) throws Exception {
@@ -104,7 +105,7 @@ public class AccountController {
      * @throws Exception return error response if client access cannot be granted
      */
     @PatchMapping("/r2/access/client")
-    public ResponseEntity<?> unlockClientPortal(
+    public ResponseEntity<Void> unlockClientPortal(
             @AuthenticationPrincipal UserAccount principal
     ) throws Exception {
         accounts.unlockClientPortal(principal);
@@ -120,7 +121,7 @@ public class AccountController {
      * @throws Exception return error response if user's name could not be changed
      */
     @PatchMapping("/user/name")
-    public ResponseEntity<?> updateUsername(
+    public ResponseEntity<Void> updateUsername(
         @AuthenticationPrincipal UserAccount principal, 
         @RequestBody AccountRequest updateUsernameRequest) throws Exception 
     {
@@ -137,13 +138,12 @@ public class AccountController {
      * @throws Exception return error response if the user's password could not be changed
      */
     @PatchMapping("/user/password")
-    public ResponseEntity<?> updatePassword(
+    public ResponseEntity<Void> updatePassword(
         @AuthenticationPrincipal UserAccount principal, 
         @RequestBody AccountRequest updatePasswordRequest) throws Exception 
     {
         accounts.updatePassword(principal, updatePasswordRequest);
         return ResponseEntity.noContent().build();
     }
-
 
 }

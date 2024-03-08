@@ -1,5 +1,8 @@
 package org.morriswa.salon.control;
 
+import org.morriswa.salon.model.ProvidedService;
+import org.morriswa.salon.model.ProvidedServiceDetails;
+import org.morriswa.salon.model.PublicEmployeeProfileResponse;
 import org.morriswa.salon.service.ProfileService;
 import org.morriswa.salon.service.ProvidedServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -35,7 +40,7 @@ public class SharedController {
      * @return profile and contact information about the user if operation was successful, else error response
      */
     @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<?> getPublicEmployeeProfile(
+    public ResponseEntity<PublicEmployeeProfileResponse> getPublicEmployeeProfile(
             @PathVariable Long employeeId
     ) throws Exception{
         // using the user profile service, retrieve the current users profile
@@ -52,7 +57,7 @@ public class SharedController {
      * @throws Exception return error response if employee's services could not be retrieved
      */
     @GetMapping("/employee/{employeeId}/services")
-    public ResponseEntity<?> retrieveAllProvidedServices(
+    public ResponseEntity<List<ProvidedService>> retrieveAllProvidedServices(
             @PathVariable Long employeeId
     ) throws Exception {
         var services = providedServices.retrieveEmployeesServices(employeeId);
@@ -66,15 +71,15 @@ public class SharedController {
      * @return all information about requested service
      */
     @GetMapping("/service/{serviceId}")
-    public ResponseEntity<?> getProvidedServiceDetails(
+    public ResponseEntity<ProvidedServiceDetails> getProvidedServiceDetails(
         @PathVariable Long serviceId
     ) throws Exception {
-        var urls = providedServices.retrieveServiceProfile(serviceId);
-        return ResponseEntity.ok(urls);
+        var profile = providedServices.retrieveServiceProfile(serviceId);
+        return ResponseEntity.ok(profile);
     }
 
     @GetMapping("/services")
-    public ResponseEntity<?> searchAvailableService(
+    public ResponseEntity<List<ProvidedServiceDetails>> searchAvailableService(
             @RequestParam String searchText
     ) throws Exception {
         final var services = providedServices.searchAvailableService(searchText);

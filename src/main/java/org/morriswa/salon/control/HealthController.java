@@ -29,7 +29,7 @@ public class HealthController {
      * @return important information about the currently running application
      */
     @GetMapping("/health")
-    public ResponseEntity<?> getServiceHealth() {
+    public ResponseEntity<ServiceInfoFactory.ServiceInfoResponse> getServiceHealth() {
         return response.getHttpResponseWithServiceInfo(HttpStatus.OK, "All is good on our end!");
     }
 }
