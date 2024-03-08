@@ -2,13 +2,10 @@ package org.morriswa.salon.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 
 /**
  * AUTHOR: William A. Morris <br>
@@ -21,11 +18,10 @@ import org.springframework.core.env.Environment;
 @Profile("!test") //Indicates to the scanner that this class should be ignored during unit testing
 public class DatasourceConfig {  //will provide all mysql config for the application
 
-    private final Environment e;
+    private final MySQLProperties config;
 
-
-    @Autowired public DatasourceConfig(Environment e) {
-        this.e = e;
+    @Autowired public DatasourceConfig(MySQLProperties config) {
+        this.config = config;
     }
 
 
@@ -38,13 +34,27 @@ public class DatasourceConfig {  //will provide all mysql config for the applica
     @Bean
     public HikariDataSource provideHikariDataSource() {
 
-        final var dbUsername = e.getRequiredProperty("mysql.username");
-        final var dbPassword = e.getRequiredProperty("mysql.password");
-        final var jdbcUrl = String.format("%s://%s:%s/%s?allowMultiQueries=true",
-                e.getRequiredProperty("mysql.protocol"),
-                e.getRequiredProperty("mysql.hostname"),
-                e.getRequiredProperty("mysql.port"),
-                e.getRequiredProperty("mysql.database"));
+        final var dbUsername = config.getUsername();
+        final var dbPassword = config.getPassword();
+        final String jdbcUrl;
+        {
+            var urlBuilder = new StringBuilder(String.format("%s://%s:%s/%s",
+                    config.getProtocol(),
+                    config.getHostname(),
+                    config.getPort(),
+                    config.getDatabase()));
+
+            if (!config.getConnectionProperties().isEmpty()) {
+                urlBuilder.append("?");
+
+                for (String prop : config.getConnectionProperties())
+                    urlBuilder.append(String.format("%s&", prop));
+
+                jdbcUrl = urlBuilder.substring(0, urlBuilder.length() - 1);
+            } else {
+                jdbcUrl = urlBuilder.toString();
+            }
+        }
 
         var databaseConfig = new HikariConfig();
         databaseConfig.setUsername(dbUsername);

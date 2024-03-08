@@ -3,6 +3,7 @@ package org.morriswa.salon;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.util.TimeZone;
 
@@ -15,6 +16,7 @@ import java.util.TimeZone;
 
 // Do NOT use Spring Data Source Configuration,
 // Data Source will be manually configured in org.morriswa.salon.config.DatasourceConfig
+@EnableConfigurationProperties
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class SalonService {
     public static void main(String[] args) {

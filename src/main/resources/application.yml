@@ -44,7 +44,8 @@ mysql:
   database: dev_dynasty_salon
   username: dev_dynasty_service
   password: password
-
+  connection-properties:
+    - 'allowMultiQueries=true'
 
 # Contains all AWS config
 aws:
