@@ -29,7 +29,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
             .andExpect(status().is(204));
 
         verify(providedServiceDao).createProvidedService(any(), any());
@@ -45,7 +45,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -64,7 +64,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -83,7 +83,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -103,7 +103,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -121,7 +121,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -139,7 +139,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -158,7 +158,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -177,7 +177,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -196,7 +196,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "My Test Service"
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -214,7 +214,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "length": 32
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -233,7 +233,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "     "
         }""";
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -257,7 +257,7 @@ public class EmployeeEndpointTest extends ServiceTest {
             "name": "%s"
         }""", longName);
 
-        hit(HttpMethod.POST, "/management/service", request)
+        hit(HttpMethod.POST, "/employee/service", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath(
                         "$.additionalInfo[0].message",
@@ -280,7 +280,7 @@ public class EmployeeEndpointTest extends ServiceTest {
         when(providedServiceDao.retrieveServiceDetails(serviceId))
                 .thenReturn(testService);
 
-        hit(HttpMethod.GET, String.format("/service/%d",serviceId))
+        hit(HttpMethod.GET, String.format("/shared/service/%d",serviceId))
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.serviceId",
                         Matchers.hasToString(serviceId.toString())))
@@ -306,7 +306,7 @@ public class EmployeeEndpointTest extends ServiceTest {
         when(providedServiceDao.retrieveServiceDetails(serviceId))
                 .thenThrow(BadRequestException.class);
 
-        hit(HttpMethod.GET, String.format("/service/%d",serviceId))
+        hit(HttpMethod.GET, String.format("/shared/service/%d",serviceId))
                 .andExpect(status().is(400))
         ;
 

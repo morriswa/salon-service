@@ -24,7 +24,7 @@ public class ClientEndpointTest extends ServiceTest {
             }
             """;
 
-        hit(HttpMethod.PATCH, "/client", request)
+        hit(HttpMethod.PATCH, "/client/profile", request)
             .andExpect(status().is(204))
         ;
 
@@ -42,7 +42,7 @@ public class ClientEndpointTest extends ServiceTest {
 
         ClientInfo info = mapper.readValue(request, ClientInfo.class);
 
-        hit(HttpMethod.PATCH, "/client", request)
+        hit(HttpMethod.PATCH, "/client/profile", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
@@ -61,7 +61,7 @@ public class ClientEndpointTest extends ServiceTest {
 
         ClientInfo info = mapper.readValue(request, ClientInfo.class);
 
-        hit(HttpMethod.PATCH, "/client", request)
+        hit(HttpMethod.PATCH, "/client/profile", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
@@ -80,7 +80,7 @@ public class ClientEndpointTest extends ServiceTest {
 
         ClientInfo info = mapper.readValue(request, ClientInfo.class);
 
-        hit(HttpMethod.PATCH, "/client", request)
+        hit(HttpMethod.PATCH, "/client/profile", request)
             .andExpect(status().is(400))
             .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
         ;
@@ -98,7 +98,7 @@ public class ClientEndpointTest extends ServiceTest {
                 "1234 Test Ave.", null, "City", "ST", "12345",
                 "Email", null));
 
-        hit(HttpMethod.GET, "/client")
+        hit(HttpMethod.GET, "/client/profile")
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.addressLineOne", Matchers.is("1234 Test Ave.")))
             .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
@@ -115,7 +115,7 @@ public class ClientEndpointTest extends ServiceTest {
                 "1234 Test Ave.", "Apt 567", "City", "ST", "12345",
                 "Email", null));
 
-        hit(HttpMethod.GET, "/client")
+        hit(HttpMethod.GET, "/client/profile")
             .andExpect(status().is(200))
             .andExpect(jsonPath("$.addressLineOne", Matchers.is("1234 Test Ave.")))
             .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))

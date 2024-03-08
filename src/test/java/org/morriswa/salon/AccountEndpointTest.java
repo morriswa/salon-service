@@ -144,7 +144,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(204));
 
         verify(accountDao).enterContactInfo(any(), any());
@@ -168,7 +168,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("contactPreference")));
 
@@ -190,7 +190,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
                 .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("firstName")))
@@ -217,7 +217,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
@@ -243,7 +243,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
@@ -269,7 +269,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
         ;
@@ -295,7 +295,7 @@ public class AccountEndpointTest extends ServiceTest{
             }
             """;
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("stateCode")))
         ;
@@ -324,7 +324,7 @@ public class AccountEndpointTest extends ServiceTest{
         doThrow(BadRequestException.class).when(accountDao)
                 .enterContactInfo(eq(testingUserId), any(UserInfo.class));
 
-        hit(HttpMethod.POST, "/r2/profile", request)
+        hit(HttpMethod.POST, "/newUser/profile", request)
                 .andExpect(status().is(400))
                 .andExpect(jsonPath("$.error", Matchers.is("BadRequestException")))
         ;
