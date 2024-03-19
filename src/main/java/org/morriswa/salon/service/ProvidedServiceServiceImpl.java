@@ -54,22 +54,28 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
 
     @Override
     public List<ProvidedService> retrieveEmployeesServices(Long employeeId) {
+
+        // return all stored services from db
         return providedServiceDao.retrieveEmployeesServices(employeeId);
     }
 
     @Override
     public ProvidedServiceProfile retrieveServiceProfile(Long serviceId) throws Exception {
+
+        // retrieve all stored details about a service from db
         var providedService = providedServiceDao.retrieveServiceDetails(serviceId);
 
+        // retrieve all stored content ids
         var contentIds = providedServiceDao.retrieveServiceContent(serviceId);
 
+        // use s3 client to generate content URLs for provided content ids
         List<URL> contentUrls = new ArrayList<>();
-
         for (var id : contentIds) {
             final var url = s3.getSignedObjectUrl(id, 30);
             contentUrls.add(url);
         }
 
+        // build and return complete provided service profile
         return new ProvidedServiceProfile(providedService, contentUrls);
     }
 
@@ -77,7 +83,7 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
     public void uploadProvidedServiceImage(UserAccount principal, Long serviceId, MultipartFile image) throws Exception {
 
         // make sure image file is correctly formatted
-        ImageValidator.validateImageFormat(image);
+        ImageValidator.validateUploadedImage(image);
 
         // ensure service belongs to authenticated user
         if (!providedServiceDao.serviceBelongsTo(serviceId, principal.getUserId()))
@@ -92,7 +98,7 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
         // upload content to S3
         s3.uploadToS3(scaledImage, image.getContentType(), newResourceId.toString());
 
-        // and add to db
+        // store
         providedServiceDao.addContentToProvidedService(serviceId, newResourceId.toString());
     }
 
@@ -100,8 +106,10 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
     @Override
     public List<ProvidedServiceDetails> searchAvailableService(String searchText) {
 
+        // if search text is valid return all matching services in db
         if (StrTools.hasValue(searchText)) return providedServiceDao.searchAvailableServices(searchText);
 
+        // else return an empty list
         return new ArrayList<>();
     }
 

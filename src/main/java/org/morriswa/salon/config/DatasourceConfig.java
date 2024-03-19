@@ -17,10 +17,10 @@ import org.springframework.context.annotation.Profile;
 @Profile("!test") //Indicates to the scanner that this class should be ignored during unit testing
 public class DatasourceConfig {  //will provide all mysql config for the application
 
-    private final MySQLProperties config;
+    private final MySQLProperties mysql;
 
     @Autowired public DatasourceConfig(MySQLProperties config) {
-        this.config = config;
+        this.mysql = config;
     }
 
 
@@ -33,33 +33,42 @@ public class DatasourceConfig {  //will provide all mysql config for the applica
     @Bean
     public HikariDataSource provideHikariDataSource() {
 
-        final var dbUsername = config.getUsername();
-        final var dbPassword = config.getPassword();
+        // retrieve database username and password from application config
+        final var dbUsername = mysql.getUsername();
+        final var dbPassword = mysql.getPassword();
+
+        // build jdbc connection string
         final String jdbcUrl;
         {
-            var urlBuilder = new StringBuilder(String.format("%s://%s:%s/%s",
-                    config.getProtocol(),
-                    config.getHostname(),
-                    config.getPort(),
-                    config.getDatabase()));
+            // using provided protocol, hostname, port and database
+            var connectionString = new StringBuilder(String.format("%s://%s:%s/%s",
+                    mysql.getProtocol(),
+                    mysql.getHostname(),
+                    mysql.getPort(),
+                    mysql.getDatabase()));
 
-            if (!config.getConnectionProperties().isEmpty()) {
-                urlBuilder.append("?");
+            // if additional connection params are required by application
+            if (!mysql.getConnectionProperties().isEmpty()) {
 
-                for (String prop : config.getConnectionProperties())
-                    urlBuilder.append(String.format("%s&", prop));
+                // add all params
+                connectionString.append("?");
+                for (String prop : mysql.getConnectionProperties())
+                    connectionString.append(String.format("%s&", prop));
 
-                jdbcUrl = urlBuilder.substring(0, urlBuilder.length() - 1);
-            } else {
-                jdbcUrl = urlBuilder.toString();
+                // and remove tailing &
+                jdbcUrl = connectionString.substring(0, connectionString.length() - 1);
+            } else { // if no additional connection params are required, return as is
+                jdbcUrl = connectionString.toString();
             }
         }
 
+        // input retrieved properties into Hikari Config model
         var databaseConfig = new HikariConfig();
         databaseConfig.setUsername(dbUsername);
         databaseConfig.setPassword(dbPassword);
         databaseConfig.setJdbcUrl(jdbcUrl);
 
+        // build and return configured datasource
         return new HikariDataSource(databaseConfig);
     }
 }

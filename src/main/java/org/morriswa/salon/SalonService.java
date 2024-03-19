@@ -15,7 +15,7 @@ import java.util.TimeZone;
  */
 
 
-// Enable configuration files annotated with @ConfigurationProperties
+// Enable configuration components annotated with @ConfigurationProperties
 @EnableConfigurationProperties
 // Do NOT use Spring Data Source Configuration,
 // Data Source will be manually configured in org.morriswa.salon.config.DatasourceConfig

@@ -74,6 +74,7 @@
             <version>1.12.665</version>
         </dependency>
 
+        <!-- Required for annotated models -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

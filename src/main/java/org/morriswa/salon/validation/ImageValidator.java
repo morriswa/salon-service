@@ -9,7 +9,7 @@ public class ImageValidator {
 
     public static final List<String> permittedContentTypes = List.of("image/jpg","image/jpeg","image/png");
 
-    public static void validateImageFormat(MultipartFile image) throws ValidationException {
+    public static void validateUploadedImage(MultipartFile image) throws ValidationException {
         ValidationException ve = new ValidationException();
 
         if (image.getContentType()==null) ve.addValidationError("image/content-type", true, null,

@@ -5,8 +5,6 @@ import org.morriswa.salon.enumerated.Pronouns;
 import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.ProvidedServiceDetails;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -15,11 +13,10 @@ import java.sql.ResultSet;
 import java.util.*;
 
 @Component
-public class ProvidedServiceDaoImpl implements ProvidedServiceDao{
+public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
+
     private final NamedParameterJdbcTemplate database;
 
-
-    private final Logger log = LoggerFactory.getLogger(ProvidedServiceDaoImpl.class);
     @Autowired
     public ProvidedServiceDaoImpl(NamedParameterJdbcTemplate database) {
         this.database = database;

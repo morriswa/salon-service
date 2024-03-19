@@ -1,7 +1,5 @@
 package org.morriswa.salon.dao;
 
-import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.ClientInfo;
 import org.morriswa.salon.model.EmployeeInfo;
 
@@ -23,9 +21,30 @@ public interface ProfileDao {
      */
     ClientInfo getClientInfo(Long userId) throws Exception;
 
+    /**
+     * updates a client's stored info in mysql
+     *
+     * @param userId of the client to update
+     * @param request containing information to update
+     * @throws Exception if client info could not be updated
+     */
     void updateClientInfo(Long userId, ClientInfo request) throws Exception;
 
-    EmployeeInfo getEmployeeInfo(Long employeeId) throws BadRequestException;
+    /**
+     * retrieves all stored employee info in mysql
+     *
+     * @param employeeId to retrieve info about
+     * @return all stored employee info
+     * @throws Exception if employee info could not be retrieved
+     */
+    EmployeeInfo getEmployeeInfo(Long employeeId) throws Exception;
 
-    void updateEmployeeProfile(Long userId, EmployeeInfo request) throws ValidationException;
+    /**
+     * updates an employee's stored info in mysql
+     *
+     * @param employeeId of the employee to update
+     * @param request containing information to update
+     * @throws Exception if employee info could not be updated
+     */
+    void updateEmployeeProfile(Long employeeId, EmployeeInfo request) throws Exception;
 }

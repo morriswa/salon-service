@@ -164,7 +164,7 @@ public class UserProfileValidator {
         if (error.containsErrors()) throw error;
     }
 
-    public static void validateUpdateUserProfileRequestOrThrow(ClientInfo updateProfileRequest) throws ValidationException {
+    public static void validateUpdateUserProfileRequestOrThrow(UserInfo updateProfileRequest) throws ValidationException {
         var error = new ValidationException();
         
         // validate required fields

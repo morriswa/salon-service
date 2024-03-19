@@ -52,7 +52,7 @@ public class WebSecurityConfig {
      * <p>
      * REQUIRED AUTOWIRED DEPENDENCIES:
      * @param userService an implementation of spring's User Detail Service
-     *                    for this application org.morriswa.eecs447.utility.JdbcAuthenticationService
+     *                    for this application org.morriswa.salon.utility.JdbcAuthenticationService
      * @param passwordEncoder an implementation of Password Encoder
      * @return the final configured application Authentication Manager
      */
@@ -143,8 +143,9 @@ public class WebSecurityConfig {
                         // employees and clients may have access to remaining endpoints
                         .anyRequest().denyAll()
                 )
-                // use custom cors config
+                // disable cross site protections
                 .csrf(csrf->csrf.disable())
+                // use custom cors config
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 // use default http basic authorization token, provided in http headers
                 // and register exception handler for requests with bad credentials (401)

@@ -2,9 +2,10 @@ package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.AccountDao;
 import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.model.*;
-import org.morriswa.salon.utility.AmazonS3Client;
-import org.morriswa.salon.utility.ImageScaleUtil;
+import org.morriswa.salon.model.AccountRequest;
+import org.morriswa.salon.model.UserAccount;
+import org.morriswa.salon.model.UserAccountResponse;
+import org.morriswa.salon.model.UserInfo;
 import org.morriswa.salon.validation.StrTools;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +20,17 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountDao accountDao;
     private final String employeeAccessCode;
-    private final AmazonS3Client s3;
-    private final ImageScaleUtil imageScale;
 
     @Autowired
-    public AccountServiceImpl(Environment e, AccountDao accountDao, AmazonS3Client s3, ImageScaleUtil imageScale) {
+    public AccountServiceImpl(Environment e, AccountDao accountDao) {
         this.accountDao = accountDao;
         this.employeeAccessCode = e.getRequiredProperty("salon.employee-code");
-        this.s3 = s3;
-        this.imageScale = imageScale;
     }
 
 
     @Override
     public UserAccountResponse login(UserAccount principal) {
+        // build response using information about the current Authentication Principal
         return new UserAccountResponse(
                 principal.getUserId(),
                 principal.getUsername(),
@@ -44,7 +42,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void registerUser(AccountRequest request) throws Exception {
-        // add user registration rules here...
 
         // validate username and password fields
         UserProfileValidator.validateUsernameOrThrow(request.username());
@@ -57,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void createUserProfile(UserAccount principal, UserInfo createProfileRequest) throws Exception {
 
-        // add Contact Info validation rules here
+        // validate create user profile request
         UserProfileValidator.validateCreateProfileRequestOrThrow(createProfileRequest);
 
         // attempt to store provided contact information
@@ -66,20 +63,23 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void updateUsername(UserAccount principal, AccountRequest updateUsernameRequest) throws Exception {
-        // validate requested username
+
+        // validate new requested username
         UserProfileValidator.validateUsernameOrThrow(updateUsernameRequest.username());
 
-        // initiate change
+        // store change in db
         accountDao.changeUsername(principal.getUserId(), updateUsernameRequest.username());
     }
 
     @Override
     public void updatePassword(UserAccount principal, AccountRequest updatePasswordRequest) throws Exception {
-        // validate requested password
+
+        // validate new requested password
         UserProfileValidator.validatePasswordChangeOrThrow(
                 updatePasswordRequest.password(),
                 updatePasswordRequest.confirmPassword());
 
+        // store change in db
         accountDao.updateUserPassword(
                 principal.getUserId(),
                 principal.getPassword(),
@@ -88,12 +88,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void unlockEmployeePortalWithCode(UserAccount principal, String code) throws BadRequestException {
+    public void unlockEmployeePortalWithCode(UserAccount principal, String code) throws Exception {
+
+        // if access code is blank or invalid, throw appropriate error
         if (!StrTools.hasValue(code) || !code.equals(employeeAccessCode))
             throw new BadRequestException("Bad access code!");
+
         // todo verify employee criteria before promoting
 
-
+        // register employee in database
         accountDao.completeEmployeeRegistration(principal.getUserId());
     }
 
@@ -101,6 +104,7 @@ public class AccountServiceImpl implements AccountService {
     public void unlockClientPortal(UserAccount principal) throws Exception {
         // todo verify client criteria before promoting
 
+        // register client in database
         accountDao.completeClientRegistration(principal.getUserId());
     }
 

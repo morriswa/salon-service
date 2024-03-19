@@ -59,8 +59,6 @@ public class ValidationException extends Exception {
 
     /**
      * Creates a blank Validation Exception that users can build upon
-     *
-     * @param validationErrors to be included in response
      */
     public ValidationException() {
         super();

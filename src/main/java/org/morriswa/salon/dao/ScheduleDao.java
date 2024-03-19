@@ -1,6 +1,5 @@
 package org.morriswa.salon.dao;
 
-import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.Appointment;
 import org.morriswa.salon.model.AppointmentOpening;
 import org.morriswa.salon.model.AppointmentRequest;
@@ -16,11 +15,25 @@ import java.util.List;
  */
 public interface ScheduleDao {
 
-    // CREATE
-    void bookAppointment(Long clientId, AppointmentRequest request) throws BadRequestException;
+// CREATE
 
-    // RETRIEVE
-    List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws BadRequestException;
+    /**
+     * store a new appointment in mysql
+     *
+     * @param clientId booking the appointment
+     * @param request required details to book appointment
+     * @throws Exception if appointment could not be booked
+     */
+    void bookAppointment(Long clientId, AppointmentRequest request) throws Exception;
+
+// RETRIEVE
+
+    /**
+     * @param request containing search params
+     * @return list of all appointment openings on a given day
+     * @throws Exception if appointment openings could not be retrieved
+     */
+    List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception;
 
     /**
      * @param clientId to retrieve schedule for
@@ -40,9 +53,30 @@ public interface ScheduleDao {
      * @author Makenna Loewenherz
      */
     List<Appointment> retrieveEmployeeSchedule(Long employeeId, LocalDate untilDate);
-    void checkEditAccessOrThrow(Long employeeId, Long appointmentId) throws BadRequestException;
 
-    // UPDATE
+    /**
+     * @param employeeId attempting to edit an existing appointment
+     * @param appointmentId to edit
+     * @throws Exception if employee cannot edit appointment
+     */
+    void checkEditAccessOrThrow(Long employeeId, Long appointmentId) throws Exception;
+
+// UPDATE
+
+    /**
+     * updates details of an appointment (other than date/time)
+     *
+     * @param appointmentId to edit
+     * @param request details to update
+     */
     void updateAppointmentDetails(Long appointmentId, AppointmentRequest request);
-    void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws BadRequestException;
+
+    /**
+     * reschedule an existing appointment
+     * @param employeeId rescheduling appointment
+     * @param appointmentId to reschedule
+     * @param request containing params
+     * @throws Exception if appointment could not be rescheduled
+     */
+    void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws Exception;
 }

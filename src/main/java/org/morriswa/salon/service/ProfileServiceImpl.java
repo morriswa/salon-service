@@ -1,15 +1,12 @@
 package org.morriswa.salon.service;
 
 import org.morriswa.salon.dao.ProfileDao;
-import org.morriswa.salon.exception.BadRequestException;
-import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.*;
 import org.morriswa.salon.utility.AmazonS3Client;
 import org.morriswa.salon.utility.ImageScaleUtil;
 import org.morriswa.salon.validation.ImageValidator;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,14 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileServiceImpl implements ProfileService {
 
     private final ProfileDao profileDao;
-    private final String employeeAccessCode;
     private final AmazonS3Client s3;
     private final ImageScaleUtil imageScale;
 
     @Autowired
-    public ProfileServiceImpl(Environment e, ProfileDao profileDao, AmazonS3Client s3, ImageScaleUtil imageScale) {
+    public ProfileServiceImpl(ProfileDao profileDao, AmazonS3Client s3, ImageScaleUtil imageScale) {
         this.profileDao = profileDao;
-        this.employeeAccessCode = e.getRequiredProperty("salon.employee-code");
         this.s3 = s3;
         this.imageScale = imageScale;
     }
@@ -32,49 +27,61 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ClientInfo getClientProfile(UserAccount principal) throws Exception {
 
-        // get client info
-        // return complete profile
+        // return all client info from db
         return profileDao.getClientInfo(principal.getUserId());
     }
 
     @Override
     public void updateClientProfile(UserAccount principal, ClientInfo updateProfileRequest) throws Exception {
-        // add Contact Info validation rules here
+
+        // validate update profile request
         UserProfileValidator.validateUpdateUserProfileRequestOrThrow(updateProfileRequest);
 
+        // store updates in db
         profileDao.updateClientInfo(principal.getUserId(), updateProfileRequest);
     }
 
     @Override
     public EmployeeProfile getEmployeeProfile(UserAccount principal) throws Exception {
-        // get user contact info
+
+        // get employee info stored in db
         var employeeInfo = profileDao.getEmployeeInfo(principal.getUserId());
 
+        // retrieve employee profile image
         var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", principal.getUserId()), 30);
 
-        // return complete profile
+        // build and return complete employee profile
         return new EmployeeProfile(employeeInfo, employeeProfileImage);
     }
 
     @Override
-    public PublicEmployeeProfile getPublicEmployeeProfile(Long employeeId) throws BadRequestException {
-        // get user contact info
+    public PublicEmployeeProfile getPublicEmployeeProfile(Long employeeId) throws Exception {
+
+        // get stored employee info
         var employeeInfo = profileDao.getEmployeeInfo(employeeId);
 
+        // get profile image
         var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", employeeId), 30);
 
-        // return complete profile
+        // build and return public profile
         return new PublicEmployeeProfile(employeeInfo, employeeProfileImage);
     }
 
     @Override
-    public void updateEmployeeProfile(UserAccount principal, EmployeeInfo request) throws ValidationException {
+    public void updateEmployeeProfile(UserAccount principal, EmployeeInfo request) throws Exception {
+
+        // validate update profile request
+        UserProfileValidator.validateUpdateUserProfileRequestOrThrow(request);
+
+        // store changes
         profileDao.updateEmployeeProfile(principal.getUserId(), request);
     }
 
     @Override
-    public void updateEmployeeProfileImage(UserAccount principal, MultipartFile image) throws Exception{
-        ImageValidator.validateImageFormat(image);
+    public void updateEmployeeProfileImage(UserAccount principal, MultipartFile image) throws Exception {
+
+        // validate uploaded image
+        ImageValidator.validateUploadedImage(image);
 
         // scale image by 80%
         final byte[] scaledImage = imageScale.getScaledImage(image, 0.8F);

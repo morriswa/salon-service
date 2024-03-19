@@ -28,15 +28,11 @@ import java.util.Optional;
 @Component @SuppressWarnings("null")
 public class ProfileDaoImpl implements ProfileDao {
 
-    private final Logger log;
     private final NamedParameterJdbcTemplate database;
-    private final PasswordEncoder encoder;
 
     @Autowired
-    public ProfileDaoImpl(NamedParameterJdbcTemplate database, PasswordEncoder encoder) {
-        this.log = LoggerFactory.getLogger(getClass());
+    public ProfileDaoImpl(NamedParameterJdbcTemplate database) {
         this.database = database;
-        this.encoder = encoder;
     }
 
 
@@ -190,7 +186,7 @@ public class ProfileDaoImpl implements ProfileDao {
     }
 
     @Override
-    public void updateEmployeeProfile(Long userId, EmployeeInfo request) throws ValidationException {
+    public void updateEmployeeProfile(Long employeeId, EmployeeInfo request) throws ValidationException {
         final var query = """
             UPDATE contact_info
                 SET
@@ -214,7 +210,7 @@ public class ProfileDaoImpl implements ProfileDao {
             """;
 
         final var params = new HashMap<String, Object>(){{
-            put("userId", userId);
+            put("userId", employeeId);
             put("firstName", request.getFirstName());
             put("lastName", request.getLastName());
             put("pronouns", request.getPronouns());

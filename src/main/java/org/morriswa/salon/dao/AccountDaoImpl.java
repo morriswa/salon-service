@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,16 +47,16 @@ public class AccountDaoImpl implements AccountDao {
         // defn query, inject params, query database and return the result
         final var query = """
             select
-                uac.user_id,
-                uac.username,
-                uac.password,
-                uac.date_created,
-                IFNULL((select 1 from contact_info where user_id=uac.user_id), 0)
-                    as isUser,
-                IFNULL((select 1 from employee where employee_id=uac.user_id), 0)
-                    as isEmployee,
-                IFNULL((select 1 from client where client_id=uac.user_id), 0)
-                    as isClient
+                    uac.user_id,
+                    uac.username,
+                    uac.password,
+                    uac.date_created,
+                        IFNULL((select 1 from contact_info where user_id=uac.user_id), 0)
+                    as registered_user,
+                        IFNULL((select 1 from employee where employee_id=uac.user_id), 0)
+                    as registered_employee,
+                        IFNULL((select 1 from client where client_id=uac.user_id), 0)
+                    as registered_client
                 from user_account uac where username=:username""";
 
         final var params = Map.of("username",username);
@@ -64,23 +64,26 @@ public class AccountDaoImpl implements AccountDao {
             // check that a database record exists
             if (rs.next()) {
 
-                final boolean isUser = rs.getLong("isUser")==1;
-                final boolean isClient = rs.getLong("isClient")==1;
-                final boolean isEmployee = rs.getLong("isEmployee")==1;
+                final boolean isRegistered = rs.getLong("registered_user")==1;
+                final boolean isClient = rs.getLong("registered_client")==1;
+                final boolean isEmployee = rs.getLong("registered_employee")==1;
 
                 var perms = new HashSet<SimpleGrantedAuthority>();
 
+                // if user has neither client nor employee privileges
+                // they are considered a new user
                 if (!(isClient||isEmployee))
                     perms.add(new SimpleGrantedAuthority("NUSER"));
 
-                if (isUser) perms.add(new SimpleGrantedAuthority("USER"));
+                // if user is registered in contact info table, they are considered a user
+                if (isRegistered) perms.add(new SimpleGrantedAuthority("USER"));
 
-                if (isEmployee)
-                    perms.add(new SimpleGrantedAuthority("EMPLOYEE"));
+                // if user is registered in employee table, they are considered an employee
+                if (isEmployee) perms.add(new SimpleGrantedAuthority("EMPLOYEE"));
 
-                if (isClient)
-                    perms.add(new SimpleGrantedAuthority("CLIENT"));
+                // if user is registered in client table, they are considered a client
 
+                if (isClient) perms.add(new SimpleGrantedAuthority("CLIENT"));
 
                 // and return the requested user, formatted for compatibility with Spring Security Filter
                 return new UserAccount(

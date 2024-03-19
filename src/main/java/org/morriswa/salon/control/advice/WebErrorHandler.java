@@ -17,10 +17,10 @@ import org.springframework.web.context.request.WebRequest;
 
 
 /**
- * AUTHOR: William A. Morris <br>
- * CREATION_DATE: 2024-01-19 <br>
- * PURPOSE: <br>
- * &emsp; provides error handlers for all controllers
+ * provides error handlers for all controllers
+ *
+ * @author William A. Morris
+ * @since 2024-01-19
  */
 @ControllerAdvice
 public class WebErrorHandler {
