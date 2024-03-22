@@ -9,7 +9,7 @@
 salon:
   # time zone MUST be in format '[+-][0-9]{2}:[0-9]{2}'
   # ex '-00:00' for UTC, '-06:00' for America/Chicago
-  timezone: '-06:00'
+  timezone: 'America/Chicago'
   # open and closing times MUST be in format 'h:mm a'
   # ex '9:00 AM', '5:00 PM'
   hours:
