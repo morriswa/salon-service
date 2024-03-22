@@ -7,12 +7,12 @@
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.2.4</version>
         <relativePath/>
     </parent>
     <groupId>org.morriswa</groupId>
     <artifactId>salon-service</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.1</version>
     <name>Salon Web Service</name>
     <description>
         Dev Dynasty's EECS 447 Group Term Project Web Service.
