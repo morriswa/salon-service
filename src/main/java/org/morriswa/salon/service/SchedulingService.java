@@ -30,11 +30,12 @@ public interface SchedulingService {
 // RETRIEVE
 
     /**
+     * @param principal current user
      * @param request containing search params
      * @return all appointment openings on requested day
      * @throws Exception if appointment openings could not be retrieved
      */
-    List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception;
+    List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws Exception;
 
     /**
      * @param principal the authenticated client

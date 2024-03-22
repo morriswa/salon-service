@@ -39,9 +39,10 @@ public class ClientController {
      */
     @PostMapping("/schedule")
     public ResponseEntity<List<AppointmentOpening>> retrieveAppointmentOpenings(
+            @AuthenticationPrincipal UserAccount principal,
             @RequestBody AppointmentRequest request
     ) throws Exception {
-        var book = schedule.retrieveAppointmentOpenings(request);
+        var book = schedule.retrieveAppointmentOpenings(principal, request);
         return ResponseEntity.ok(book);
     }
 

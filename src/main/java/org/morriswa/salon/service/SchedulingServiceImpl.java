@@ -22,13 +22,13 @@ public class SchedulingServiceImpl implements SchedulingService{
 
 
     @Override
-    public List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception {
+    public List<AppointmentOpening> retrieveAppointmentOpenings(UserAccount principal, AppointmentRequest request) throws Exception {
 
         // validate params to view appointment openings
         ScheduleRequestValidator.validateAppointmentOpeningsRequest(request);
 
         // return all generated appointment openings
-        return scheduleDao.retrieveAppointmentOpenings(request);
+        return scheduleDao.retrieveAppointmentOpenings(principal.getUserId(), request);
     }
 
     @Override

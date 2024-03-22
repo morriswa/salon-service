@@ -83,7 +83,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     }
 
     @Override
-    public List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws BadRequestException {
+    public List<AppointmentOpening> retrieveAppointmentOpenings(Long clientId, AppointmentRequest request) throws BadRequestException {
 
         // get beginning of day in salon's timezone
         final var salonOpen = request.searchDate().toInstant()
@@ -118,7 +118,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 apt.length
             from appointment apt
             left join provided_service ps on apt.service_id = ps.service_id
-            where ps.employee_id=:employeeId
+            where   (ps.employee_id=:employeeId
+                    or
+                    apt.client_id=:clientId)
             and
                 appointment_time between :startSearch and :endSearch
             order by appointment_time
@@ -127,6 +129,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
         // inject params
         final var params = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
+            put("clientId", clientId);
             put("startSearch", startSearch);
             put("endSearch", salonClose);
         }};
@@ -305,7 +308,9 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 apt.length
             from appointment apt
             left join provided_service ps on apt.service_id=ps.service_id
-            where ps.employee_id=:employeeId
+            where   (ps.employee_id = :employeeId
+                    or
+                    apt.client_id = :clientId)
             and
                 appointment_time between :startSearch and :endSearch
             """;
@@ -315,6 +320,7 @@ public class ScheduleDaoImpl  implements ScheduleDao{
                 .plusMinutes(serviceToSchedule.getLength() * 15L).minusMinutes(1);
         final var params2 = new HashMap<String, Object>(){{
             put("employeeId", request.employeeId());
+            put("clientId", clientId);
             put("startSearch", startSearch);
             put("endSearch", stopSearch);
         }};

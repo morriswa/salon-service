@@ -29,11 +29,12 @@ public interface ScheduleDao {
 // RETRIEVE
 
     /**
+     * @param clientId requester
      * @param request containing search params
      * @return list of all appointment openings on a given day
      * @throws Exception if appointment openings could not be retrieved
      */
-    List<AppointmentOpening> retrieveAppointmentOpenings(AppointmentRequest request) throws Exception;
+    List<AppointmentOpening> retrieveAppointmentOpenings(Long clientId, AppointmentRequest request) throws Exception;
 
     /**
      * @param clientId to retrieve schedule for
