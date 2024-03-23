@@ -1,9 +1,9 @@
 package org.morriswa.salon.enumerated;
 
 public enum Pronouns {
-    HE("H", "he/him/his"),
-    SHE("S", "she/her/hers"),
-    THEY("T", "they/them/theirs");
+    HE(DatabaseCodes.Pronouns.he, "he/him/his"),
+    SHE(DatabaseCodes.Pronouns.she, "she/her/hers"),
+    THEY(DatabaseCodes.Pronouns.they, "they/them/theirs");
 
 
     public final String code;
@@ -16,19 +16,15 @@ public enum Pronouns {
 
     public static Pronouns getEnum(String code) {
         return switch (code) {
-            case "H" -> Pronouns.HE;
-            case "S" -> Pronouns.SHE;
-            case "T" -> Pronouns.THEY;
+            case DatabaseCodes.Pronouns.he -> Pronouns.HE;
+            case DatabaseCodes.Pronouns.she -> Pronouns.SHE;
+            case DatabaseCodes.Pronouns.they -> Pronouns.THEY;
             default -> null;
         };
     }
 
     public static String getPronounStr(String code) {
-        return switch (code) {
-            case "H" -> Pronouns.HE.description;
-            case "S" -> Pronouns.SHE.description;
-            case "T" -> Pronouns.THEY.description;
-            default -> null;
-        };
+        final var pronoun = getEnum(code);
+        return pronoun==null ? null: pronoun.description;
     }
 }

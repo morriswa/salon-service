@@ -1,9 +1,9 @@
 package org.morriswa.salon.enumerated;
 
 public enum ContactPreference {
-    Email("EMAIL", "Email"),
-    PhoneCall("PCALL", "Phone Call"),
-    TextMessage("PTEXT", "Text Message");
+    Email(DatabaseCodes.ContactPreference.email, "Email"),
+    PhoneCall(DatabaseCodes.ContactPreference.phone, "Phone Call"),
+    TextMessage(DatabaseCodes.ContactPreference.text, "Text Message");
 
 
     public final String code;
@@ -16,9 +16,9 @@ public enum ContactPreference {
 
     public static ContactPreference getEnum(String code) {
         return switch (code) {
-            case "EMAIL" -> Email;
-            case "PCALL" -> PhoneCall;
-            case "PTEXT" -> TextMessage;
+            case DatabaseCodes.ContactPreference.email -> Email;
+            case DatabaseCodes.ContactPreference.phone -> PhoneCall;
+            case DatabaseCodes.ContactPreference.text -> TextMessage;
             default -> null;
         };
     }
