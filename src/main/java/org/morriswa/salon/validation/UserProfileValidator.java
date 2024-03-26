@@ -2,7 +2,6 @@ package org.morriswa.salon.validation;
 
 import org.morriswa.salon.enumerated.ContactPreference;
 import org.morriswa.salon.exception.ValidationException;
-import org.morriswa.salon.model.ClientInfo;
 import org.morriswa.salon.model.UserInfo;
 
 import java.util.Set;
@@ -15,7 +14,7 @@ import java.util.Set;
  */
 public class UserProfileValidator {
 
-    public static final Set<String> validPronouns = Set.of("H", "S", "T");
+    public static final Set<String> validPronouns = Set.of("H", "S", "T", "N");
 
     // add static validation methods to be used throughout the application here
 
@@ -78,7 +77,7 @@ public class UserProfileValidator {
         if (!StrTools.hasValue(pronouns)) error.addValidationError(
                 "pronouns", true, pronouns, "Please select your preferred pronouns!");
         else if (!validPronouns.contains(pronouns)) error.addValidationError(
-                "pronouns", true, pronouns, "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them...");
+                "pronouns", true, pronouns, "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them, 'N' for not say...");
 
         // first name validation rules
         final var firstName = createProfileRequest.getFirstName();
@@ -171,7 +170,7 @@ public class UserProfileValidator {
 
         // pronoun validation rules
         if (StrTools.hasValue(updateProfileRequest.getPronouns()) && !validPronouns.contains(updateProfileRequest.getPronouns())) error.addValidationError(
-            "pronouns", true, updateProfileRequest.getPronouns(), "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them...");
+            "pronouns", true, updateProfileRequest.getPronouns(), "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them, 'N' for not say...");
 
         // first name validation rules
         if(StrTools.isNotNullButBlank(updateProfileRequest.getFirstName())) error.addValidationError(

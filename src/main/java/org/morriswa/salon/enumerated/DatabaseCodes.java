@@ -1,6 +1,6 @@
 package org.morriswa.salon.enumerated;
 
-class DatabaseCodes {
+public class DatabaseCodes {
     public static class AppointmentStatus {
         final static String good = "OKGOOD";
         final static String missed = "MISSED";
@@ -17,5 +17,6 @@ class DatabaseCodes {
         final static String he = "H";
         final static String she = "S";
         final static String they = "T";
+        final static String not_say = "N";
     }
 }
