@@ -6,6 +6,6 @@ testing:
   bad-token: Basic YmFkOnRva2Vu
 
 jdbc:
-  url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE;
-  user: testuser
-  pass: testpassword
+  url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_DELAY=-1;
+  username: sa
+  password: password

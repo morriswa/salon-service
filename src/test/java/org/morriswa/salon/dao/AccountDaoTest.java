@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,16 +19,8 @@ import static org.springframework.test.util.AssertionErrors.*;
 @Transactional
 public class AccountDaoTest extends DaoTest {
 
-    private final AccountDao dao;
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-    private final PasswordEncoder encoder;
 
-    @Autowired
-    public AccountDaoTest(AccountDao dao, NamedParameterJdbcTemplate jdbcTemplate, PasswordEncoder encoder) {
-        this.dao = dao;
-        this.jdbcTemplate = jdbcTemplate;
-        this.encoder = encoder;
-    }
+    @Autowired protected PasswordEncoder encoder;
 
     @Test
     void registerAndFindUserQueries() throws Exception {
