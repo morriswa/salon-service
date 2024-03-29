@@ -55,6 +55,11 @@
                 <artifactId>spring-security-test</artifactId>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <scope>test</scope>
+            </dependency>
 
 
         <!-- Required for JDBC with MySql -->
@@ -71,7 +76,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.665</version>
+            <version>1.12.690</version>
         </dependency>
 
         <!-- Required for annotated models -->

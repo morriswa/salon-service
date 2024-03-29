@@ -117,7 +117,7 @@ public class AccountDaoImpl implements AccountDao {
             // extract database error message
             final var error = dpke.getMostSpecificCause().getMessage();
             // if error was caused by duplicate username on user_profile table...
-            if (error.endsWith("for key 'user_account.username'"))
+            if (error.toLowerCase().contains("username") && error.toLowerCase().contains("user_account"))
                 // throw a user-friendly error
                 throw new ValidationException(
                     "username", true, username,

@@ -4,3 +4,8 @@ testing:
   username: test
   password: test_password
   bad-token: Basic YmFkOnRva2Vu
+
+jdbc:
+  url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE;
+  user: testuser
+  pass: testpassword

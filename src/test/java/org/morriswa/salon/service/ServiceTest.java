@@ -1,4 +1,4 @@
-package org.morriswa.salon;
+package org.morriswa.salon.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.extension.ExtendWith;

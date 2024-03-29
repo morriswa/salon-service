@@ -1,4 +1,4 @@
-package org.morriswa.salon;
+package org.morriswa.salon.service;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AccountEndpointTest extends ServiceTest{
+public class AccountServiceTest extends ServiceTest{
 
     @Test
     void registerUserEndpoint() throws Exception {

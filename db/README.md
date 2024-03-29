@@ -2,7 +2,7 @@
 # Salon MySQL Instance 
 ## Current DB Version: 2.1
 #### Upgrade to V2.0 from New Schema (when run from project directory)
-    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V2__CreateTables.sql
+    mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/schema.sql
 #### Upgrade to V2.1 from 2.0
     mysql -u dev_dynasty_service -p dev_dynasty_salon < ./db/migration/V2.1__ModifyPronounConstraint.sql
 

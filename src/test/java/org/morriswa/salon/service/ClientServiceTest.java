@@ -1,8 +1,7 @@
-package org.morriswa.salon;
+package org.morriswa.salon.service;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.morriswa.salon.annotations.WithClientAccount;
 import org.morriswa.salon.model.ClientInfo;
 import org.springframework.http.HttpMethod;
@@ -13,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("null")
-public class ClientEndpointTest extends ServiceTest {
+public class ClientServiceTest extends ServiceTest {
 
     @Test
     @WithClientAccount

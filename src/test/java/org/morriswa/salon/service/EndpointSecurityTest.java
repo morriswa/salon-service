@@ -1,4 +1,4 @@
-package org.morriswa.salon;
+package org.morriswa.salon.service;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("null")
-public class SecurityTest extends ServiceTest {
+public class EndpointSecurityTest extends ServiceTest {
 
     @Test
     void unauthenticatedRequest() throws Exception {
