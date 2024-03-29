@@ -196,25 +196,37 @@ public class AccountDaoImpl implements AccountDao {
             database.update(query, params);
         } catch (DuplicateKeyException dpke) {
             // extract database error message
-            final var error = dpke.getMostSpecificCause().getMessage();
-            // if error was caused by duplicate primary key on contact_info table...
-            if (error.endsWith("for key 'contact_info.PRIMARY'"))
-                // throw a user-friendly error
-                throw new BadRequestException("You have already entered your contact info! Please use update endpoint if you are attempting to update your profile.");
+            final var errors = dpke.getMostSpecificCause().getMessage().split(";");
+            if (errors.length == 0) throw dpke;
+
+            final var error = errors[0];
+
+            var ve = new ValidationException();
 
             // if error was caused by duplicate phone number on contact_info table...
-            if (error.endsWith("for key 'contact_info.phone_num'"))
+            if (    error.toLowerCase().contains("contact_info")
+            &&      error.toLowerCase().contains("phone_num"))
                 // throw a user-friendly error
-                throw new ValidationException(
+                ve.addValidationError(
                         "phoneNumber", true, request.getPhoneNumber(),
                         "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
-            if (error.endsWith("for key 'contact_info.email'"))
+            if (    error.toLowerCase().contains("contact_info")
+            &&      error.toLowerCase().contains("email"))
                 // throw a user-friendly error
-                throw new ValidationException(
+                ve.addValidationError(
                         "email", true, request.getEmail(),
                         "There is already a user registered with requested email address!");
+
+            // if error was caused by duplicate primary key on contact_info table...
+            if (    error.toLowerCase().contains("contact_info")
+            &&      error.toLowerCase().contains("primary key")
+            &&      error.toLowerCase().contains("user_id"))
+                // throw a user-friendly error
+                throw new BadRequestException("You have already entered your contact info! Please use update endpoint if you are attempting to update your profile.");
+
+            if (ve.containsErrors()) throw ve;
 
             // if error was not expected, throw as is
             throw dpke;
