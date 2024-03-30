@@ -5,7 +5,11 @@ testing:
   password: test_password
   bad-token: Basic YmFkOnRva2Vu
 
-jdbc:
-  url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_DELAY=-1;
-  username: sa
+mysql:
+  protocol: jdbc:h2
+  database: mem:test
+  username: username
   password: password
+  connection-properties:
+    - 'MODE=MySQL'
+    - 'DB_CLOSE_DELAY=-1'
