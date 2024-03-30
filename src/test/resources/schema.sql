@@ -82,6 +82,9 @@ CREATE TABLE provided_service(
     CONSTRAINT offered_values CHECK ( offered IN ('Y', 'N') )
 );
 
+-- needed for testing with h2
+CREATE INDEX provided_service_name_idx ON provided_service(provided_service_name);
+
 
 -- AUTHOR: Makenna Loewenherz, Kevin Rivers, and William Morris
 -- CREATED: 2024-02-07

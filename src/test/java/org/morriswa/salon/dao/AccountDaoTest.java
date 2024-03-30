@@ -25,7 +25,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void registerAndFindUserQueries() throws Exception {
 
-        final String username = "username";
+        final String username = "new_user";
         final String password = "password";
 
         dao.register(username, password);
@@ -44,12 +44,10 @@ public class AccountDaoTest extends DaoTest {
     }
 
     @Test
-    void registerDuplicateUserQuery() throws Exception {
+    void registerDuplicateUserQuery() {
 
-        final String username = "username";
+        final String username = "test_nuser_1";
         final String password = "password";
-
-        dao.register(username, password);
 
         var exception = assertThrows(ValidationException.class, ()->dao.register(username, password));
 
@@ -60,6 +58,62 @@ public class AccountDaoTest extends DaoTest {
     }
 
     @Test
+    void findUserClientQuery() {
+
+        var clientUser = dao.findUser("test_client_1");
+
+        assertNotNull("client user should already be in db", clientUser);
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("NUSER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("USER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
+        );
+    }
+
+    @Test
+    void findUserEmployeeQuery() {
+
+        var clientUser = dao.findUser("test_employee_1");
+
+        assertNotNull("employee user should already be in db", clientUser);
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("NUSER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("USER"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
+        );
+    }
+
+    @Test
     void findUserBadNameQuery() {
 
         assertThrows(UsernameNotFoundException.class, ()->dao.findUser("bad_user"));
@@ -67,31 +121,8 @@ public class AccountDaoTest extends DaoTest {
 
     @Test
     void enterContactInfoQuery() throws Exception {
-        final String username = "username";
-        final String password = "password";
 
-        dao.register(username, password);
-
-        var createdUser = dao.findUser(username);
-
-        assertNotNull("registered user should be present", createdUser);
-
-        List<String> results = jdbcTemplate.query(
-                "select * from user_account where username = :username",
-                Map.of("username", username),
-                rs -> {
-                    var r = new ArrayList<String>();
-                    while (rs.next()) {
-                        r.add(rs.getString("username"));
-                    }
-                    return r;
-                });
-
-        assert results != null;
-        assertEquals("database should have updated information",
-                results.get(0), username);
-
-        final Long userId = createdUser.getUserId();
+        final Long userId = 1L;
         final UserInfo newUserInfo = new UserInfo(
                 "firstName", "lastName", "H",
                 "1231231234", "test@morriswa.org",
@@ -121,22 +152,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void enterContactInfoDuplicatePhoneQuery() throws Exception {
 
-        final String username = "username";
-        final String password = "password";
-
-        final String username1 = "username1";
-        final String password1 = "password1";
-
-        dao.register(username, password);
-        dao.register(username1, password1);
-
-        var createdUser = dao.findUser(username);
-        var createdUser1 = dao.findUser(username1);
-
-        assertNotNull("registered user should be present", createdUser);
-        assertNotNull("registered user1 should be present", createdUser1);
-
-        final Long userId = createdUser.getUserId();
+        final Long userId = 1L;
         final UserInfo newUserInfo = new UserInfo(
                 "firstName", "lastName", "H",
                 "1231231234", "test@morriswa.org",
@@ -144,15 +160,13 @@ public class AccountDaoTest extends DaoTest {
                 "Email"
         );
 
-        final Long userId1 = createdUser1.getUserId();
+        final Long userId1 = 2L;
         final UserInfo newUserInfo1 = new UserInfo(
                 "firstName", "lastName", "H",
                 "1231231234", "test1@morriswa.org",
                 "1234 Main St", null, "Town", "KS", "12345",
                 "Email"
         );
-
-        assertNotEquals("users should have different ids", userId, userId1);
 
         dao.enterContactInfo(userId, newUserInfo);
         var exception = assertThrows(ValidationException.class,()->dao.enterContactInfo(userId1, newUserInfo1));
@@ -164,22 +178,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void enterContactInfoDuplicateEmailQuery() throws Exception {
 
-        final String username = "username";
-        final String password = "password";
-
-        final String username1 = "username1";
-        final String password1 = "password1";
-
-        dao.register(username, password);
-        dao.register(username1, password1);
-
-        var createdUser = dao.findUser(username);
-        var createdUser1 = dao.findUser(username1);
-
-        assertNotNull("registered user should be present", createdUser);
-        assertNotNull("registered user1 should be present", createdUser1);
-
-        final Long userId = createdUser.getUserId();
+        final Long userId = 5L;
         final UserInfo newUserInfo = new UserInfo(
                 "firstName", "lastName", "H",
                 "1231231234", "test@morriswa.org",
@@ -187,7 +186,7 @@ public class AccountDaoTest extends DaoTest {
                 "Email"
         );
 
-        final Long userId1 = createdUser1.getUserId();
+        final Long userId1 = 1L;
         final UserInfo newUserInfo1 = new UserInfo(
                 "firstName", "lastName", "H",
                 "1231231235", "test@morriswa.org",
@@ -195,12 +194,116 @@ public class AccountDaoTest extends DaoTest {
                 "Email"
         );
 
-        assertNotEquals("users should have different ids", userId, userId1);
-
         dao.enterContactInfo(userId, newUserInfo);
         var exception = assertThrows(ValidationException.class,()->dao.enterContactInfo(userId1, newUserInfo1));
 
         assertEquals("exception should have helpful information",
                 "email", exception.getValidationErrors().get(0).field());
+    }
+
+    @Test
+    void completeClientRegistrationQuery() {
+
+        var user = dao.findUser("test_user_1");
+
+        assertNotNull("user should already be in db", user);
+
+        assertTrue(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("NUSER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("USER"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
+        );
+
+        dao.completeClientRegistration(user.getUserId());
+
+        var clientUser = dao.findUser("test_user_1");
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("NUSER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("USER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
+        );
+
+    }
+
+    @Test
+    void completeEmployeeRegistrationQuery() {
+
+        var user = dao.findUser("test_user_1");
+
+        assertNotNull("user should already be in db", user);
+
+        assertTrue(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("NUSER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("USER"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                user.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
+        );
+
+        dao.completeEmployeeRegistration(user.getUserId());
+
+        var clientUser = dao.findUser("test_user_1");
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("NUSER"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("USER"))
+        );
+
+        assertFalse(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("CLIENT"))
+        );
+
+        assertTrue(
+                "registered user should have correct authorities",
+                clientUser.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
+        );
+
     }
 }
