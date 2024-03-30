@@ -6,6 +6,7 @@ import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.model.ProvidedService;
 import org.morriswa.salon.model.ProvidedServiceDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +17,13 @@ import java.util.*;
 public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
 
     private final NamedParameterJdbcTemplate database;
+    private final ArrayList<String> activeProfiles;
+
 
     @Autowired
-    public ProvidedServiceDaoImpl(NamedParameterJdbcTemplate database) {
+    public ProvidedServiceDaoImpl(Environment e, NamedParameterJdbcTemplate database) {
         this.database = database;
+        this.activeProfiles = new ArrayList<>(List.of(e.getActiveProfiles()));
     }
 
     @Override
@@ -117,11 +121,15 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
 
     @Override
     public void createProvidedService(Long employeeId, ProvidedService createProvidedServiceRequest) {
-        final var query = """
+
+        final var query = String.format("""
             insert into provided_service
                 (employee_id, provided_service_name, default_cost, default_length)
             values
-                (:employeeId, :serviceName, :cost, IFNULL(:length, DEFAULT(default_length)))""";
+                (:employeeId, :serviceName, :cost, %s)""",
+
+        // adapt query for testing with s3
+        activeProfiles.contains("test") ? ":length" : "IFNULL(:length, DEFAULT(default_length) )");
 
         final var params = new HashMap<String, Object>() {{
             put("employeeId", employeeId);
