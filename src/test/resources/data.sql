@@ -93,3 +93,6 @@ values (11), (12), (13), (14), (15);
 
 insert into employee (employee_id)
 values (21), (22), (23), (24), (25);
+
+insert into provided_service (service_id, employee_id, provided_service_name, default_cost, default_length)
+values (251, 25, 'Test 5 Employee Service 1', 123.45, 1);
