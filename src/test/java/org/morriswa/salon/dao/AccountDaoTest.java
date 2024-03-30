@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.util.AssertionErrors.*;
 
-@Transactional
 public class AccountDaoTest extends DaoTest {
 
 
@@ -28,9 +26,9 @@ public class AccountDaoTest extends DaoTest {
         final String username = "new_user";
         final String password = "password";
 
-        dao.register(username, password);
+        accountDao.register(username, password);
 
-        var createdUser = dao.findUser(username);
+        var createdUser = accountDao.findUser(username);
 
         assertNotNull("registered user should be present", createdUser);
         assertNotNull("new user must have user id", createdUser.getUserId());
@@ -49,7 +47,7 @@ public class AccountDaoTest extends DaoTest {
         final String username = "test_nuser_1";
         final String password = "password";
 
-        var exception = assertThrows(ValidationException.class, ()->dao.register(username, password));
+        var exception = assertThrows(ValidationException.class, ()-> accountDao.register(username, password));
 
         assertNotNull("should throw appropriate error", exception);
         assertTrue("exception should contain helpful info", exception.containsErrors());
@@ -60,7 +58,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void findUserClientQuery() {
 
-        var clientUser = dao.findUser("test_client_1");
+        var clientUser = accountDao.findUser("test_client_1");
 
         assertNotNull("client user should already be in db", clientUser);
 
@@ -88,7 +86,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void findUserEmployeeQuery() {
 
-        var clientUser = dao.findUser("test_employee_1");
+        var clientUser = accountDao.findUser("test_employee_1");
 
         assertNotNull("employee user should already be in db", clientUser);
 
@@ -116,7 +114,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void findUserBadNameQuery() {
 
-        assertThrows(UsernameNotFoundException.class, ()->dao.findUser("bad_user"));
+        assertThrows(UsernameNotFoundException.class, ()-> accountDao.findUser("bad_user"));
     }
 
     @Test
@@ -130,7 +128,7 @@ public class AccountDaoTest extends DaoTest {
                 "Email"
         );
 
-        dao.enterContactInfo(userId, newUserInfo);
+        accountDao.enterContactInfo(userId, newUserInfo);
 
         List<String> contactInfoResults = jdbcTemplate.query(
                 "select * from contact_info where user_id = :userId",
@@ -168,8 +166,8 @@ public class AccountDaoTest extends DaoTest {
                 "Email"
         );
 
-        dao.enterContactInfo(userId, newUserInfo);
-        var exception = assertThrows(ValidationException.class,()->dao.enterContactInfo(userId1, newUserInfo1));
+        accountDao.enterContactInfo(userId, newUserInfo);
+        var exception = assertThrows(ValidationException.class,()-> accountDao.enterContactInfo(userId1, newUserInfo1));
 
         assertEquals("exception should have helpful information 2",
                 "phoneNumber", exception.getValidationErrors().get(0).field());
@@ -194,8 +192,8 @@ public class AccountDaoTest extends DaoTest {
                 "Email"
         );
 
-        dao.enterContactInfo(userId, newUserInfo);
-        var exception = assertThrows(ValidationException.class,()->dao.enterContactInfo(userId1, newUserInfo1));
+        accountDao.enterContactInfo(userId, newUserInfo);
+        var exception = assertThrows(ValidationException.class,()-> accountDao.enterContactInfo(userId1, newUserInfo1));
 
         assertEquals("exception should have helpful information",
                 "email", exception.getValidationErrors().get(0).field());
@@ -204,7 +202,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void completeClientRegistrationQuery() {
 
-        var user = dao.findUser("test_user_1");
+        var user = accountDao.findUser("test_user_1");
 
         assertNotNull("user should already be in db", user);
 
@@ -228,9 +226,9 @@ public class AccountDaoTest extends DaoTest {
                 user.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
         );
 
-        dao.completeClientRegistration(user.getUserId());
+        accountDao.completeClientRegistration(user.getUserId());
 
-        var clientUser = dao.findUser("test_user_1");
+        var clientUser = accountDao.findUser("test_user_1");
 
         assertFalse(
                 "registered user should have correct authorities",
@@ -257,7 +255,7 @@ public class AccountDaoTest extends DaoTest {
     @Test
     void completeEmployeeRegistrationQuery() {
 
-        var user = dao.findUser("test_user_1");
+        var user = accountDao.findUser("test_user_1");
 
         assertNotNull("user should already be in db", user);
 
@@ -281,9 +279,9 @@ public class AccountDaoTest extends DaoTest {
                 user.getAuthorities().contains(new SimpleGrantedAuthority("EMPLOYEE"))
         );
 
-        dao.completeEmployeeRegistration(user.getUserId());
+        accountDao.completeEmployeeRegistration(user.getUserId());
 
-        var clientUser = dao.findUser("test_user_1");
+        var clientUser = accountDao.findUser("test_user_1");
 
         assertFalse(
                 "registered user should have correct authorities",

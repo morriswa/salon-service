@@ -1,3 +1,6 @@
+/**
+    create testing data before each test
+ */
 
 insert into user_account (user_id, username, password, date_created)
 values

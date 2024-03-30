@@ -1,3 +1,6 @@
+/**
+  COPY OF db/migration files modified for compatibility with test runner
+ */
 
 
 -- AUTHOR: William A. Morris, Kevin Rivers
