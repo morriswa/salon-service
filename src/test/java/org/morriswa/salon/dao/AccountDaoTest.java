@@ -1,6 +1,7 @@
 package org.morriswa.salon.dao;
 
 import org.junit.jupiter.api.Test;
+import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.util.AssertionErrors.*;
@@ -53,6 +55,22 @@ public class AccountDaoTest extends DaoTest {
         assertTrue("exception should contain helpful info", exception.containsErrors());
         assertEquals("exception should report back an error in the 'username' field",
                 "username", exception.getValidationErrors().get(0).field());
+    }
+
+    @Test
+    void registerDuplicateUserProfileQuery() {
+
+        final UserInfo newUserInfo = new UserInfo(
+                "firstName", "lastName", "H",
+                "1231231234", "test@morriswa.org",
+                "1234 Main St", null, "Town", "KS", "12345",
+                "Email"
+        );
+
+        var exception = assertThrows(BadRequestException.class, ()-> accountDao.enterContactInfo(31L, newUserInfo));
+
+        assertNotNull("should throw appropriate error", exception);
+        assertNotNull("exception should contain helpful info", exception.getMessage());
     }
 
     @Test
@@ -145,6 +163,98 @@ public class AccountDaoTest extends DaoTest {
         assertEquals("database should have updated contact information",
                 contactInfoResults.get(0), newUserInfo.getEmail());
 
+    }
+
+    @Test
+    void updatePasswordQuery() throws Exception {
+
+        final Long userId = 31L;
+
+        accountDao.updateUserPassword(
+                userId,
+                "password",
+                "password",
+                "newPassword");
+
+        Optional<String> passwordResult = jdbcTemplate.query(
+                "select * from user_account where user_id = :userId",
+                Map.of("userId", userId),
+                rs -> {
+                    if (rs.next())
+                        return Optional.of(rs.getString("password"));
+
+                    return Optional.empty();
+                });
+
+        assert passwordResult != null;
+        assertTrue("password should be present", passwordResult.isPresent());
+        assertEquals("database should have updated password",
+                passwordResult.get(), "newPassword");
+    }
+
+    @Test
+    void updatePasswordQueryBadPassword() {
+
+        final Long userId = 31L;
+
+        assertThrows(BadRequestException.class, ()->accountDao.updateUserPassword(
+                userId,
+                "password",
+                "passwordd",
+                "newPassword"));
+    }
+
+    @Test
+    void updateUsernameQuery() throws Exception {
+
+        final Long userId = 31L;
+
+        accountDao.changeUsername(
+                userId,
+                "newUsername");
+
+        Optional<String> usernameResult = jdbcTemplate.query(
+                "select * from user_account where user_id = :userId",
+                Map.of("userId", userId),
+                rs -> {
+                    if (rs.next())
+                        return Optional.of(rs.getString("username"));
+
+                    return Optional.empty();
+                });
+
+        assert usernameResult != null;
+        assertTrue("username should be present", usernameResult.isPresent());
+        assertEquals("database should have updated username",
+                usernameResult.get(), "newUsername");
+    }
+
+    @Test
+    void updateUsernameQueryWithExistingUsername() {
+
+        final Long userId = 31L;
+
+        var exception = assertThrows(ValidationException.class, ()->accountDao.changeUsername(
+                userId,
+                "test_user_2"));
+
+        assertEquals("correct field should be rejected",
+                exception.getValidationErrors().get(0).field(), "username");
+
+        Optional<String> usernameResult = jdbcTemplate.query(
+                "select * from user_account where user_id = :userId",
+                Map.of("userId", userId),
+                rs -> {
+                    if (rs.next())
+                        return Optional.of(rs.getString("username"));
+
+                    return Optional.empty();
+                });
+
+        assert usernameResult != null;
+        assertTrue("username should be present", usernameResult.isPresent());
+        assertEquals("database should have old username (no change)",
+                usernameResult.get(), "test_user_1");
     }
 
     @Test

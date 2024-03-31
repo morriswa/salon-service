@@ -16,9 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 /**
  * AUTHOR: William A. Morris, Kevin Rivers, Makenna Loewenherz <br>
@@ -103,6 +101,24 @@ public class AccountDaoImpl implements AccountDao {
         });
     }
 
+    private void expectDuplicateError(
+            String table,
+            String column,
+            DuplicateKeyException error,
+            String field,
+            String rejectedValue,
+            String msgOnReject
+    ) throws ValidationException {
+
+        var errorMsg = error.getMostSpecificCause().getMessage().toLowerCase();
+
+        if (    errorMsg.contains(table)
+            &&  errorMsg.contains(column)
+            &&  errorMsg.contains(rejectedValue))
+            // throw a user-friendly error
+            throw new ValidationException(field, true, rejectedValue, msgOnReject);
+    }
+
     @Override
     public void register(String username, String password) throws Exception {
         // database should always store an encrypted password
@@ -113,15 +129,9 @@ public class AccountDaoImpl implements AccountDao {
         try { // attempt to update the database
             database.update(query, params);
         } catch (DuplicateKeyException dpke) { // if a duplicate key exception is thrown...
-            // extract database error message
-            final var error = dpke.getMostSpecificCause().getMessage();
-            // if error was caused by duplicate username on user_profile table...
-            if (error.toLowerCase().contains("username") && error.toLowerCase().contains("user_account"))
-                // throw a user-friendly error
-                throw new ValidationException(
-                    "username", true, username,
-                    "There is already a user registered with that username! Try again :)");
-            // if error was not expected, throw as is
+            expectDuplicateError(
+                "user_account", "username", dpke, "username", username,
+                "There is already a user registered with that username! Try again :)");
             throw dpke;
         }
     }
@@ -153,16 +163,9 @@ public class AccountDaoImpl implements AccountDao {
             database.update(query, params);
         }
         catch (DuplicateKeyException exception) {
-            // extract database error message
-            final var error = exception.getMostSpecificCause().getMessage();
-            // if error was caused by duplicate username on user_profile table...
-            if (error.endsWith("for key 'user_account.username'"))
-                // throw a user-friendly error
-                throw new ValidationException(
-                        "username", true, newUsername,
-                        "There is already a user registered with that username! Try again :)");
-            // if error was not expected, throw as is
-            throw exception;
+            expectDuplicateError(
+                "user_account", "username", exception, "username", newUsername,
+                "There is already a user registered with that username! Try again :)");
         }
     }
 
@@ -195,37 +198,20 @@ public class AccountDaoImpl implements AccountDao {
             database.update(query, params);
         } catch (DuplicateKeyException dpke) {
             // extract database error message
-            final var errors = dpke.getMostSpecificCause().getMessage().split(";");
-            if (errors.length == 0) throw dpke;
-
-            final var error = errors[0];
-
-            var ve = new ValidationException();
-
-            // if error was caused by duplicate phone number on contact_info table...
-            if (    error.toLowerCase().contains("contact_info")
-            &&      error.toLowerCase().contains("phone_num"))
-                // throw a user-friendly error
-                ve.addValidationError(
-                        "phoneNumber", true, request.getPhoneNumber(),
-                        "There is already a user registered with requested phone number!");
-
-            // if error was caused by duplicate email on contact_info table...
-            if (    error.toLowerCase().contains("contact_info")
-            &&      error.toLowerCase().contains("email"))
-                // throw a user-friendly error
-                ve.addValidationError(
-                        "email", true, request.getEmail(),
-                        "There is already a user registered with requested email address!");
+            expectDuplicateError(
+                    "contact_info", "phone_num", dpke, "phoneNumber", request.getPhoneNumber(),
+                    "There is already a user registered with requested phone number!");
+            expectDuplicateError(
+                    "contact_info", "email", dpke, "email", request.getEmail(),
+                    "There is already a user registered with requested email address!");
 
             // if error was caused by duplicate primary key on contact_info table...
-            if (    error.toLowerCase().contains("contact_info")
-            &&      error.toLowerCase().contains("primary key")
-            &&      error.toLowerCase().contains("user_id"))
+            final var error = dpke.getMostSpecificCause().getMessage().toLowerCase();
+            if (    error.contains("contact_info")
+                    &&      error.contains("primary key")
+                    &&      error.contains("user_id"))
                 // throw a user-friendly error
                 throw new BadRequestException("You have already entered your contact info! Please use update endpoint if you are attempting to update your profile.");
-
-            if (ve.containsErrors()) throw ve;
 
             // if error was not expected, throw as is
             throw dpke;
