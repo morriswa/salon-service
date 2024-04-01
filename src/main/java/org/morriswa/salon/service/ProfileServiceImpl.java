@@ -7,18 +7,25 @@ import org.morriswa.salon.utility.ImageScaleUtil;
 import org.morriswa.salon.validation.ImageValidator;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
+    private final Environment e;
     private final ProfileDao profileDao;
     private final AmazonS3Client s3;
     private final ImageScaleUtil imageScale;
 
     @Autowired
-    public ProfileServiceImpl(ProfileDao profileDao, AmazonS3Client s3, ImageScaleUtil imageScale) {
+    public ProfileServiceImpl(Environment e, ProfileDao profileDao, AmazonS3Client s3, ImageScaleUtil imageScale) {
+        this.e = e;
         this.profileDao = profileDao;
         this.s3 = s3;
         this.imageScale = imageScale;
@@ -65,6 +72,31 @@ public class ProfileServiceImpl implements ProfileService {
 
         // build and return public profile
         return new PublicEmployeeProfile(employeeInfo, employeeProfileImage);
+    }
+
+    @Override
+    public List<PublicEmployeeProfile> retrieveFeaturedEmployees() throws Exception {
+
+        final List<Long> featuredEmployeeIds = new ArrayList<>(){{
+            final var ids = Arrays.stream(e.getRequiredProperty("salon.featured-employees")
+                .split(",")).map(String::trim).map(Long::parseLong).toList();
+            addAll(ids);
+        }};
+
+        List<PublicEmployeeProfile> results = new ArrayList<>();
+
+        for (var employeeId : featuredEmployeeIds) {
+            // get stored employee info
+            var employeeInfo = profileDao.getEmployeeInfo(employeeId);
+
+            // get profile image
+            var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", employeeId), 30);
+
+            // build and return public profile
+            results.add(new PublicEmployeeProfile(employeeInfo, employeeProfileImage));
+        }
+
+        return results;
     }
 
     @Override

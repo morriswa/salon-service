@@ -127,7 +127,7 @@ public class WebSecurityConfig {
                 // Be authorized only by following below rules
                 .authorizeHttpRequests(authorize -> authorize
                         // requests to user registration endpoint shall be allowed
-                        .requestMatchers("/register", "/health").permitAll()
+                        .requestMatchers("/register", "/health", "/public/**").permitAll()
                         // only new user accounts should have access to account registration endpoints
                         .requestMatchers("/newUser/**").hasAuthority("NUSER")
                         // only authenticated accounts can access login endpoint

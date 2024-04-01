@@ -3,6 +3,8 @@ package org.morriswa.salon.service;
 import org.morriswa.salon.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 /**
  * provides an interface for performing essential Client/Employee Profile actions
  *
@@ -37,6 +39,15 @@ public interface ProfileService {
      * @throws Exception if requested information could not be retrieved
      */
     PublicEmployeeProfile getPublicEmployeeProfile(Long employeeId) throws Exception;
+
+
+    /**
+     * retrieves an employee's publicly available profile
+     *
+     * @return featured employees
+     * @throws Exception if requested information could not be retrieved
+     */
+    List<PublicEmployeeProfile> retrieveFeaturedEmployees() throws Exception;
 
     /**
      * updates a client's profile

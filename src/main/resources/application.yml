@@ -18,6 +18,7 @@ salon:
     close: '7:00 pm'
   # salon's employee access code
   employee-code: 'IAMEMPLOYEE'
+  featured-employees: '11, 1'
 
 
 # Vital server configuration
