@@ -32,22 +32,6 @@ public class SharedController {
 
 
     /**
-     * Http GET endpoint used to retrieve all stored information about the currently authenticated user
-     *
-     * @return profile and contact information about the user if operation was successful, else error response
-     */
-    @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<PublicEmployeeProfile> getPublicEmployeeProfile(
-            @PathVariable Long employeeId
-    ) throws Exception{
-        // using the user profile service, retrieve the current users profile
-        var profile = profileService.getPublicEmployeeProfile(employeeId);
-        // and return it to them in JSON format
-        return ResponseEntity.ok(profile);
-    }
-
-
-    /**
      * HTTP Get endpoint for employees to view all the services they are providing to users
      *
      * @return an array of provided services

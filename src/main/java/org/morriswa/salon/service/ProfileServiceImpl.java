@@ -71,7 +71,7 @@ public class ProfileServiceImpl implements ProfileService {
         var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", employeeId), 30);
 
         // build and return public profile
-        return new PublicEmployeeProfile(employeeInfo, employeeProfileImage);
+        return new PublicEmployeeProfile(employeeId, employeeInfo, employeeProfileImage);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class ProfileServiceImpl implements ProfileService {
             var employeeProfileImage = s3.getSignedObjectUrl(String.format("employeeProfile/%d", employeeId), 30);
 
             // build and return public profile
-            results.add(new PublicEmployeeProfile(employeeInfo, employeeProfileImage));
+            results.add(new PublicEmployeeProfile(employeeId, employeeInfo, employeeProfileImage));
         }
 
         return results;
