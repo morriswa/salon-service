@@ -15,10 +15,6 @@ public class TimeZoneUtilImpl implements TimeZoneUtil{
     private final ZoneId SALON_TIME_ZONE;
     private final LocalTime SALON_OPEN;
     private final LocalTime SALON_CLOSE;
-    private final ZoneId UTC = ZoneId.of("+00:00");
-
-    private final Logger log = LoggerFactory.getLogger(TimeZoneUtilImpl.class);
-
 
     @Autowired
     public TimeZoneUtilImpl(
@@ -34,9 +30,9 @@ public class TimeZoneUtilImpl implements TimeZoneUtil{
         SALON_CLOSE = LocalTime.parse(closeString, DateTimeFormatter.ofPattern("h:mm a"));
 
         // print output on success
+        Logger log = LoggerFactory.getLogger(TimeZoneUtil.class);
         log.info("Starting service for a salon in timezone {} that opens at {} and closes at {}",
                 SALON_TIME_ZONE, SALON_OPEN, SALON_CLOSE);
-
     }
 
     @Override

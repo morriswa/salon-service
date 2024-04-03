@@ -17,13 +17,10 @@ import java.util.*;
 public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
 
     private final NamedParameterJdbcTemplate database;
-    private final ArrayList<String> activeProfiles;
-
 
     @Autowired
-    public ProvidedServiceDaoImpl(Environment e, NamedParameterJdbcTemplate database) {
+    public ProvidedServiceDaoImpl(NamedParameterJdbcTemplate database) {
         this.database = database;
-        this.activeProfiles = new ArrayList<>(List.of(e.getActiveProfiles()));
     }
 
     @Override
@@ -122,14 +119,11 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
     @Override
     public void createProvidedService(Long employeeId, ProvidedService createProvidedServiceRequest) {
 
-        final var query = String.format("""
+        final var query = """
             insert into provided_service
                 (employee_id, provided_service_name, default_cost, default_length)
             values
-                (:employeeId, :serviceName, :cost, %s)""",
-
-        // adapt query for testing with s3
-        activeProfiles.contains("test") ? ":length" : "IFNULL(:length, DEFAULT(default_length) )");
+                (:employeeId, :serviceName, :cost, :length)""";
 
         final var params = new HashMap<String, Object>() {{
             put("employeeId", employeeId);

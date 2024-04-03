@@ -23,7 +23,6 @@ import java.util.Date;
 
 @Component
 public class AmazonS3ClientImpl implements AmazonS3Client {
-    private final Logger log;
     private final AmazonS3 s3;
 
     private final String ACTIVE_BUCKET;
@@ -31,7 +30,7 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
 
     @Autowired
     AmazonS3ClientImpl(Environment e) {
-        this.log = LoggerFactory.getLogger(AmazonS3ClientImpl.class);
+        Logger log = LoggerFactory.getLogger(AmazonS3Client.class);
         this.s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
         this.ACTIVE_BUCKET = e.getRequiredProperty("aws.s3.bucket");
         this.FILE_DEST_PREFIX = e.getRequiredProperty("aws.s3.apppath");

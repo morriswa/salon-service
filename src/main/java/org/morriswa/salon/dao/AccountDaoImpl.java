@@ -28,13 +28,11 @@ import java.util.*;
 @Component @SuppressWarnings("null")
 public class AccountDaoImpl implements AccountDao {
 
-    private final Logger log;
     private final NamedParameterJdbcTemplate database;
     private final PasswordEncoder encoder;
 
     @Autowired
     public AccountDaoImpl(NamedParameterJdbcTemplate database, PasswordEncoder encoder) {
-        this.log = LoggerFactory.getLogger(getClass());
         this.database = database;
         this.encoder = encoder;
     }

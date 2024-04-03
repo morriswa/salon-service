@@ -39,7 +39,6 @@ public class ScheduleDaoImpl  implements ScheduleDao{
     private final ZoneId UTC = ZoneId.of("+00:00");
 
     private final NamedParameterJdbcTemplate database;
-    private final Logger log = LoggerFactory.getLogger(ScheduleDaoImpl.class);
 
 
     @Autowired

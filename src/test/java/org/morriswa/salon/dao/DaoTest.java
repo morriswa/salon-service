@@ -13,7 +13,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = {TestConfig.class, TestDatasourceConfig.class, TestJdbcAuthenticationConfig.class})
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "h2test"})
 @TestPropertySource({"classpath:application-test.yml"})
 @Transactional
 public class DaoTest {

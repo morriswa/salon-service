@@ -6,12 +6,9 @@ import org.morriswa.salon.exception.BadRequestException;
 import org.morriswa.salon.exception.ValidationException;
 import org.morriswa.salon.model.ClientInfo;
 import org.morriswa.salon.model.EmployeeInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
