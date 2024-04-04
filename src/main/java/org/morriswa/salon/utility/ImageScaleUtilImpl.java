@@ -49,7 +49,7 @@ public class ImageScaleUtilImpl implements ImageScaleUtil {
     @Override
     public OutputStream getScaledImage(MultipartFile imageRequest, float scale) throws IOException {
 
-        BufferedImage retrievedImage = ImageIO.read(new ByteArrayInputStream(imageRequest.getBytes()));
+        BufferedImage retrievedImage = ImageIO.read(imageRequest.getInputStream());
 
         final int pxWidth = (int) (retrievedImage.getWidth() * scale);
         final int pxHeight = (int) (retrievedImage.getHeight() * scale);
