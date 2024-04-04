@@ -15,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Date;
@@ -50,16 +49,38 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
     }
 
     @Override
-    public void uploadToS3(byte[] content, String contentType, String destination) {
+    public void uploadToS3(OutputStream content, String contentType, String destination) throws IOException, InterruptedException {
 
-        InputStream inputStream = new ByteArrayInputStream(content);
+        final ByteArrayOutputStream outputStream = (ByteArrayOutputStream) content;
+        final int contentLength = outputStream.size();
 
         final ObjectMetadata imageInfo; {
             var info = new ObjectMetadata();
-            info.setContentLength(content.length);
+            info.setContentLength(contentLength);
             info.setContentType(contentType);
             imageInfo = info;
         }
+
+        // connect the pipes
+        PipedInputStream in = new PipedInputStream();
+        PipedOutputStream out = new PipedOutputStream(in);
+
+        // create a new thread to write output to input stream
+        final var myThread = new Thread(() -> {
+            try {
+                outputStream.writeTo(out);
+                out.close();
+            } catch (IOException iox) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(iox);
+            }
+        });
+
+        // start the thread
+        myThread.start();
+
+        // create input stream from output
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(in.readAllBytes());
 
         s3.putObject(new PutObjectRequest(ACTIVE_BUCKET,
                 this.FILE_DEST_PREFIX+destination,

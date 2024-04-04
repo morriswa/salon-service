@@ -6,9 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * AUTHOR: William A. Morris
@@ -21,7 +19,7 @@ public class ImageScaleUtilImpl implements ImageScaleUtil {
 
 
     @Override
-    public byte[] getScaledImage(MultipartFile imageRequest, int pxWidth, int pxHeight) throws IOException {
+    public OutputStream getScaledImage(MultipartFile imageRequest, int pxWidth, int pxHeight) throws IOException {
 
         BufferedImage retrievedImage = ImageIO.read(new ByteArrayInputStream(imageRequest.getBytes()));
 
@@ -45,11 +43,11 @@ public class ImageScaleUtilImpl implements ImageScaleUtil {
         byteStream.close();
 
 
-        return byteStream.toByteArray();
+        return byteStream;
     }
 
     @Override
-    public byte[] getScaledImage(MultipartFile imageRequest, float scale) throws IOException {
+    public OutputStream getScaledImage(MultipartFile imageRequest, float scale) throws IOException {
 
         BufferedImage retrievedImage = ImageIO.read(new ByteArrayInputStream(imageRequest.getBytes()));
 
@@ -80,6 +78,6 @@ public class ImageScaleUtilImpl implements ImageScaleUtil {
         // close bytestream
         byteStream.close();
 
-        return byteStream.toByteArray();
+        return byteStream;
     }
 }

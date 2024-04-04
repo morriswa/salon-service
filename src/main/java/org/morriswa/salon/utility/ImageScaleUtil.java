@@ -3,6 +3,7 @@ package org.morriswa.salon.utility;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Provides an easy Interface to scale images
@@ -21,7 +22,7 @@ public interface ImageScaleUtil {
      * @return a byte array containing the scaled image
      * @throws IOException if the image could not be scaled
      */
-    byte[] getScaledImage(MultipartFile imageRequest, int pxWidth, int pxHeight) throws IOException;
+    OutputStream getScaledImage(MultipartFile imageRequest, int pxWidth, int pxHeight) throws IOException;
 
     /**
      * Scales a provided image
@@ -31,5 +32,5 @@ public interface ImageScaleUtil {
      * @return a byte array containing the scaled image
      * @throws IOException if the image could not be scaled
      */
-    byte[] getScaledImage(MultipartFile imageRequest, float scale) throws IOException;
+    OutputStream getScaledImage(MultipartFile imageRequest, float scale) throws IOException;
 }

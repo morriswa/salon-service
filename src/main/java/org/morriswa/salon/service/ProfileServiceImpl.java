@@ -116,7 +116,7 @@ public class ProfileServiceImpl implements ProfileService {
         ImageValidator.validateUploadedImage(image);
 
         // scale image by 80%
-        final byte[] scaledImage = imageScale.getScaledImage(image, 0.8F);
+        final var scaledImage = imageScale.getScaledImage(image, 0.8F);
 
         // upload content to S3
         s3.uploadToS3(scaledImage, image.getContentType(), String.format("employeeProfile/%d", principal.getUserId()));

@@ -1,6 +1,7 @@
 package org.morriswa.salon.utility;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 
 /**
@@ -11,7 +12,7 @@ import java.net.URL;
  */
 public interface AmazonS3Client {
 
-    void uploadToS3(byte[] content, String contentType, String destination) throws IOException;
+    void uploadToS3(OutputStream content, String contentType, String destination) throws IOException, InterruptedException;
 
     boolean doesObjectExist(String path);
 

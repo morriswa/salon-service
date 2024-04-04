@@ -90,7 +90,7 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
             throw new BadRequestException("You are not allowed to edit this service!");
 
         // scale image by 80%
-        final byte[] scaledImage = imageScale.getScaledImage(image, 0.8F);
+        final var scaledImage = imageScale.getScaledImage(image, 0.8F);
 
         // create resource ID for uploaded content
         final UUID newResourceId = UUID.randomUUID();
