@@ -137,7 +137,50 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
 
     @Override
     public void deleteProvidedService(Long employeeId, Long serviceId) {
+        final var query = """
+            update provided_service
+                set offered = 'N'
+            where service_id = :serviceId
+            and   employee_id = :employeeId""";
 
+        final var params = Map.of("employeeId",employeeId,"serviceId", serviceId);
+
+        database.update(query, params);
+    }
+
+    @Override
+    public void deleteProvidedServiceContent(Long serviceId) {
+        final var query = """
+            delete from provided_service_content
+            where service_id = :serviceId""";
+
+        final var params = Map.of("serviceId", serviceId);
+
+        database.update(query, params);
+    }
+
+    @Override
+    public void deleteProvidedServiceContent(Long serviceId, String contentId) {
+        final var query = """
+            delete from provided_service_content
+            where service_id = :serviceId
+            and   content_id = :contentId""";
+
+        final var params = Map.of("serviceId", serviceId, "contentId", contentId);
+
+        database.update(query, params);
+    }
+
+    @Override
+    public boolean contentBelongsToService(String contentId, Long serviceId) {
+        final var query = """
+            select 1 from dev_dynasty_salon.provided_service_content
+            where service_id = :serviceId
+            and   content_id = :contentId""";
+
+        final var params = Map.of("serviceId", serviceId, "contentId", contentId);
+
+        return Boolean.TRUE.equals(database.query(query, params, ResultSet::next));
     }
 
     @Override

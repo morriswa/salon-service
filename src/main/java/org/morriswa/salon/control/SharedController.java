@@ -22,12 +22,10 @@ import java.util.List;
 public class SharedController {
 
     private final ProvidedServiceService providedServices;
-    private final ProfileService profileService;
 
     @Autowired
-    public SharedController(ProvidedServiceService providedServices, ProfileService profileService) {
+    public SharedController(ProvidedServiceService providedServices) {
         this.providedServices = providedServices;
-        this.profileService = profileService;
     }
 
 
@@ -59,10 +57,16 @@ public class SharedController {
         return ResponseEntity.ok(profile);
     }
 
+    /**
+     * HTTP Get endpoint to search available services
+     *
+     * @param searchText to return results for
+     * @return list of provided services
+     */
     @GetMapping("/services")
     public ResponseEntity<List<ProvidedServiceDetails>> searchAvailableService(
             @RequestParam String searchText
-    ) throws Exception {
+    ) {
         final var services = providedServices.searchAvailableService(searchText);
         return ResponseEntity.ok(services);
     }

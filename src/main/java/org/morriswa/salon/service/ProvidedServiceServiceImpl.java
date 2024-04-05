@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProvidedServiceServiceImpl implements ProvidedServiceService {
@@ -46,10 +44,43 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
     @Override
     public void deleteProvidedService(UserAccount principal, Long serviceId) {
 
-        throw new UnsupportedOperationException("Unimplemented method 'deleteProvidedService'");
+        final var contentIds = providedServiceDao.retrieveServiceContent(serviceId);
 
-        // execute db operation to delete an employees provided service
-//        employeeDao.deleteProvidedService(principal.getUserId(), serviceId);
+        for (var id : contentIds) s3.deleteObject(id);
+
+        providedServiceDao.deleteProvidedServiceContent(serviceId);
+
+        providedServiceDao.deleteProvidedService(principal.getUserId(), serviceId);
+    }
+
+    @Override
+    public Map<String, URL> getProvidedServiceImages(UserAccount principal, Long serviceId) {
+
+        // retrieve all stored content ids
+        var contentIds = providedServiceDao.retrieveServiceContent(serviceId);
+
+        // use s3 client to generate content URLs for provided content ids
+        Map<String, URL> contentUrls = new HashMap<>();
+        for (var id : contentIds) {
+            final var url = s3.getSignedObjectUrl(id, 30);
+            contentUrls.put(id, url);
+        }
+
+        return contentUrls;
+    }
+
+    @Override
+    public void deleteProvidedServiceImage(UserAccount principal, Long serviceId, String contentId) throws Exception {
+
+        if (!providedServiceDao.serviceBelongsTo(serviceId, principal.getUserId()))
+            throw new BadRequestException("Not your service!");
+
+        if (!providedServiceDao.contentBelongsToService(contentId, serviceId))
+            throw new BadRequestException("Content doesnt match service!");
+
+        providedServiceDao.deleteProvidedServiceContent(serviceId, contentId);
+
+        s3.deleteObject(contentId);
     }
 
     @Override

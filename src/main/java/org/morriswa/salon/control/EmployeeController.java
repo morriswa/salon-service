@@ -11,8 +11,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -91,10 +93,9 @@ public class EmployeeController {
      *
      * @param principal currently authenticated employee
      * @return an array of provided services
-     * @throws Exception return error response if employee's services could not be retrieved
      */
     @GetMapping("/services")
-    public ResponseEntity<List<ProvidedService>> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) throws Exception {
+    public ResponseEntity<List<ProvidedService>> retrieveAllProvidedServices(@AuthenticationPrincipal UserAccount principal) {
         var services = providedServices.retrieveEmployeesServices(principal.getUserId());
         return ResponseEntity.ok(services);
     }
@@ -137,6 +138,36 @@ public class EmployeeController {
     }
 
     /**
+     * @param principal currently authenticated employee
+     * @param serviceId associated with the service to modify
+     * @return no content
+     */
+    @GetMapping("/service/{serviceId}/images")
+    public ResponseEntity<Map<String, URL>> getProvidedServiceImages(
+            @AuthenticationPrincipal UserAccount principal,
+            @PathVariable Long serviceId
+    ) {
+        var images = providedServices.getProvidedServiceImages(principal, serviceId);
+        return ResponseEntity.ok(images);
+    }
+
+    /**
+     * @param principal currently authenticated employee
+     * @param serviceId associated with the service to modify
+     * @return no content
+     * @throws Exception return error response if the image could not be stored
+     */
+    @DeleteMapping("/service/{serviceId}/image/{contentId}")
+    public ResponseEntity<Map<String, URL>> deleteProvidedServiceImage(
+            @AuthenticationPrincipal UserAccount principal,
+            @PathVariable Long serviceId,
+            @PathVariable String contentId
+    ) throws Exception {
+        providedServices.deleteProvidedServiceImage(principal, serviceId, contentId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * HTTP Delete endpoint to remove a provided service from client portal
      * This service will still exist within the table, but will not be available for booking
      *
@@ -149,7 +180,7 @@ public class EmployeeController {
         @AuthenticationPrincipal UserAccount principal,
         @PathVariable Long serviceId
     ) {
-//        employeeService.deleteProvidedService(principal, serviceId);
+        providedServices.deleteProvidedService(principal, serviceId);
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 
@@ -172,25 +203,6 @@ public class EmployeeController {
     }
 
     /**
-     * HTTP Patch endpoint to move a currently scheduled appointment
-     *
-     * @param principal currently authenticated employee
-     * @param appointmentId associated with the appointment to reschedule
-     * @param request containing required information to move the apt.
-     * @return no content
-     * @throws Exception return error response if the appointment could not be rescheduled
-     */
-    @PatchMapping("/schedule/{appointmentId}")
-    public ResponseEntity<Void> rescheduleAppointment(
-            @AuthenticationPrincipal UserAccount principal,
-            @PathVariable Long appointmentId,
-            @RequestBody AppointmentRequest request
-    ) throws Exception {
-        schedule.employeeReschedulesAppointment(principal, appointmentId, request);
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
      * HTTP Patch endpoint to modify details of a scheduled appointment
      *
      * @param principal currently authenticated employee
@@ -207,23 +219,5 @@ public class EmployeeController {
     ) throws Exception {
         schedule.updateAppointmentDetails(principal, appointmentId, request);
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * HTTP Delete endpoint used to cancel a scheduled appointment
-     * This appointment will still exist within the table, but will not be billed
-     *
-     * @param principal currently authenticated employee
-     * @param appointmentId associated with the appointment to cancel
-     * @return no content
-     * @throws Exception return error response if the appointment could not be canceled
-     */
-    @DeleteMapping("/schedule/{appointmentId}")
-    public ResponseEntity<?> cancelAppointment(
-            @AuthenticationPrincipal UserAccount principal,
-            @PathVariable Long appointmentId
-    ) throws Exception {
-//        employeeService.cancelAppointment(principal, appointmentId);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
     }
 }

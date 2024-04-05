@@ -63,6 +63,12 @@ public class ClientController {
     }
 
 
+    /**
+     * HTTP Get endpoint retrieves all appointments for a client
+     *
+     * @param principal currently authenticated user
+     * @return all scheduled appointments
+     */
     @GetMapping("/schedule")
     public ResponseEntity<List<Appointment>> retrieveScheduledAppointments(@AuthenticationPrincipal UserAccount principal) {
         final var appointments = schedule.retrieveScheduledAppointments(principal);

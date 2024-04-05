@@ -72,12 +72,4 @@ public interface ScheduleDao {
      */
     void updateAppointmentDetails(Long appointmentId, AppointmentRequest request);
 
-    /**
-     * reschedule an existing appointment
-     * @param employeeId rescheduling appointment
-     * @param appointmentId to reschedule
-     * @param request containing params
-     * @throws Exception if appointment could not be rescheduled
-     */
-    void employeeReschedulesAppointment(Long employeeId, Long appointmentId, AppointmentRequest request) throws Exception;
 }

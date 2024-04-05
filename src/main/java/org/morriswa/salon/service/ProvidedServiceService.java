@@ -6,7 +6,9 @@ import org.morriswa.salon.model.ProvidedServiceProfile;
 import org.morriswa.salon.model.UserAccount;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 /**
  * responsible for validating and maintaining all provided services
@@ -49,6 +51,16 @@ public interface ProvidedServiceService {
      */
     List<ProvidedServiceDetails> searchAvailableService(String searchText);
 
+    /**
+     * retrieves all images for a service
+     *
+     * @param principal authenticated user
+     * @param serviceId to retrieve images for
+     * @return content id matched to url
+     */
+    Map<String, URL> getProvidedServiceImages(UserAccount principal, Long serviceId);
+
+
 // UPDATE
 
     /**
@@ -71,4 +83,13 @@ public interface ProvidedServiceService {
      */
     void deleteProvidedService(UserAccount principal, Long serviceId);
 
+    /**
+     * deletes image from a provided service
+     *
+     * @param principal currently authenticated user
+     * @param serviceId to delete from
+     * @param contentId to delete
+     * @throws Exception if the content can not be deleted
+     */
+    void deleteProvidedServiceImage(UserAccount principal, Long serviceId, String contentId) throws Exception;
 }

@@ -20,6 +20,12 @@ public class PublicController {
         this.profileService = profileService;
     }
 
+    /**
+     * HTTP Get endpoint to get content for UI
+     *
+     * @return all featured employee profiles
+     * @throws Exception if profiles cannot be retrieved
+     */
     @GetMapping("/featuredEmployees")
     public ResponseEntity<List<PublicEmployeeProfile>> retrieveFeaturedEmployees() throws Exception {
         final var response = profileService.retrieveFeaturedEmployees();

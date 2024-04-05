@@ -67,6 +67,13 @@ public interface ProvidedServiceDao {
      */
     boolean serviceBelongsTo(Long serviceId, Long employeeId);
 
+    /**
+     * @param contentId to check
+     * @param serviceId owner
+     * @return if a content ref belongs to a service
+     */
+    boolean contentBelongsToService(String contentId, Long serviceId);
+
 // UPDATE
 
     /**
@@ -86,4 +93,19 @@ public interface ProvidedServiceDao {
      * @param serviceId to remove from available services
      */
     void deleteProvidedService(Long employeeId, Long serviceId);
+
+    /**
+     * removes all content from a service
+     *
+     * @param serviceId doing the action
+     */
+    void deleteProvidedServiceContent(Long serviceId);
+
+    /**
+     * removes specific content from a service
+     *
+     * @param serviceId from service
+     * @param contentId to delete
+     */
+    void deleteProvidedServiceContent(Long serviceId, String contentId);
 }

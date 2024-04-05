@@ -53,16 +53,6 @@ public interface SchedulingService {
 // UPDATE
 
     /**
-     * moves a currently scheduled appointment
-     *
-     * @param principal the authenticated employee
-     * @param appointmentId the appointment to move
-     * @param request containing new appointment time
-     * @throws Exception if the appointment could not be rescheduled
-     */
-    void employeeReschedulesAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception;
-
-    /**
      * updates details of a currently scheduled appointment
      *
      * @param principal the authenticated employee

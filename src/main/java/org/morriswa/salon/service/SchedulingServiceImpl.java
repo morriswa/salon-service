@@ -42,22 +42,11 @@ public class SchedulingServiceImpl implements SchedulingService{
     }
 
     @Override
-    public void employeeReschedulesAppointment(UserAccount principal, Long appointmentId, AppointmentRequest request) throws Exception {
-
-        // validate params to reschedule appointment
-        ScheduleRequestValidator.validateRescheduleAppointmentRequest(request);
-
-        // move appointment in db
-        scheduleDao.employeeReschedulesAppointment(principal.getUserId(), appointmentId, request);
-    }
-
-    @Override
     public List<Appointment> retrieveScheduledAppointments(UserAccount principal) {
 
         // return all a client's appointments stored in db
         return scheduleDao.retrieveScheduledAppointments(principal.getUserId());
     }
-
 
     @Override
     public List<Appointment> retrieveEmployeeSchedule(UserAccount principal, LocalDate untilDate) {
