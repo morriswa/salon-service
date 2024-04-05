@@ -77,7 +77,7 @@ public class WebSecurityConfig {
             // allow requests coming from any origin
             setAllowedOrigins(List.of("*"));
             // allow only GET and POST HTTP methods
-            setAllowedMethods(List.of("GET", "POST", "PATCH"));
+            setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
             // allow request to have any headers
             setAllowedHeaders(List.of("*"));
         }};
