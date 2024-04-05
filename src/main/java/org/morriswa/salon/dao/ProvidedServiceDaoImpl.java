@@ -36,9 +36,14 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
                 FROM provided_service ps
                 JOIN contact_info ci ON ps.employee_id = ci.user_id
                 WHERE
-                    ps.offered = 'Y' AND
-                    MATCH (ps.provided_service_name)
-                    AGAINST ((:searchText) IN BOOLEAN MODE)
+                    ps.offered = 'Y'
+                    AND (
+                        MATCH (ps.provided_service_name)
+                        AGAINST ((:searchText) IN BOOLEAN MODE)
+                        OR
+                        MATCH (ci.first_name, ci.last_name)
+                        AGAINST ((:searchText) IN BOOLEAN MODE)
+                    )
             """;
 
         final var params = new HashMap<String, Object>(){{

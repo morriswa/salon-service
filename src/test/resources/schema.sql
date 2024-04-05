@@ -42,6 +42,9 @@ CREATE TABLE contact_info(
     last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE INDEX name_search_idx ON contact_info(first_name, last_name);
+
+
 
 -- AUTHOR: William A. Morris
 -- DATE CREATED: 2024-03-04
