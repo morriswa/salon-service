@@ -232,6 +232,7 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
             select *
             from provided_service
             where employee_id=:employeeId
+            and   offered='Y'
             order by offered desc""";
 
         final var params = new HashMap<String, Object>(){{
