@@ -84,6 +84,14 @@ public class ProvidedServiceServiceImpl implements ProvidedServiceService {
     }
 
     @Override
+    public void updateProvidedServiceDetails(UserAccount principal, Long serviceId, ProvidedService request) throws Exception {
+
+        ProvidedServiceValidator.validateUpdateOrThrow(request);
+
+        providedServiceDao.updateProvidedServiceDetails(principal.getUserId(), serviceId, request);
+    }
+
+    @Override
     public List<ProvidedService> retrieveEmployeesServices(Long employeeId) {
 
         // return all stored services from db

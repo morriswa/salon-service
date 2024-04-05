@@ -101,6 +101,24 @@ public class EmployeeController {
     }
 
     /**
+     * HTTP Patch endpoint to update services
+     *
+     * @param principal authenticated employee
+     * @param request update params
+     * @param serviceId to update
+     * @throws Exception if the service could not be updated
+     */
+    @PatchMapping("/service/{serviceId}")
+    public ResponseEntity<Void> updateProvidedServiceDetails(
+            @AuthenticationPrincipal UserAccount principal,
+            @RequestBody ProvidedService request,
+            @PathVariable Long serviceId
+    ) throws Exception {
+        providedServices.updateProvidedServiceDetails(principal, serviceId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
      * HTTP Post endpoint for employees to add their services to the client portal for booking
      *
      * @param principal currently authenticated employee

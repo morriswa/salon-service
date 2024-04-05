@@ -92,4 +92,14 @@ public interface ProvidedServiceService {
      * @throws Exception if the content can not be deleted
      */
     void deleteProvidedServiceImage(UserAccount principal, Long serviceId, String contentId) throws Exception;
+
+    /**
+     * updates a service
+     *
+     * @param principal authenticated employee
+     * @param serviceId to update
+     * @param request update params
+     * @throws Exception if the service could not be updated
+     */
+    void updateProvidedServiceDetails(UserAccount principal, Long serviceId, ProvidedService request) throws Exception;
 }

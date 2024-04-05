@@ -172,6 +172,27 @@ public class ProvidedServiceDaoImpl implements ProvidedServiceDao {
     }
 
     @Override
+    public void updateProvidedServiceDetails(Long employeeId, Long serviceId, ProvidedService request) {
+        final var query = """
+            update provided_service
+                set default_length = IFNULL(:length, default_length),
+                    default_cost = IFNULL(:cost, default_cost),
+                    provided_service_name = IFNULL(:name, provided_service_name)
+                where employee_id = :employeeId and service_id = :serviceId
+            """;
+
+        final var params = new HashMap<String, Object>(){{
+            put("employeeId", employeeId);
+            put("serviceId", serviceId);
+            put("length", request.getLength());
+            put("cost", request.getCost());
+            put("name", request.getName());
+        }};
+
+        database.update(query, params);
+    }
+
+    @Override
     public boolean contentBelongsToService(String contentId, Long serviceId) {
         final var query = """
             select 1 from dev_dynasty_salon.provided_service_content

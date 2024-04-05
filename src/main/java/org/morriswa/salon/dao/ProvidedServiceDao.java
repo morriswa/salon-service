@@ -108,4 +108,13 @@ public interface ProvidedServiceDao {
      * @param contentId to delete
      */
     void deleteProvidedServiceContent(Long serviceId, String contentId);
+
+    /**
+     * update provided service in mysql db
+     *
+     * @param employeeId authenticated employee
+     * @param serviceId to update
+     * @param request update params
+     */
+    void updateProvidedServiceDetails(Long employeeId, Long serviceId, ProvidedService request);
 }
