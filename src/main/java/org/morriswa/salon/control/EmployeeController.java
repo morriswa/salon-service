@@ -199,7 +199,7 @@ public class EmployeeController {
         @PathVariable Long serviceId
     ) {
         providedServices.deleteProvidedService(principal, serviceId);
-        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+        return ResponseEntity.noContent().build();
     }
 
     /**
