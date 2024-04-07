@@ -221,7 +221,9 @@ public class UserProfileValidator {
                 "stateCode", true, updateProfileRequest.getStateCode(), "State code must contain 2 uppercase characters!");
         }
 
-        if (StrTools.hasValue(updateProfileRequest.getZipCode()) && (
+        if (StrTools.isNotNullButBlank(updateProfileRequest.getZipCode())) error.addValidationError(
+                "zipCode", true, updateProfileRequest.getZipCode(), "Zip code must not be blank!");
+        else if (StrTools.hasValue(updateProfileRequest.getZipCode()) && (
                 updateProfileRequest.getZipCode().length() != 5
                 || !updateProfileRequest.getZipCode().matches("^[0-9]*$")
         )) error.addValidationError(
