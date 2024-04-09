@@ -4,9 +4,11 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.salon.annotations.WithClientAccount;
 import org.morriswa.salon.model.ClientInfo;
+import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.http.HttpMethod;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -15,6 +17,66 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SuppressWarnings("null")
 public class ClientServiceTest extends ServiceTest {
+
+    @Test
+    @WithClientAccount
+    void updatePronouns() throws Exception {
+        for (var pronoun : UserProfileValidator.validPronouns) {
+            String request = String.format("""
+            {
+                "pronouns": "%s",
+                "firstName": "testing"
+            }
+            """, pronoun);
+
+            hit(HttpMethod.PATCH, "/client/profile", request)
+                    .andExpect(status().is(204))
+            ;
+        }
+
+        verify(profileDao, times(UserProfileValidator.validPronouns.size()))
+            .updateClientInfo(eq(testingUserId), any(ClientInfo.class));
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectEmptyPronouns() throws Exception {
+        String request = """
+        {
+            "pronouns": " ",
+            "firstName": "testing"
+        }
+        """;
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
+        ;
+
+        verify(profileDao, never())
+                .updateClientInfo(eq(testingUserId), any(ClientInfo.class));
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectInvalidPronouns() throws Exception {
+        for (var pronoun : Set.of("A", "B", "C")) {
+            String request = String.format("""
+            {
+                "pronouns": "%s",
+                "firstName": "testing"
+            }
+            """, pronoun);
+
+            hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
+            ;
+        }
+
+        verify(profileDao, never())
+                .updateClientInfo(eq(testingUserId), any(ClientInfo.class));
+    }
 
     @Test
     @WithClientAccount
@@ -52,6 +114,28 @@ public class ClientServiceTest extends ServiceTest {
 
     @Test
     @WithClientAccount
+    void rejectLongFirstName() throws Exception {
+
+        final var longName = "long".repeat(8) + "n";
+        assert longName.length() == 33;
+
+        String request = String.format("""
+            {
+                "firstName": "%s",
+                "lastName": "test"
+            }
+            """, longName);
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("firstName")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(any(), any());
+    }
+
+    @Test
+    @WithClientAccount
     void updateLastName() throws Exception {
         String request = """
             {
@@ -75,6 +159,28 @@ public class ClientServiceTest extends ServiceTest {
                 "lastName": " "
             }
             """;
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("lastName")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(any(), any());
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectLongLastName() throws Exception {
+
+        final var longName = "long".repeat(8) + "n";
+        assert longName.length() == 33;
+
+        String request = String.format("""
+            {
+                "firstName": "name",
+                "lastName": "%s"
+            }
+            """, longName);
 
         hit(HttpMethod.PATCH, "/client/profile", request)
                 .andExpect(status().is(400))
@@ -185,6 +291,46 @@ public class ClientServiceTest extends ServiceTest {
 
     @Test
     @WithClientAccount
+    void rejectInvalidPhoneNumber() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "+1 (913) 777"
+            }
+            """;
+
+        ClientInfo info = mapper.readValue(request, ClientInfo.class);
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(testingUserId, info);
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectInvalidPhoneNumber2() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "1 34567890"
+            }
+            """;
+
+        ClientInfo info = mapper.readValue(request, ClientInfo.class);
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(testingUserId, info);
+    }
+
+    @Test
+    @WithClientAccount
     void rejectEmptyNumber() throws Exception {
         String request = """
             {
@@ -262,7 +408,58 @@ public class ClientServiceTest extends ServiceTest {
 
     @Test
     @WithClientAccount
+    void rejectLongAddress() throws Exception {
+
+        final var longAddress = "address".repeat(7) + "hi";
+        assert longAddress.length() == 51;
+
+        String request = String.format("""
+            {
+                "addressLineOne": "%s",
+                "addressLineTwo": "%s",
+                "city": "Georgetown",
+                "state": "DC"
+            }
+            """, longAddress, longAddress);
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("addressLineOne")))
+                .andExpect(jsonPath("$.additionalInfo[1].field", Matchers.is("addressLineTwo")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(eq(testingUserId), any(ClientInfo.class));
+    }
+
+    @Test
+    @WithClientAccount
     void rejectEmptyCity() throws Exception {
+
+        final var longCity = "address".repeat(7) + "hi";
+        assert longCity.length() == 51;
+
+        String request = String.format("""
+            {
+                "addressLineOne": "1234 Main St",
+                "addressLineTwo": "Apt 123",
+                "city": "%s",
+                "state": "DC"
+            }
+            """, longCity);
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("city")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(eq(testingUserId), any(ClientInfo.class));
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectLongCity() throws Exception {
         String request = """
             {
                 "addressLineOne": "1234 Main St",
@@ -477,5 +674,62 @@ public class ClientServiceTest extends ServiceTest {
         ;
     }
 
+    @Test
+    @WithClientAccount
+    void updateEmail() throws Exception {
+        String request = """
+            {
+                "firstName": "test@morriswa.org"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(204))
+        ;
+
+        verify(profileDao).updateClientInfo(eq(testingUserId), any(ClientInfo.class));
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectEmptyEmail() throws Exception {
+        String request = """
+            {
+                "firstName": "test",
+                "lastName": "test",
+                "email": " "
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("email")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(any(), any());
+    }
+
+    @Test
+    @WithClientAccount
+    void rejectLongEmail() throws Exception {
+
+        final var longEmail = "email".repeat(10) + "@" + "email".repeat(10);
+        assert longEmail.length() == 101;
+
+        String request = String.format("""
+            {
+                "firstName": "test",
+                "lastName": "test",
+                "email": "%s"
+            }
+            """, longEmail);
+
+        hit(HttpMethod.PATCH, "/client/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("email")))
+        ;
+
+        verify(profileDao, never()).updateClientInfo(any(), any());
+    }
 
 }

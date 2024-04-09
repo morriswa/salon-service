@@ -377,6 +377,27 @@ public class AccountServiceTest extends ServiceTest{
 
     @Test
     @WithUserAccount
+    void rejectEmptyPassword() throws Exception {
+
+        final String newPassword = "password2";
+
+        final var request = String.format("""
+        {
+            "currentPassword":"%s",
+            "password":" ",
+            "confirmPassword":"%s"
+        }""", testingPassword, newPassword.toUpperCase());
+
+        hit(HttpMethod.PATCH, "/user/password", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("password")))
+        ;
+
+        verify(accountDao, never()).updateUserPassword(any(), any(), any(), any());
+    }
+
+    @Test
+    @WithUserAccount
     void updateUserPasswordNotMatching() throws Exception {
 
         final String newPassword = "password2";
@@ -388,7 +409,7 @@ public class AccountServiceTest extends ServiceTest{
             "confirmPassword":"%s"
         }""", testingPassword, newPassword, newPassword.toUpperCase());
 
-        hit(HttpMethod.PATCH, "/user/password")
+        hit(HttpMethod.PATCH, "/user/password", request)
                 .andExpect(status().is(400))
         ;
 
@@ -408,7 +429,7 @@ public class AccountServiceTest extends ServiceTest{
             "confirmPassword":"%s"
         }""", testingPassword, newPassword, newPassword);
 
-        hit(HttpMethod.PATCH, "/user/password")
+        hit(HttpMethod.PATCH, "/user/password", request)
                 .andExpect(status().is(400))
         ;
 
@@ -431,6 +452,23 @@ public class AccountServiceTest extends ServiceTest{
         ;
 
         verify(accountDao).changeUsername(testingUserId, newUsername);
+    }
+
+    @Test
+    @WithUserAccount
+    void rejectBlankUsername() throws Exception {
+
+        final var request = """
+        {
+            "username":" "
+        }""";
+
+        hit(HttpMethod.PATCH, "/user/name", request)
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("username")));
+        ;
+
+        verify(accountDao, never()).changeUsername(any(), any());
     }
 
     @Test

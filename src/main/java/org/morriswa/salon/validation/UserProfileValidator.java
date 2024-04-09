@@ -169,7 +169,9 @@ public class UserProfileValidator {
         // validate required fields
 
         // pronoun validation rules
-        if (StrTools.hasValue(updateProfileRequest.getPronouns()) && !validPronouns.contains(updateProfileRequest.getPronouns())) error.addValidationError(
+        if(StrTools.isNotNullButBlank(updateProfileRequest.getPronouns())) error.addValidationError(
+                "pronouns", false, updateProfileRequest.getPronouns(), "Pronouns must be selected!");
+        else if (StrTools.hasValue(updateProfileRequest.getPronouns()) && !validPronouns.contains(updateProfileRequest.getPronouns())) error.addValidationError(
             "pronouns", false, updateProfileRequest.getPronouns(), "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them, 'N' for not say...");
 
         // first name validation rules
