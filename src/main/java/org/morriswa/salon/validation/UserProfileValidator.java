@@ -170,71 +170,75 @@ public class UserProfileValidator {
 
         // pronoun validation rules
         if (StrTools.hasValue(updateProfileRequest.getPronouns()) && !validPronouns.contains(updateProfileRequest.getPronouns())) error.addValidationError(
-            "pronouns", true, updateProfileRequest.getPronouns(), "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them, 'N' for not say...");
+            "pronouns", false, updateProfileRequest.getPronouns(), "Valid pronoun codes are 'H' for him, 'S' for her, 'T' for them, 'N' for not say...");
 
         // first name validation rules
         if(StrTools.isNotNullButBlank(updateProfileRequest.getFirstName())) error.addValidationError(
-            "firstName", true, updateProfileRequest.getFirstName(), "First name must not be blank!");
+            "firstName", false, updateProfileRequest.getFirstName(), "First name must not be blank!");
         if (StrTools.hasValue(updateProfileRequest.getFirstName()) && updateProfileRequest.getFirstName().length() > 32) error.addValidationError(
-            "firstName", true, updateProfileRequest.getFirstName(), "First name must be 32 characters or less!");
+            "firstName", false, updateProfileRequest.getFirstName(), "First name must be 32 characters or less!");
 
         // last name validation rules
         if(StrTools.isNotNullButBlank(updateProfileRequest.getLastName())) error.addValidationError(
-            "lastName", true, updateProfileRequest.getLastName(), "Last name must not be blank!");
+            "lastName", false, updateProfileRequest.getLastName(), "Last name must not be blank!");
         if (StrTools.hasValue(updateProfileRequest.getLastName())&& updateProfileRequest.getLastName().length() > 32) error.addValidationError(
-            "lastName", true, updateProfileRequest.getLastName(), "Last name must be 32 characters or less!");
+            "lastName", false, updateProfileRequest.getLastName(), "Last name must be 32 characters or less!");
         
         // phone number validation rules
-        if (StrTools.hasValue(updateProfileRequest.getPhoneNumber())) {
+        if (StrTools.isNotNullButBlank(updateProfileRequest.getPhoneNumber())) error.addValidationError(
+                "phoneNumber", false, updateProfileRequest.getPhoneNumber(), "Phone number must not be blank!");
+        else if (StrTools.hasValue(updateProfileRequest.getPhoneNumber())) {
             if (updateProfileRequest.getPhoneNumber().length() != 10) error.addValidationError(
-                "phoneNumber", true, updateProfileRequest.getPhoneNumber(), "Phone number MUST be 10 digits!");
+                "phoneNumber", false, updateProfileRequest.getPhoneNumber(), "Phone number MUST be 10 digits!");
 
             if (!updateProfileRequest.getPhoneNumber().matches("^[0-9]*$")) error.addValidationError(
-                "phoneNumber", true, updateProfileRequest.getPhoneNumber(), "Phone number must only contain numeric characters!");
+                "phoneNumber", false, updateProfileRequest.getPhoneNumber(), "Phone number must only contain numeric characters!");
         }
        
 
         // email validation rules
         if(StrTools.isNotNullButBlank(updateProfileRequest.getEmail())) error.addValidationError(
-            "email", true, updateProfileRequest.getEmail(), "Email address must not be blank!");
+            "email", false, updateProfileRequest.getEmail(), "Email address must not be blank!");
         if (StrTools.hasValue(updateProfileRequest.getEmail()) && updateProfileRequest.getEmail().length() > 100) error.addValidationError(
-            "email", true, updateProfileRequest.getEmail(), "Email must not be longer than 100 characters!");
+            "email", false, updateProfileRequest.getEmail(), "Email must not be longer than 100 characters!");
             
         // address validation rules
         if(StrTools.isNotNullButBlank(updateProfileRequest.getAddressLineOne())) error.addValidationError(
-            "addressLineOne", true, updateProfileRequest.getAddressLineOne(), "Address must not be blank!");
+            "addressLineOne", false, updateProfileRequest.getAddressLineOne(), "Address must not be blank!");
         if (StrTools.hasValue(updateProfileRequest.getAddressLineOne()) && updateProfileRequest.getAddressLineOne().length()>50) error.addValidationError(
-            "addressLineOne", true, updateProfileRequest.getAddressLineOne(), "Address fields must be shorter than 50 characters!");
+            "addressLineOne", false, updateProfileRequest.getAddressLineOne(), "Address fields must be shorter than 50 characters!");
             
         if (StrTools.hasValue(updateProfileRequest.getAddressLineTwo()) && updateProfileRequest.getAddressLineTwo().length()>50) error.addValidationError(
-                    "addressLineTwo", true, updateProfileRequest.getAddressLineTwo(), "Address fields must be shorter than 50 characters!");
+                    "addressLineTwo", false, updateProfileRequest.getAddressLineTwo(), "Address fields must be shorter than 50 characters!");
         
         if(StrTools.isNotNullButBlank(updateProfileRequest.getCity())) error.addValidationError(
-            "city", true, updateProfileRequest.getCity(), "City must not be blank!");
+            "city", false, updateProfileRequest.getCity(), "City must not be blank!");
         if (StrTools.hasValue(updateProfileRequest.getCity()) && updateProfileRequest.getCity().length()>50) error.addValidationError(
-                "city", true, updateProfileRequest.getCity(), "City name must be shorter than 50 characters!");
-                  
-        if (StrTools.hasValue(updateProfileRequest.getStateCode())) {
+                "city", false, updateProfileRequest.getCity(), "City name must be shorter than 50 characters!");
+
+        if(StrTools.isNotNullButBlank(updateProfileRequest.getStateCode())) error.addValidationError(
+                "stateCode", false, updateProfileRequest.getStateCode(), "State code must not be blank!");
+        else if (StrTools.hasValue(updateProfileRequest.getStateCode())) {
             if (updateProfileRequest.getStateCode().length() != 2) error.addValidationError(
-                "stateCode", true, updateProfileRequest.getStateCode(), "State code MUST be 2 characters!");
+                "stateCode", false, updateProfileRequest.getStateCode(), "State code MUST be 2 characters!");
             if (!updateProfileRequest.getStateCode().matches("^[A-Z]*$")) error.addValidationError(
-                "stateCode", true, updateProfileRequest.getStateCode(), "State code must contain 2 uppercase characters!");
+                "stateCode", false, updateProfileRequest.getStateCode(), "State code must contain 2 uppercase characters!");
         }
 
         if (StrTools.isNotNullButBlank(updateProfileRequest.getZipCode())) error.addValidationError(
-                "zipCode", true, updateProfileRequest.getZipCode(), "Zip code must not be blank!");
+                "zipCode", false, updateProfileRequest.getZipCode(), "Zip code must not be blank!");
         else if (StrTools.hasValue(updateProfileRequest.getZipCode()) && (
                 updateProfileRequest.getZipCode().length() != 5
                 || !updateProfileRequest.getZipCode().matches("^[0-9]*$")
         )) error.addValidationError(
-            "zipCode", true, updateProfileRequest.getZipCode(), "Zip code MUST be 5 DIGITS!");
+            "zipCode", false, updateProfileRequest.getZipCode(), "Zip code MUST be 5 DIGITS!");
 
         // contact preferences validation rules
         if (StrTools.hasValue(updateProfileRequest.getContactPreference()))
             try { ContactPreference.valueOf(updateProfileRequest.getContactPreference()); }
             catch (Exception e) {
                 error.addValidationError(
-                "contactPreference", true, updateProfileRequest.getContactPreference(),
+                "contactPreference", false, updateProfileRequest.getContactPreference(),
                 "Invalid option for Contact Preference, must be 'Email', 'PhoneCall', 'TextMessage'...");
             }
         
