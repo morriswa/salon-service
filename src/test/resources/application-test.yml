@@ -1,4 +1,7 @@
 
+salon:
+  featured-employees: 11, 22, 33
+
 testing:
   userId: 1
   username: test

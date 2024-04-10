@@ -3,7 +3,9 @@ package org.morriswa.salon.service;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.morriswa.salon.annotations.WithClientAccount;
+import org.morriswa.salon.annotations.WithEmployeeAccount;
 import org.morriswa.salon.model.ClientInfo;
+import org.morriswa.salon.model.EmployeeInfo;
 import org.morriswa.salon.validation.UserProfileValidator;
 import org.springframework.http.HttpMethod;
 
@@ -16,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("null")
-public class ClientServiceTest extends ServiceTest {
+public class ProfileServiceTest extends ServiceTest {
 
     @Test
     @WithClientAccount
@@ -732,4 +734,351 @@ public class ClientServiceTest extends ServiceTest {
         verify(profileDao, never()).updateClientInfo(any(), any());
     }
 
+
+    @Test
+    @WithEmployeeAccount
+    void updatePronounEmployeeAccount() throws Exception {
+        for (var pronoun : UserProfileValidator.validPronouns) {
+            String request = String.format("""
+            {
+                "pronouns": "%s",
+                "firstName": "testing"
+            }
+            """, pronoun);
+
+            hit(HttpMethod.PATCH, "/employee/profile", request)
+                    .andExpect(status().is(204))
+            ;
+        }
+
+        verify(profileDao, times(UserProfileValidator.validPronouns.size()))
+                .updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectEmptyPronounsEmployeeAccount() throws Exception {
+        String request = """
+        {
+            "pronouns": " ",
+            "firstName": "testing"
+        }
+        """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
+        ;
+
+        verify(profileDao, never())
+                .updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectInvalidPronounsEmployeeAccount() throws Exception {
+        for (var pronoun : Set.of("A", "B", "C")) {
+            String request = String.format("""
+            {
+                "pronouns": "%s",
+                "firstName": "testing"
+            }
+            """, pronoun);
+
+            hit(HttpMethod.PATCH, "/employee/profile", request)
+                    .andExpect(status().is(400))
+                    .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("pronouns")))
+            ;
+        }
+
+        verify(profileDao, never())
+                .updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void updatePhoneNumberEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "1112223334"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(204))
+        ;
+
+        verify(profileDao).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectShortPhoneNumberEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "1234567"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectLongPhoneNumberEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "11234567890"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectInvalidPhoneNumberEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "+1 (913) 777"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectInvalidPhoneNumber2EmployeeAccount() throws Exception {
+        String request = """
+            {
+                "phoneNumber": "1 34567890"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectEmptyNumberEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "phoneNumber": " "
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.error", Matchers.is("ValidationException")))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("phoneNumber")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void updateAddressEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "addressLineOne": "1234 Main St.",
+                "addressLineTwo": "Apt 123",
+                "city": "Georgetown",
+                "state": "DC"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(204))
+        ;
+
+        verify(profileDao).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void updateAddressEmptyLineTwoEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "addressLineOne": "1234 Main St.",
+                "addressLineTwo": " ",
+                "city": "Georgetown",
+                "state": "DC"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(204))
+        ;
+
+        verify(profileDao).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void getEmployeeProfile() throws Exception {
+
+        when(profileDao.getEmployeeInfo(testingUserId))
+                .thenReturn(new EmployeeInfo("First", "Last", "He/Him/His",
+                        "1234567890", "test@email.com",
+                        "1234 Test Ave.", null, "City", "ST", "12345",
+                        "Email", null));
+
+        hit(HttpMethod.GET, "/employee/profile")
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.addressLineOne", Matchers.is("1234 Test Ave.")))
+                .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
+        ;
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void getPublicEmployeeProfile() throws Exception {
+
+        when(profileDao.getEmployeeInfo(testingUserId))
+                .thenReturn(new EmployeeInfo("First", "Last", "He/Him/His",
+                        "1234567890", "test@email.com",
+                        "1234 Test Ave.", null, "City", "ST", "12345",
+                        "Email", null));
+
+        hit(HttpMethod.GET, String.format("/public/profile/%d", testingUserId))
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.email", Matchers.is("test@email.com")))
+                .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
+        ;
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void getFeaturedEmployeeProfiles() throws Exception {
+
+        final Long featuredTestOne = 11L;
+        final Long featuredTestTwo = 22L;
+        final Long featuredTestThree = 33L;
+
+
+        when(profileDao.getEmployeeInfo(featuredTestOne))
+                .thenReturn(new EmployeeInfo("First", "Last", "He/Him/His",
+                        "1234567890", "test1@email.com",
+                        "1234 Test Ave.", null, "City", "ST", "12345",
+                        "Email", null));
+
+        when(profileDao.getEmployeeInfo(featuredTestTwo))
+                .thenReturn(new EmployeeInfo("Second", "Last", "He/Him/His",
+                        "2234567890", "test2@email.com",
+                        "1234 Test Ave.", null, "City", "ST", "12345",
+                        "Email", null));
+
+        when(profileDao.getEmployeeInfo(featuredTestThree))
+                .thenReturn(new EmployeeInfo("Third", "Last", "He/Him/His",
+                        "3234567890", "test3@email.com",
+                        "1234 Test Ave.", null, "City", "ST", "12345",
+                        "Email", null));
+
+        hit(HttpMethod.GET, "/public/featuredEmployees")
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$[0].employeeId", Matchers.is(featuredTestOne.intValue())))
+                .andExpect(jsonPath("$[1].employeeId", Matchers.is(featuredTestTwo.intValue())))
+                .andExpect(jsonPath("$[2].employeeId", Matchers.is(featuredTestThree.intValue())))
+        ;
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void getEmployeeProfileIncludingAddressLineTwo() throws Exception {
+
+        when(profileDao.getEmployeeInfo(testingUserId))
+                .thenReturn(new EmployeeInfo("First", "Last", "He/Him/His",
+                        "1234567890", "test@email.com",
+                        "1234 Test Ave.", "Apt 567", "City", "ST", "12345",
+                        "Email", null));
+
+        hit(HttpMethod.GET, "/employee/profile")
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.addressLineOne", Matchers.is("1234 Test Ave.")))
+                .andExpect(jsonPath("$.phoneNumber", Matchers.is("1234567890")))
+        ;
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void updateEmailEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "firstName": "test@morriswa.org"
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(204))
+        ;
+
+        verify(profileDao).updateEmployeeProfile(eq(testingUserId), any(EmployeeInfo.class));
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectEmptyEmailWithEmployeeAccount() throws Exception {
+        String request = """
+            {
+                "firstName": "test",
+                "lastName": "test",
+                "email": " "
+            }
+            """;
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("email")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(any(), any());
+    }
+
+    @Test
+    @WithEmployeeAccount
+    void rejectLongEmailWithEmployeeAccount() throws Exception {
+
+        final var longEmail = "email".repeat(10) + "@" + "email".repeat(10);
+        assert longEmail.length() == 101;
+
+        String request = String.format("""
+            {
+                "firstName": "test",
+                "lastName": "test",
+                "email": "%s"
+            }
+            """, longEmail);
+
+        hit(HttpMethod.PATCH, "/employee/profile", request)
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.additionalInfo[0].field", Matchers.is("email")))
+        ;
+
+        verify(profileDao, never()).updateEmployeeProfile(any(), any());
+    }
 }

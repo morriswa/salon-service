@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SuppressWarnings("null")
-public class EmployeeServiceTest extends ServiceTest {
+public class ProvidedServiceServiceTest extends ServiceTest {
 
     @Test
     @WithEmployeeAccount
