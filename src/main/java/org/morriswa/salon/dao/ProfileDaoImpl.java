@@ -122,17 +122,17 @@ public class ProfileDaoImpl implements ProfileDao {
             database.update(query, params);
         } catch (DuplicateKeyException dpke) {
             // extract database error message
-            final var error = dpke.getMostSpecificCause().getMessage();
+            final var error = dpke.getMostSpecificCause().getMessage().toLowerCase().split(";")[0];
 
             // if error was caused by duplicate phone number on contact_info table...
-            if (error.endsWith("for key 'contact_info.phone_num'"))
+            if (error.contains("contact_info")&&error.contains("phone_num"))
             // throw a user-friendly error
                 throw new ValidationException(
                         "phoneNumber", true, request.getPhoneNumber(),
                         "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
-            if (error.endsWith("for key 'contact_info.email'"))
+            if (error.contains("contact_info")&&error.contains("email"))
                 // throw a user-friendly error
                 throw new ValidationException(
                         "email", true, request.getEmail(),
@@ -228,17 +228,17 @@ public class ProfileDaoImpl implements ProfileDao {
             database.update(query, params);
         } catch (DuplicateKeyException dpke) {
             // extract database error message
-            final var error = dpke.getMostSpecificCause().getMessage();
+            final var error = dpke.getMostSpecificCause().getMessage().toLowerCase().split(";")[0];
 
             // if error was caused by duplicate phone number on contact_info table...
-            if (error.endsWith("for key 'contact_info.phone_num'"))
+            if (error.contains("contact_info")&&error.contains("phone_num"))
                 // throw a user-friendly error
                 throw new ValidationException(
                         "phoneNumber", true, request.getPhoneNumber(),
                         "There is already a user registered with requested phone number!");
 
             // if error was caused by duplicate email on contact_info table...
-            if (error.endsWith("for key 'contact_info.email'"))
+            if (error.contains("contact_info")&&error.contains("email"))
                 // throw a user-friendly error
                 throw new ValidationException(
                         "email", true, request.getEmail(),
