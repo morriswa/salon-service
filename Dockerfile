@@ -13,7 +13,7 @@ FROM --platform=x86-64 amazoncorretto:17-alpine-jdk
 
 # ENV SYS_VAR=default_value
 ENV MYSQL_HOSTNAME=host.docker.internal
-
+ENV MAX_HEAP=1024
 # create and move to directory /app to store artifacts
 WORKDIR /app
 
@@ -21,7 +21,7 @@ WORKDIR /app
 COPY target/salon-service.jar salon-service.jar
 
 # set entrypoint (command which will run when container is started)
-ENTRYPOINT ["java","-jar","/app/salon-service.jar"]
+ENTRYPOINT java -Xmx${MAX_HEAP}M -jar /app/salon-service.jar
 
 # expose appropriate API port
 EXPOSE 8080
