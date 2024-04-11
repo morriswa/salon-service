@@ -1,6 +1,7 @@
 
 salon:
   featured-employees: 11, 22, 33
+  employee-code: testCode
 
 testing:
   userId: 1

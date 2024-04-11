@@ -548,4 +548,28 @@ public class AccountServiceTest extends ServiceTest{
         verify(accountDao, never()).register(any(), any());
     }
 
+    @Test
+    @WithNewUserAccount
+    void unlockClientAccount() throws Exception {
+        hit(HttpMethod.PATCH, "/newUser/access/client")
+            .andExpect(status().is(204))
+        ;
+    }
+
+    @Test
+    @WithNewUserAccount
+    void unlockEmployeeAccount() throws Exception {
+        hit(HttpMethod.PATCH, String.format("/newUser/access/employee?accessCode=testCode"))
+            .andExpect(status().is(204))
+        ;
+    }
+
+    @Test
+    @WithNewUserAccount
+    void rejectBadEmployeeAccessCode() throws Exception {
+        hit(HttpMethod.PATCH, String.format("/newUser/access/employee?accessCode=badTestCode"))
+            .andExpect(status().is(400))
+            .andExpect(jsonPath("$.description",Matchers.is("Bad access code!")))
+        ;
+    }
 }
