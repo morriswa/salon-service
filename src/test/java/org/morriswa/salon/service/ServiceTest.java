@@ -2,7 +2,6 @@ package org.morriswa.salon.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.morriswa.salon.config.TestConfig;
-import org.morriswa.salon.config.TestJdbcAuthenticationConfig;
 import org.morriswa.salon.dao.AccountDao;
 import org.morriswa.salon.dao.ProfileDao;
 import org.morriswa.salon.dao.ProvidedServiceDao;
@@ -16,14 +15,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@SpringBootTest(classes = {TestConfig.class, TestJdbcAuthenticationConfig.class})
+
+/**
+ * test configuration for controller and service unit tests
+ *
+ * @author William A. Morris
+ * @since 2024-01-22
+ */
+@SpringBootTest(classes = {TestConfig.class})
 @ActiveProfiles("test")
-@TestPropertySource("classpath:application-test.yml")
 @AutoConfigureMockMvc
 public class ServiceTest {
 
