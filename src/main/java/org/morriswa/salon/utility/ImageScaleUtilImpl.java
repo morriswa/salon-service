@@ -17,33 +17,41 @@ import java.io.*;
 @Component
 public class ImageScaleUtilImpl implements ImageScaleUtil {
 
+    private OutputStream getScaledImage(BufferedImage originalImage, int pxWidth, int pxHeight, String contentType) throws IOException {
 
-    @Override
-    public OutputStream getScaledImage(MultipartFile imageRequest, int pxWidth, int pxHeight) throws IOException {
-
-        BufferedImage retrievedImage = ImageIO.read(new ByteArrayInputStream(imageRequest.getBytes()));
-
-        Image scaledImage = retrievedImage.getScaledInstance(
+        Image scaledImage = originalImage.getScaledInstance(
                 pxWidth,
                 pxHeight,
-                Image.SCALE_SMOOTH);
+                Image.SCALE_FAST);
         BufferedImage outputImage = new BufferedImage(
                 pxWidth,
                 pxHeight,
                 BufferedImage.TYPE_INT_RGB);
         outputImage.getGraphics().drawImage(scaledImage, 0, 0, null);
 
-        assert imageRequest.getContentType() != null;
+        assert contentType != null;
+        final String imageFormat = contentType.substring(
+                contentType.indexOf("/") + 1
+        );
 
         // open bytestream
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         // write image to bytestream in original format
-        ImageIO.write(outputImage, imageRequest.getContentType(), byteStream);
+        ImageIO.write(outputImage, imageFormat, byteStream);
         // close bytestream
         byteStream.close();
 
-
         return byteStream;
+    }
+
+    @Override
+    public OutputStream getScaledImage(MultipartFile imageRequest, int pxWidth, int pxHeight) throws IOException {
+
+        BufferedImage retrievedImage = ImageIO.read(imageRequest.getInputStream());
+
+        final String contentType = imageRequest.getContentType();
+
+        return getScaledImage(retrievedImage, pxWidth, pxHeight, contentType);
     }
 
     @Override
@@ -53,31 +61,8 @@ public class ImageScaleUtilImpl implements ImageScaleUtil {
 
         final int pxWidth = (int) (retrievedImage.getWidth() * scale);
         final int pxHeight = (int) (retrievedImage.getHeight() * scale);
+        final String contentType = imageRequest.getContentType();
 
-        Image scaledImage = retrievedImage.getScaledInstance(
-                pxWidth,
-                pxHeight,
-                Image.SCALE_SMOOTH);
-        BufferedImage outputImage = new BufferedImage(
-                pxWidth,
-                pxHeight,
-                BufferedImage.TYPE_INT_RGB);
-        outputImage.getGraphics().drawImage(scaledImage, 0, 0, null);
-
-        assert imageRequest.getContentType() != null;
-
-        // open bytestream
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-
-        final String imageFormat = imageRequest.getContentType().substring(
-                imageRequest.getContentType().indexOf("/") + 1
-        );
-
-        // write image to bytestream in original format
-        ImageIO.write(outputImage, imageFormat, byteStream);
-        // close bytestream
-        byteStream.close();
-
-        return byteStream;
+        return getScaledImage(retrievedImage, pxWidth, pxHeight, contentType);
     }
 }

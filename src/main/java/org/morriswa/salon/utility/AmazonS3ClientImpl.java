@@ -49,10 +49,10 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
     }
 
     @Override
-    public void uploadToS3(OutputStream content, String contentType, String destination) throws IOException, InterruptedException {
+    public void uploadToS3(OutputStream content, String contentType, String destination) throws Exception {
 
-        final ByteArrayOutputStream outputStream = (ByteArrayOutputStream) content;
-        final int contentLength = outputStream.size();
+        final ByteArrayOutputStream contentAsOutputStream = (ByteArrayOutputStream) content;
+        final int contentLength = contentAsOutputStream.size();
 
         final ObjectMetadata imageInfo; {
             var info = new ObjectMetadata();
@@ -61,30 +61,13 @@ public class AmazonS3ClientImpl implements AmazonS3Client {
             imageInfo = info;
         }
 
-        // connect the pipes
-        PipedInputStream in = new PipedInputStream();
-        PipedOutputStream out = new PipedOutputStream(in);
-
-        // create a new thread to write output to input stream
-        final var myThread = new Thread(() -> {
-            try {
-                outputStream.writeTo(out);
-                out.close();
-            } catch (IOException iox) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(iox);
-            }
-        });
-
-        // start the thread
-        myThread.start();
-
-        // create input stream from output
-        final ByteArrayInputStream inputStream = new ByteArrayInputStream(in.readAllBytes());
+        final InputStream contentAsInputStream = StreamTools.outputStreamToInput(contentAsOutputStream);
 
         s3.putObject(new PutObjectRequest(ACTIVE_BUCKET,
                 this.FILE_DEST_PREFIX+destination,
-                inputStream, imageInfo));
+                contentAsInputStream, imageInfo));
+
+        contentAsInputStream.close();
     }
 
     @Override

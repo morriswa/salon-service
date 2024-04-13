@@ -12,7 +12,7 @@ import java.net.URL;
  */
 public interface AmazonS3Client {
 
-    void uploadToS3(OutputStream content, String contentType, String destination) throws IOException, InterruptedException;
+    void uploadToS3(OutputStream content, String contentType, String destination) throws Exception;
 
     boolean doesObjectExist(String path);
 
