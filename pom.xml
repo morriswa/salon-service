@@ -12,7 +12,7 @@
     </parent>
     <groupId>org.morriswa</groupId>
     <artifactId>salon-service</artifactId>
-    <version>0.1.5-SNAPSHOT</version>
+    <version>0.2.0</version>
     <name>Salon Web Service</name>
     <description>
         Dev Dynasty's EECS 447 Group Term Project Web Service.
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.690</version>
+            <version>1.12.698</version>
         </dependency>
 
         <!-- Required for annotated models -->
@@ -86,8 +86,6 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
-
 
     <build>
         <plugins>
