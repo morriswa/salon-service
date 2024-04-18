@@ -3,6 +3,7 @@ package org.morriswa.salon.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.morriswa.salon.utility.ServiceInfoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -34,6 +35,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity // Enables Spring Security for this application
 public class WebSecurityConfig {
+
+    @Value("${server.allowed-origin}")
+    private String allowedOrigin;
 
     /**
      * Register a Password Encoder bean to be injected
@@ -70,26 +74,26 @@ public class WebSecurityConfig {
      *
      * @return fully configured Cors Object, ready to be injected into Security Filter
      */
-    private static CorsConfigurationSource corsConfigurationSource() {
+    private CorsConfigurationSource corsConfigurationSource() {
 
         // configuration for Secured Routes
         final CorsConfiguration secureRoutesCors = new CorsConfiguration(){{
             // allow requests coming from any origin
-            setAllowedOrigins(List.of("*"));
+            setAllowedOrigins(List.of(allowedOrigin));
             // allow only GET and POST HTTP methods
             setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
             // allow request to have any headers
-            setAllowedHeaders(List.of("*"));
+            setAllowedHeaders(List.of("Content-Type", "Authorization"));
         }};
 
         // configuration for Public Routes
         final CorsConfiguration publicEndpointCors = new CorsConfiguration(){{
             // allow requests coming from any origin
-            setAllowedOrigins(List.of("*"));
+            setAllowedOrigins(List.of(allowedOrigin));
             // only allow GET and POST methods
             setAllowedMethods(List.of("GET", "POST"));
             // allow request to have any headers
-            setAllowedHeaders(List.of("*"));
+            setAllowedHeaders(List.of());
         }};
 
         // cors configuration will vary based on url

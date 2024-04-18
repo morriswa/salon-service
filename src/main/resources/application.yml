@@ -25,7 +25,7 @@ salon:
 server:
   # service will be available on this port
   port: 8080
-
+  allowed-origin: 'http://localhost:4200'
 
 # Settings for Spring Boot
 spring:
