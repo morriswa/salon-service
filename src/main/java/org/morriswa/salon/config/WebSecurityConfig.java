@@ -2,6 +2,7 @@ package org.morriswa.salon.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.morriswa.salon.utility.ServiceInfoFactory;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,11 +14,12 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -83,7 +85,8 @@ public class WebSecurityConfig {
             // allow only GET and POST HTTP methods
             setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
             // allow request to have any headers
-            setAllowedHeaders(List.of("Content-Type", "Authorization"));
+            setAllowedHeaders(List.of("Content-Type", "Authorization", "X-XSRF-TOKEN", "X-Requested-With"));
+            setAllowCredentials(true);
         }};
 
         // configuration for Public Routes
@@ -102,14 +105,18 @@ public class WebSecurityConfig {
         // register all routes with secured cors config
         sources.registerCorsConfiguration("/**", secureRoutesCors);
 
-        // register user registration route with appropriate config
+        // specify public endpoints
         sources.registerCorsConfiguration("/register", publicEndpointCors);
-
-        // register user registration route with appropriate config
         sources.registerCorsConfiguration("/health", publicEndpointCors);
+        sources.registerCorsConfiguration("/public/**", publicEndpointCors);
 
         // return fully configured cors source
         return sources;
+    }
+
+    private CsrfTokenRepository csrfTokenRepository() {
+
+        return CookieCsrfTokenRepository.withHttpOnlyFalse();
     }
 
     /**
@@ -127,7 +134,7 @@ public class WebSecurityConfig {
 
         http    // All http requests will...
                 // Be stateless
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Be authorized only by following below rules
                 .authorizeHttpRequests(authorize -> authorize
                         // requests to user registration endpoint shall be allowed
@@ -148,7 +155,7 @@ public class WebSecurityConfig {
                         .anyRequest().denyAll()
                 )
                 // disable cross site protections
-                .csrf(csrf->csrf.disable())
+                .csrf(csrf->csrf.csrfTokenRepository(csrfTokenRepository()))
                 // use custom cors config
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 // use default http basic authorization token, provided in http headers
@@ -203,6 +210,8 @@ public class WebSecurityConfig {
                 })
                 // register exception handler for requests without proper scope (403)
                 .accessDeniedHandler((request, response, authException) -> {
+                    final var log = LoggerFactory.getLogger(WebSecurityConfig.class);
+                    log.error("rejected client", authException);
                     // create a formatted Http Response
                     var customErrorResponse =
                         responseFactory.getHttpErrorResponse(
@@ -211,10 +220,7 @@ public class WebSecurityConfig {
                             // error should be the exception encountered in the filter chain
                             authException.getClass().getSimpleName(),
                             // error description to include in response
-                            """ 
-                            YOU SHALL NOT PASS! \
-                            You do not have permission to access this endpoint. \
-                            If you believe this is a mistake, please contact your system administrator."""
+                            authException.getMessage()
                         );
 
                     // write the body of the generated Http Response to actual Response

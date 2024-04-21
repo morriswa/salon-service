@@ -36,7 +36,7 @@ public class EndpointSecurityTest extends ServiceTest {
     @Test
     @WithUserDetails
     void authenticatedRequest() throws Exception {
-        hit(HttpMethod.GET, "/login")
+        hit(HttpMethod.POST, "/login")
             .andExpect(status().is(200))
         ;
     }

@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
 
 /**
  * test configuration for controller and service unit tests
@@ -56,11 +58,13 @@ public class ServiceTest {
     @Value("${testing.password}") protected String testingPassword;
 
     protected ResultActions hit(HttpMethod method, String endpoint) throws Exception {
-        return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint));
+        return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint)
+            .with(csrf()));
     }
 
     protected ResultActions hit(HttpMethod method, String endpoint, String body) throws Exception {
         return mockMvc.perform(MockMvcRequestBuilders.request(method, endpoint)
+            .with(csrf())
             .contentType("application/json")
             .content(body));
     }

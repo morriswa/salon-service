@@ -37,7 +37,7 @@ public class AccountController {
      *                  no further user authentication or authorization action is needed.
      * @return JSON response with account information, notably user's granted authorities
      */
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<UserAccountResponse> login(@AuthenticationPrincipal UserAccount principal) {
         // use the user profile service to register a new user, and retrieve the username they were registered with
         var userInfo = accounts.login(principal);
