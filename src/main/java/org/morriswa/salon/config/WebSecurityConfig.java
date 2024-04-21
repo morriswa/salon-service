@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -25,6 +26,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 
 /**
@@ -85,7 +88,7 @@ public class WebSecurityConfig {
             // allow only GET and POST HTTP methods
             setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
             // allow request to have any headers
-            setAllowedHeaders(List.of("content-type", "authorization", "x-xsrf-token", "x-requested-with"));
+            setAllowedHeaders(List.of(HttpHeaders.CONTENT_TYPE, HttpHeaders.AUTHORIZATION, "x-xsrf-token", "x-requested-with"));
             setAllowCredentials(true);
         }};
 
