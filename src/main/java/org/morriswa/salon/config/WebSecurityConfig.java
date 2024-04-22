@@ -124,12 +124,6 @@ public class WebSecurityConfig {
         return repo;
     }
 
-    private CsrfTokenRequestAttributeHandler requestHandler() {
-            CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-            // set the name of the attribute the CsrfToken will be populated on
-            requestHandler.setCsrfRequestAttributeName(null);
-            return requestHandler;
-    }
     /**
      * Register a Security Filter Chain bean to secure all web requests
      * REQUIRED AUTOWIRED DEPENDENCIES:
@@ -165,7 +159,6 @@ public class WebSecurityConfig {
                 )
                 // disable cross site protections
                 .csrf(csrf->csrf
-                        .csrfTokenRequestHandler(requestHandler())
                         .csrfTokenRepository(csrfTokenRepository()))
                 // use custom cors config
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
