@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -218,14 +219,6 @@ public class WebSecurityConfig {
                 })
                 // register exception handler for requests without proper scope (403)
                 .accessDeniedHandler((request, response, authException) -> {
-                    final var log = LoggerFactory.getLogger(WebSecurityConfig.class);
-                    log.error(
-                            "rejected client with cookies {} and header X-XSRF-TOKEN {}",
-                            Arrays.stream(request.getCookies()).map(cookie -> cookie.getName()+" "+cookie.getValue()).toList(),
-                            request.getHeader("X-XSRF-TOKEN"),
-                            authException
-                    );
-
                     // create a formatted Http Response
                     var customErrorResponse =
                         responseFactory.getHttpErrorResponse(
