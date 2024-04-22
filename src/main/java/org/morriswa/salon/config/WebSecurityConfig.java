@@ -119,12 +119,8 @@ public class WebSecurityConfig {
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
-
-        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
-        repo.setCookieCustomizer(cookie->{
-            cookie.path("/");
-            cookie.httpOnly(false);
-        });
+        CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        repo.setCookiePath("/");
         return repo;
     }
 
