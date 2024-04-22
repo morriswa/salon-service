@@ -15,6 +15,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,9 +26,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 
 /**
@@ -118,7 +118,14 @@ public class WebSecurityConfig {
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
-
+//        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
+//        repo.setCookieCustomizer(cookie->{
+//            cookie.sameSite("Lax");
+//            cookie.httpOnly(false);
+//            cookie.path("/");
+//            cookie.build();
+//        });
+//        return repo;
         return CookieCsrfTokenRepository.withHttpOnlyFalse();
     }
 
@@ -137,7 +144,7 @@ public class WebSecurityConfig {
 
         http    // All http requests will...
                 // Be stateless
-//                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 // Be authorized only by following below rules
                 .authorizeHttpRequests(authorize -> authorize
                         // requests to user registration endpoint shall be allowed
@@ -214,7 +221,13 @@ public class WebSecurityConfig {
                 // register exception handler for requests without proper scope (403)
                 .accessDeniedHandler((request, response, authException) -> {
                     final var log = LoggerFactory.getLogger(WebSecurityConfig.class);
-                    log.error("rejected client", authException);
+                    log.error(
+                            "rejected client with cookies {} and header X-XSRF-TOKEN {}",
+                            Arrays.stream(request.getCookies()).map(cookie -> cookie.getName()+" "+cookie.getValue()).toList(),
+                            request.getHeader("X-XSRF-TOKEN"),
+                            authException
+                    );
+
                     // create a formatted Http Response
                     var customErrorResponse =
                         responseFactory.getHttpErrorResponse(
