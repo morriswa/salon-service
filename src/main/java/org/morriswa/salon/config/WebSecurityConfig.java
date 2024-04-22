@@ -15,13 +15,13 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -118,17 +118,15 @@ public class WebSecurityConfig {
     }
 
     private CsrfTokenRepository csrfTokenRepository() {
-//        CookieCsrfTokenRepository repo = new CookieCsrfTokenRepository();
-//        repo.setCookieCustomizer(cookie->{
-//            cookie.sameSite("Lax");
-//            cookie.httpOnly(false);
-//            cookie.path("/");
-//            cookie.build();
-//        });
-//        return repo;
         return CookieCsrfTokenRepository.withHttpOnlyFalse();
     }
 
+    private CsrfTokenRequestAttributeHandler requestHandler() {
+            CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+            // set the name of the attribute the CsrfToken will be populated on
+            requestHandler.setCsrfRequestAttributeName(null);
+            return requestHandler;
+    }
     /**
      * Register a Security Filter Chain bean to secure all web requests
      * REQUIRED AUTOWIRED DEPENDENCIES:
@@ -143,8 +141,6 @@ public class WebSecurityConfig {
                                          ObjectMapper objectMapper) throws Exception {
 
         http    // All http requests will...
-                // Be stateless
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 // Be authorized only by following below rules
                 .authorizeHttpRequests(authorize -> authorize
                         // requests to user registration endpoint shall be allowed
@@ -165,7 +161,9 @@ public class WebSecurityConfig {
                         .anyRequest().denyAll()
                 )
                 // disable cross site protections
-                .csrf(csrf->csrf.csrfTokenRepository(csrfTokenRepository()))
+                .csrf(csrf->csrf
+                        .csrfTokenRequestHandler(requestHandler())
+                        .csrfTokenRepository(csrfTokenRepository()))
                 // use custom cors config
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 // use default http basic authorization token, provided in http headers
